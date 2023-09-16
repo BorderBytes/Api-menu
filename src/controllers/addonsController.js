@@ -177,7 +177,7 @@ exports.createAddon = (req, res) => {
             return;
         }
 
-        sendJsonResponse(res, 'success', `Addon creado con ID: ${results.insertId}`, null, executionTime);
+        sendJsonResponse(res, 'success', `Addon creado con ID: ${results.insertId}`, { id: results.insertId }, executionTime);
     });
 };
 
