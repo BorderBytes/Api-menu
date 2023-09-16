@@ -146,6 +146,49 @@ exports.createUser = (req, res) => {
         });
     });
 };
+exports.createBundleUser = (req, res) => {
+    const startTime = performance.now(); // Start the timer
+
+    const { level_id, status_id, email, password, name, phone } = req.body;
+
+    if (!level_id || !status_id || !email || !password || !name || !phone) {
+        const executionTime = calculateExecutionTime(startTime); // Calculate execution time
+        sendJsonResponse(res, 'error', 'level_id, status_id, email, password, name, and phone are required', null, executionTime);
+        return;
+    }
+
+    bcrypt.hash(password, saltRounds, (error, hashedPassword) => {
+        if (error) {
+            const executionTime = calculateExecutionTime(startTime); // Calculate execution time
+            console.error('Error while hashing password:', error.stack);
+            sendJsonResponse(res, 'error', 'Error while hashing password', null, executionTime);
+            return;
+        }
+
+        // Insert into the database
+        connection.query('INSERT INTO users (level_id, status_id, email, password) VALUES (?, ?, ?, ?)', [level_id, status_id, email, hashedPassword], (error, results) => {
+            if (error) {
+                const executionTime = calculateExecutionTime(startTime); // Calculate execution time
+                console.error('Error while inserting:', error.stack);
+                sendJsonResponse(res, 'error', 'Error while inserting user', null, executionTime);
+                return;
+            }
+
+            // Once the user is inserted successfully, now insert into clients table
+            connection.query('INSERT INTO clients (user_id, name, phone) VALUES (?, ?, ?)', [results.insertId, name, phone], (error, clientResults) => {
+                const executionTime = calculateExecutionTime(startTime); // Calculate execution time
+
+                if (error) {
+                    console.error('Error while inserting client:', error.stack);
+                    sendJsonResponse(res, 'error', 'Error while inserting client', null, executionTime);
+                    return;
+                }
+
+                sendJsonResponse(res, 'success', `User created with ID: ${results.insertId} and Client created with ID: ${clientResults.insertId}`, null, executionTime);
+            });
+        });
+    });
+};
 
 exports.updateUser = (req, res) => {
     const startTime = performance.now(); // Iniciar el temporizador

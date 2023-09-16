@@ -14,6 +14,9 @@ router.get('/:id', usersController.getUserById);
 // Crear un nuevo usuario
 router.post('/', usersController.createUser);
 
+// Crear un nuevo usuario y cliente
+router.post('/bundle', usersController.createBundleUser);
+
 // Actualizar un usuario
 router.put('/:id', usersController.updateUser);
 
