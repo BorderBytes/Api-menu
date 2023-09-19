@@ -32,6 +32,10 @@ app.use('/clients', clientsRoutes);
 const usersRoutes = require('./routes/usersRoutes');
 app.use('/users', usersRoutes);
 
+// Ruta para detalles de addons (Antes de addons para que no haya problemas en el enrutamiento)
+const addonsDetailRoutes = require('./routes/addonsDetailRoutes');
+app.use('/addons/detail', addonsDetailRoutes);
+
 // Ruta para addons
 const addonsRoutes = require('./routes/addonsRoutes');
 app.use('/addons', addonsRoutes);
