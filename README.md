@@ -42,4 +42,46 @@
 
    Una vez que el servidor esté corriendo, deberías ver un mensaje indicando que está corriendo en `http://localhost:3000`.
 
+5. **Estructura del proyecto
+```lua
+📂 proyecto
+│
+│-- 📂 node_modules          # Módulos y paquetes de Node.js
+│
+│-- 📂 src                   # Código fuente principal
+│   │
+│   │-- 📂 config            # Configuraciones del proyecto
+│   │
+│   │-- 📂 models            # Modelos (para bases de datos, ORM, etc.)
+│   │
+│   │-- 📂 routes            # Rutas del proyecto
+│   │
+│   │-- 📂 controllers       # Controladores (lógica detrás de las rutas)
+│   │
+│   │-- 📂 middlewares       # Middlewares (autenticación, logs, etc.)
+│   │
+│   │-- 📂 public            # Archivos estáticos (CSS, JS, imágenes)
+│   │
+│   │-- 📂 views             # Vistas o plantillas (si se usará algún motor de vistas)
+│   │
+│   │-- 📂 utils             # Funciones de utilidad
+│   │
+│   │-- 📂 services          # Servicios (lógica de negocio, API externas)
+│   │
+│   │-- 📂 tests             # Pruebas
+│   │
+│   └─ app.js               # Archivo principal de la aplicación
+│
+│-- 📂 logs                  # Archivos de logs
+│
+│-- package.json             # Metadatos del proyecto, scripts, dependencias
+│
+│-- package-lock.json        # Versiones exactas de las dependencias
+│
+│-- .gitignore               # Archivos/directorios ignorados por Git
+│
+│-- .env                     # Variables de entorno (¡no subir al control de versiones!)
+│
+└─ README.md                 # Documentación del proyecto
+```
 ---
