@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
   }
 })
 const fileFilter = (req, file, cb) => {
-  const filetypes = /jpeg|jpg|png|gif/; // Tipos de archivos permitidos
+  const filetypes = /jpeg|jpg|png|gif|webp/; // Tipos de archivos permitidos
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = filetypes.test(file.mimetype);
 
@@ -95,58 +95,48 @@ exports.getCategoryById = (req, res) => {
 
 // Función para crear una nueva categoría
 exports.createCategory = (req, res) => {
-
   upload.single('image')(req, res, async function (uploadError) {
-    if (uploadError) {
-      console.error('Error uploading file:', uploadError.stack);
-      sendJsonResponse(res, 'error', 'Error uploading file');
-      return;
-    }
+      try {
+          if (uploadError) {
+              throw new Error('Error uploading file: ' + uploadError.message);
+          }
 
-    if (req.file) {
-        const inputImagePath = path.join(__dirname, '..', 'public', 'images/categories', req.file.filename);
-        const outputImagePath = path.join(__dirname, '..', 'public', 'images/categories', path.basename(req.file.filename, path.extname(req.file.filename)) + '.webp');
-
-        try {
-            await sharp(inputImagePath)
-                .webp({ quality: 90 }) // Puedes ajustar la calidad según lo necesites
-                .toFile(outputImagePath);
-
-            // Opcional: Borrar la imagen original después de la conversión
-            fs.unlinkSync(inputImagePath);
+          if (req.file) {
+            const ext = path.extname(req.file.filename).toLowerCase();
+            const inputImagePath = path.join(__dirname, '..', 'public', 'images/categories', req.file.filename);
             
-            // Actualizar el nombre del archivo para que incluya la nueva extensión .webp
-            req.file.filename = path.basename(req.file.filename, path.extname(req.file.filename)) + '.webp';
-        } catch (err) {
-            console.error('Error converting image:', err.stack);
-            sendJsonResponse(res, 'error', 'Error converting image');
-            return;
+            if (ext !== '.webp') {
+                const outputImagePath = path.join(__dirname, '..', 'public', 'images/categories', path.basename(req.file.filename, ext) + '.webp');
+                
+                await sharp(inputImagePath)
+                    .webp({ quality: 90 }) 
+                    .toFile(outputImagePath);
+                
+                fs.unlinkSync(inputImagePath); // Borrar la imagen original después de la conversión
+                
+                req.file.filename = path.basename(req.file.filename, ext) + '.webp';
+            }
         }
-    }
+        
 
-    // Extraemos el nombre de la categoría y la imagen del cuerpo de la petición
-    const { name } = req.body;
-    const imageFilename = req.file ? req.file.filename : null;
+          const { name } = req.body;
+          if (!name) {
+              throw new Error('Category name is required');
+          }
 
-    // Verificar si el nombre de la categoría ha sido proporcionado
-    if (!name) {
-      sendJsonResponse(res, 'error', 'Category name is required');
-      return;
-    }
+          const imageFilename = req.file ? req.file.filename : null;
 
-    // Insertar la nueva categoría en la base de datos (ahora también insertando el nombre del archivo de imagen)
-    connection.query('INSERT INTO categories (name, image) VALUES (?, ?)', [name, imageFilename], (error, results) => {
-      
-      // En caso de error al insertar
-      if (error) {
-        console.error('Error al insertar:', error.stack);
-        sendJsonResponse(res, 'error', error.message);
-        return;
+          connection.query('INSERT INTO categories (name, image) VALUES (?, ?)', [name, imageFilename], (error, results) => {
+              if (error) {
+                  throw new Error('Error al insertar: ' + error.message);
+              }
+
+              sendJsonResponse(res, 'success', `Category created: ${results.insertId}`, { id: results.insertId });
+          });
+      } catch (err) {
+          console.error(err.stack || err.message);
+          sendJsonResponse(res, 'error', err.message);
       }
-
-      // Enviar respuesta con el ID de la categoría creada
-      sendJsonResponse(res, 'success', `Category created: ${results.insertId}`, { id: results.insertId });
-    });
   });
 };
 
@@ -155,63 +145,92 @@ exports.updateCategory = (req, res) => {
   const id = req.params.id;
 
   upload.single('image')(req, res, async function (uploadError) {
-    if (uploadError) {
-      console.error('Error uploading file:', uploadError.stack);
-      sendJsonResponse(res, 'error', 'Error uploading file');
-      return;
-    }
+      try {
+          if (uploadError) {
+              throw new Error('Error uploading file: ' + uploadError.message);
+          }
 
-    let imageFilename = null;
+          let newImageFilename = null;
 
-    if (req.file) {
-        const inputImagePath = path.join(__dirname, '..', 'public', 'images', req.file.filename);
-        const outputImagePath = path.join(__dirname, '..', 'public', 'images', path.basename(req.file.filename, path.extname(req.file.filename)) + '.webp');
-
-        try {
-            await sharp(inputImagePath)
-                .webp({ quality: 90 })
-                .toFile(outputImagePath);
-
-            // Opcional: Borrar la imagen original después de la conversión
-            fs.unlinkSync(inputImagePath);
-
-            imageFilename = path.basename(req.file.filename, path.extname(req.file.filename)) + '.webp';
-        } catch (err) {
-            console.error('Error converting image:', err.stack);
-            sendJsonResponse(res, 'error', 'Error converting image');
-            return;
+          if (req.file) {
+            const ext = path.extname(req.file.filename).toLowerCase();
+            const inputImagePath = path.join(__dirname, '..', 'public', 'images/categories/', req.file.filename);
+            
+            if (ext !== '.webp') {
+                const outputImagePath = path.join(__dirname, '..', 'public', 'images/categories/', path.basename(req.file.filename, ext) + '.webp');
+                
+                await sharp(inputImagePath)
+                    .webp({ quality: 90 })
+                    .toFile(outputImagePath);
+                
+                fs.unlinkSync(inputImagePath);
+                
+                newImageFilename = path.basename(req.file.filename, ext) + '.webp';
+            } else {
+                newImageFilename = req.file.filename;
+            }
         }
-    }
+        
 
-    const { name } = req.body;
+          if (newImageFilename) {
+              const result = await new Promise((resolve, reject) => {
+                  connection.query('SELECT image FROM categories WHERE id = ?', [id], (err, results) => {
+                      if (err || !results[0]) reject(err);
+                      resolve(results[0].image);
+                  });
+              });
 
-    if (!name && !imageFilename) {
-      sendJsonResponse(res, 'error', 'Category name or image is required');
-      return;
-    }
+              const oldImageFilename = result;
+              if (oldImageFilename) {
+                  const oldImagePath = path.join(__dirname, '..', 'public', 'images/categories', oldImageFilename);
+                  const trashFolder = path.join(__dirname, '..', 'public', 'images/trash');
+                  const trashFilename = 'old_' + id + '_' + oldImageFilename;
+                  const trashPath = path.join(trashFolder, trashFilename);
 
-    let updateQuery = 'UPDATE categories SET name = ?';
-    let updateValues = [name];
+                  const filesWithSameId = fs.readdirSync(trashFolder).filter(file => file.startsWith('old_' + id + '_')).sort((a, b) => {
+                      return fs.statSync(path.join(trashFolder, a)).mtime.getTime() - fs.statSync(path.join(trashFolder, b)).mtime.getTime();
+                  });
 
-    if (imageFilename) {
-      updateQuery += ', image = ?';
-      updateValues.push(imageFilename);
-    }
+                  if (filesWithSameId.length >= 3) {
+                      fs.unlinkSync(path.join(trashFolder, filesWithSameId[0]));
+                  }
 
-    updateQuery += ' WHERE id = ?';
-    updateValues.push(id);
+                  fs.renameSync(oldImagePath, trashPath);
+              }
+          }
 
-    connection.query(updateQuery, updateValues, (error) => {
-      if (error) {
-        console.error('Error al actualizar:', error.stack);
-        sendJsonResponse(res, 'error', error.message);
-        return;
+          const { name } = req.body;
+
+          if (!name && !newImageFilename) {
+              throw new Error('Category name or image is required');
+          }
+
+          let updateQuery = 'UPDATE categories SET name = ?';
+          let updateValues = [name];
+
+          if (newImageFilename) {
+              updateQuery += ', image = ?';
+              updateValues.push(newImageFilename);
+          }
+
+          updateQuery += ' WHERE id = ?';
+          updateValues.push(id);
+
+          await new Promise((resolve, reject) => {
+              connection.query(updateQuery, updateValues, (error) => {
+                  if (error) reject(error);
+                  resolve();
+              });
+          });
+
+          sendJsonResponse(res, 'success', 'Category updated successfully');
+
+      } catch (err) {
+          console.error(err.stack || err.message);
+          sendJsonResponse(res, 'error', err.message);
       }
-      sendJsonResponse(res, 'success', 'Category updated successfully');
-    });
   });
 };
-
 
 // Función para eliminar (actualizar el estado a 0) una categoría
 exports.deleteCategory = (req, res) => {

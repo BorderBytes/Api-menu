@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const app = express();
 const PORT = 3000;
 // Requiere la conexión de la base de datos
@@ -10,6 +11,24 @@ const path = require('path');
 
 // Middleware para servir archivos estáticos desde 'public/'
 app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// Ruta para imagenes
+app.get('/images/:folder/:filename', (req, res) => {
+  const folder = req.params.folder;
+  const filename = req.params.filename;
+  const filepath = path.join(__dirname, 'public', 'images', folder, filename);
+  
+  fs.access(filepath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error('Error accessing file:', err.stack);
+      res.status(404).send('Image not found');
+      return;
+    }
+
+    res.sendFile(filepath);
+  });
+});
+
 
 // Ruta para categorias
 const categoriesRoutes = require('./routes/categoriesRoutes');
