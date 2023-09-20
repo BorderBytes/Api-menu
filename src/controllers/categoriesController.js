@@ -8,6 +8,36 @@ const error_message = 'Error in mysql query';
 const success_message = null;
 // Mensaje estanadar sin resultados
 const no_data_message = null;
+// Libreria de iamgenes
+const multer  = require('multer');
+const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs');
+const imagesDirectory = path.join(__dirname, '..', 'public', 'images/categories');
+// Configuración de Multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, imagesDirectory)  // Directorio donde se guardarán las imágenes.
+  },
+  filename: function (req, file, cb) {
+      cb(null, Date.now() + path.extname(file.originalname)) // Se genera un nombre de archivo único con timestamp + extensión original.
+  }
+})
+const fileFilter = (req, file, cb) => {
+  const filetypes = /jpeg|jpg|png|gif/; // Tipos de archivos permitidos
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (extname && mimetype) {
+      return cb(null, true);
+  } else {
+      cb('Error: Solo se admiten imágenes.');
+  }
+};
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter
+});
 
 // Función para obtener todas las categorías
 exports.getCategories = (req, res) => {
@@ -65,48 +95,123 @@ exports.getCategoryById = (req, res) => {
 
 // Función para crear una nueva categoría
 exports.createCategory = (req, res) => {
-  // Extraemos el nombre de la categoría del cuerpo de la petición
-  const { name } = req.body;
 
-  // Verificar si el nombre de la categoría ha sido proporcionado
-  if (!name) {
-    sendJsonResponse(res, 'error', 'Category name is required');
-    return;
-  }
-
-  // Insertar la nueva categoría en la base de datos
-  connection.query('INSERT INTO categories (name) VALUES (?)', [name], (error, results) => {
-    // En caso de error al insertar
-    if (error) {
-      console.error('Error al insertar:', error.stack);
-      sendJsonResponse(res, 'error', error_message);
+  upload.single('image')(req, res, async function (uploadError) {
+    if (uploadError) {
+      console.error('Error uploading file:', uploadError.stack);
+      sendJsonResponse(res, 'error', 'Error uploading file');
       return;
     }
 
-    // Enviar respuesta con el ID de la categoría creada
-    sendJsonResponse(res, 'success', `Categoriy created: ${results.insertId}`, { id: results.insertId });
+    if (req.file) {
+        const inputImagePath = path.join(__dirname, '..', 'public', 'images/categories', req.file.filename);
+        const outputImagePath = path.join(__dirname, '..', 'public', 'images/categories', path.basename(req.file.filename, path.extname(req.file.filename)) + '.webp');
+
+        try {
+            await sharp(inputImagePath)
+                .webp({ quality: 90 }) // Puedes ajustar la calidad según lo necesites
+                .toFile(outputImagePath);
+
+            // Opcional: Borrar la imagen original después de la conversión
+            fs.unlinkSync(inputImagePath);
+            
+            // Actualizar el nombre del archivo para que incluya la nueva extensión .webp
+            req.file.filename = path.basename(req.file.filename, path.extname(req.file.filename)) + '.webp';
+        } catch (err) {
+            console.error('Error converting image:', err.stack);
+            sendJsonResponse(res, 'error', 'Error converting image');
+            return;
+        }
+    }
+
+    // Extraemos el nombre de la categoría y la imagen del cuerpo de la petición
+    const { name } = req.body;
+    const imageFilename = req.file ? req.file.filename : null;
+
+    // Verificar si el nombre de la categoría ha sido proporcionado
+    if (!name) {
+      sendJsonResponse(res, 'error', 'Category name is required');
+      return;
+    }
+
+    // Insertar la nueva categoría en la base de datos (ahora también insertando el nombre del archivo de imagen)
+    connection.query('INSERT INTO categories (name, image) VALUES (?, ?)', [name, imageFilename], (error, results) => {
+      
+      // En caso de error al insertar
+      if (error) {
+        console.error('Error al insertar:', error.stack);
+        sendJsonResponse(res, 'error', error.message);
+        return;
+      }
+
+      // Enviar respuesta con el ID de la categoría creada
+      sendJsonResponse(res, 'success', `Category created: ${results.insertId}`, { id: results.insertId });
+    });
   });
 };
 
 // Función para actualizar una categoría
 exports.updateCategory = (req, res) => {
   const id = req.params.id;
-  const { name } = req.body;
 
-  if (!name) {
-    sendJsonResponse(res, 'error', 'Category name is required');
-    return;
-  }
-
-  connection.query('UPDATE categories SET name = ? WHERE id = ?', [name, id], (error) => {
-    if (error) {
-      console.error('Error al actualizar:', error.stack);
-      sendJsonResponse(res, 'error', error_message);
+  upload.single('image')(req, res, async function (uploadError) {
+    if (uploadError) {
+      console.error('Error uploading file:', uploadError.stack);
+      sendJsonResponse(res, 'error', 'Error uploading file');
       return;
     }
-    sendJsonResponse(res, 'success', success_message);
+
+    let imageFilename = null;
+
+    if (req.file) {
+        const inputImagePath = path.join(__dirname, '..', 'public', 'images', req.file.filename);
+        const outputImagePath = path.join(__dirname, '..', 'public', 'images', path.basename(req.file.filename, path.extname(req.file.filename)) + '.webp');
+
+        try {
+            await sharp(inputImagePath)
+                .webp({ quality: 90 })
+                .toFile(outputImagePath);
+
+            // Opcional: Borrar la imagen original después de la conversión
+            fs.unlinkSync(inputImagePath);
+
+            imageFilename = path.basename(req.file.filename, path.extname(req.file.filename)) + '.webp';
+        } catch (err) {
+            console.error('Error converting image:', err.stack);
+            sendJsonResponse(res, 'error', 'Error converting image');
+            return;
+        }
+    }
+
+    const { name } = req.body;
+
+    if (!name && !imageFilename) {
+      sendJsonResponse(res, 'error', 'Category name or image is required');
+      return;
+    }
+
+    let updateQuery = 'UPDATE categories SET name = ?';
+    let updateValues = [name];
+
+    if (imageFilename) {
+      updateQuery += ', image = ?';
+      updateValues.push(imageFilename);
+    }
+
+    updateQuery += ' WHERE id = ?';
+    updateValues.push(id);
+
+    connection.query(updateQuery, updateValues, (error) => {
+      if (error) {
+        console.error('Error al actualizar:', error.stack);
+        sendJsonResponse(res, 'error', error.message);
+        return;
+      }
+      sendJsonResponse(res, 'success', 'Category updated successfully');
+    });
   });
 };
+
 
 // Función para eliminar (actualizar el estado a 0) una categoría
 exports.deleteCategory = (req, res) => {

@@ -42,7 +42,7 @@
 
    Una vez que el servidor esté corriendo, deberías ver un mensaje indicando que está corriendo en `http://localhost:3000`.
 
-5. **Estructura del proyecto
+5. **Estructura del proyecto**
 ```lua
 📂 proyecto
 │

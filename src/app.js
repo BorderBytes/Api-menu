@@ -6,19 +6,10 @@ require('./config/database');
 
 app.use(express.json());
 
-// Ruta por defecto
-app.get('/', (req, res) => {
-  res.send(`
-    <h1>API de users</h1>
-    <p>Endpoints disponibles:</p>
-    <ul>
-      <li>GET /users</li>
-      <li>POST /users</li>
-      <li>PUT /users/:id</li>
-      <li>DELETE /users/:id</li>
-    </ul>
-  `);
-});
+const path = require('path');
+
+// Middleware para servir archivos estáticos desde 'public/'
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Ruta para categorias
 const categoriesRoutes = require('./routes/categoriesRoutes');
@@ -39,6 +30,16 @@ app.use('/addons/detail', addonsDetailRoutes);
 // Ruta para addons
 const addonsRoutes = require('./routes/addonsRoutes');
 app.use('/addons', addonsRoutes);
+
+// Ruta por defecto
+// Middleware para manejar rutas no definidas. Si el archivo no existe en 'public/', redirige al inicio.
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, 'public/index.html'), err => {
+      if (err) {
+          res.redirect('/');  // Si no se encuentra el archivo index.html, redirige al inicio.
+      }
+  });
+});
 
 // Iniciar servicio
 app.listen(PORT, () => {
