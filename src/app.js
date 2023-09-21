@@ -1,66 +1,63 @@
 const express = require('express');
 const fs = require('fs');
+const path = require('path');
+
 const app = express();
 const PORT = 3000;
-// Requiere la conexión de la base de datos
+
+// Conexión de la base de datos
 require('./config/database');
 
 app.use(express.json());
 
-const path = require('path');
-
 // Middleware para servir archivos estáticos desde 'public/'
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
+// Rutas específicas
+const categoriesRoutes = require('./routes/categoriesRoutes');
+const clientsRoutes = require('./routes/clientsRoutes');
+const usersRoutes = require('./routes/usersRoutes');
+const addonsDetailRoutes = require('./routes/addonsDetailRoutes');
+const addonsRoutes = require('./routes/addonsRoutes');
+
+app.use('/categories', categoriesRoutes);
+app.use('/clients', clientsRoutes);
+app.use('/users', usersRoutes);
+app.use('/addons/detail', addonsDetailRoutes);
+app.use('/addons', addonsRoutes);
+
+// Ruta para servir recursos para la plantilla de panel
+app.use('/assets', express.static(path.join(__dirname, 'public/panel/assets')));
+
 // Ruta para imagenes
 app.get('/images/:folder/:filename', (req, res) => {
-  const folder = req.params.folder;
-  const filename = req.params.filename;
-  const filepath = path.join(__dirname, 'public', 'images', folder, filename);
-  
+  const filepath = path.join(__dirname, 'public', 'images', req.params.folder, req.params.filename);
+
   fs.access(filepath, fs.constants.F_OK, (err) => {
     if (err) {
       console.error('Error accessing file:', err.stack);
-      res.status(404).send('Image not found');
-      return;
+      return res.status(404).send('Image not found');
     }
-
     res.sendFile(filepath);
   });
 });
 
+// Ruta para /dashboard
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/dashboard/index.html'));
+});
 
-// Ruta para categorias
-const categoriesRoutes = require('./routes/categoriesRoutes');
-app.use('/categories', categoriesRoutes);
+// Ruta para la raíz
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/app/index.html'));
+});
 
-// Ruta para clientes
-const clientsRoutes = require('./routes/clientsRoutes');
-app.use('/clients', clientsRoutes);
-
-// Ruta para users
-const usersRoutes = require('./routes/usersRoutes');
-app.use('/users', usersRoutes);
-
-// Ruta para detalles de addons (Antes de addons para que no haya problemas en el enrutamiento)
-const addonsDetailRoutes = require('./routes/addonsDetailRoutes');
-app.use('/addons/detail', addonsDetailRoutes);
-
-// Ruta para addons
-const addonsRoutes = require('./routes/addonsRoutes');
-app.use('/addons', addonsRoutes);
-
-// Ruta por defecto
-// Middleware para manejar rutas no definidas. Si el archivo no existe en 'public/', redirige al inicio.
+// Middleware para manejar rutas no definidas
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'), err => {
-      if (err) {
-          res.redirect('/');  // Si no se encuentra el archivo index.html, redirige al inicio.
-      }
-  });
+  res.status(404).send('404 - Page Not Found');
 });
 
 // Iniciar servicio
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
