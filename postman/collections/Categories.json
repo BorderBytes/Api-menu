@@ -47,7 +47,28 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": ""
+					"raw": "{{server}}/categories/search?name=a&length=1&start=10",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"categories",
+						"search"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "a"
+						},
+						{
+							"key": "length",
+							"value": "1"
+						},
+						{
+							"key": "start",
+							"value": "10"
+						}
+					]
 				}
 			},
 			"response": []
