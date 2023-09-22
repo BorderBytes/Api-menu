@@ -1,21 +1,3 @@
-/*!
- * =============================================================
- * dropify v0.2.2 - Override your input files with style.
- * https://github.com/JeremyFagis/dropify
- *
- * (c) 2017 - Jeremy FAGIS <jeremy@fagis.fr> (http://fagis.fr)
- * =============================================================
- */
-
-;(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define(['jquery'], factory);
-  } else if (typeof exports === 'object') {
-    module.exports = factory(require('jquery'));
-  } else {
-    root.Dropify = factory(root.jQuery);
-  }
-}(this, function($) {
 var pluginName = "dropify";
 
 /**
@@ -41,7 +23,7 @@ function Dropify(element, options) {
         showErrors: true,
         errorTimeout: 3000,
         errorsPosition: 'overlay',
-        imgFileExtensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp'],
+        imgFileExtensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp',`webp`],
         maxFileSizePreview: "5M",
         allowedFormats: ['portrait', 'square', 'landscape'],
         allowedFileExtensions: ['*'],
@@ -651,7 +633,3 @@ $.fn[pluginName] = function(options) {
 
     return this;
 };
-
-
-return Dropify;
-}));

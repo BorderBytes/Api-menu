@@ -24,10 +24,16 @@
    Luego, abre este archivo en tu editor de texto y añade las siguientes variables con sus respectivos valores:
 
    ```env
-   DB_HOST=TuServidorMySQL
-   DB_USER=TuUsuarioMySQL
-   DB_PASSWORD=TuContraseñaMySQL
-   DB_NAME=NombreDeTuBaseDeDatos
+   # DATABASE
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=
+   DB_NAME=borderbytes_menu_api
+   #EMAIL
+   EMAIL_HOST = #smtp-mail.outlook.com
+   EMAIL_AUTH_USER = # Tu dirección de correo electronico
+   EMAIL_AUTH_PASSWORD = # Tu contraseña
+   EMAIL_OPTIONS_FROM = # "No Reply" <noreply@borderbytes.mx>
    ```
 
    Asegúrate de reemplazar `TuServidorMySQL`, `TuUsuarioMySQL`, `TuContraseñaMySQL`, y `NombreDeTuBaseDeDatos` con tus propios valores de configuración de MySQL.

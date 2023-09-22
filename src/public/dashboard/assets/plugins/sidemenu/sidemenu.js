@@ -611,6 +611,3 @@ $(document).on("click", ".rtl #slide-right", function () {
         e.style.display = '';
     })
 });
-
-// FOOTER
-document.getElementById("year").innerHTML = new Date().getFullYear();

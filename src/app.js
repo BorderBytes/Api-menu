@@ -19,12 +19,14 @@ const clientsRoutes = require('./routes/clientsRoutes');
 const usersRoutes = require('./routes/usersRoutes');
 const addonsDetailRoutes = require('./routes/addonsDetailRoutes');
 const addonsRoutes = require('./routes/addonsRoutes');
+const emailRoutes = require('./routes/emailRoutes');
 
 app.use('/categories', categoriesRoutes);
 app.use('/clients', clientsRoutes);
 app.use('/users', usersRoutes);
 app.use('/addons/detail', addonsDetailRoutes);
 app.use('/addons', addonsRoutes);
+app.use('/email', emailRoutes);
 
 // Ruta para servir recursos para la plantilla de panel
 app.use('/assets', express.static(path.join(__dirname, 'public/panel/assets')));
@@ -42,11 +44,18 @@ app.get('/images/:folder/:filename', (req, res) => {
   });
 });
 
+// Ruta para assets del dashboard
+app.use('/dashboard/assets', express.static(path.join(__dirname, 'public/dashboard/assets')));
+
 // Ruta para /dashboard
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/dashboard/index.html'));
 });
-
+// Ruta para /dashboard
+app.get('/dashboard/*', (req, res) => {
+  // Para cualquier otra ruta bajo /dashboard, enviar el archivo index.html
+  res.sendFile(path.join(__dirname, 'public/dashboard/index.html'));
+});
 // Ruta para la raíz
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/app/index.html'));

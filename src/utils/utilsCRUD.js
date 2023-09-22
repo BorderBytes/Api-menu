@@ -7,7 +7,7 @@ exports.calculateExecutionTime = (startTime) => {
 };
 
 // Función genérica para enviar respuestas en formato JSON
-exports.sendJsonResponse = (res, status, message, data = null, executionTime = null) => {
+exports.sendJsonResponse = (res, status, message, data = null, executionTime = null,total_results = null) => {
   const response = {
     status: status,
     info: message,
@@ -18,8 +18,8 @@ exports.sendJsonResponse = (res, status, message, data = null, executionTime = n
     response.execution_time_ms = executionTime;
   }
 
-  if (data instanceof Array) {
-    response.total_results = data.length;
+  if (total_results) {
+    response.total_results = total_results;
   }
 
   res.json(response);

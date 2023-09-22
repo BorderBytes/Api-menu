@@ -1,0 +1,75 @@
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Categorias</h1>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">Inventario</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Categorias</li>
+        </ol>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <a href="javascript:void(0);" class="btn btn-success btn-icon text-white">
+            <span>
+                <i class="fe fe-log-in"></i>
+            </span> Exportar
+        </a>
+    </div>
+</div>
+<!-- Row -->
+<div class="row row-sm">
+    <div class="col-lg-4">
+        <form id="form">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Agregar categoria</h3>
+            </div>
+            <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label">Nombre <span class="text-red">*</span></label>
+                                <input type="text" class="form-control" name="name" placeholder="Nombre">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label">Imagen</label>
+                                <input type="file" class="dropify" name="image" data-bs-height="180" />
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-md-12 mb-2">
+                    <button type="submit" class="btn btn-success btn-lg btn-block mb-1">Agregar categoria</button>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="col-lg-8">
+        <div class="card cart">
+            <div class="card-header">
+                <h3 class="card-title">Categorias existentes</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-vcenter text-nowrap" id="tabla">
+                        <thead>
+                            <tr class="border-top">
+                                <th class="w-5">id</th>
+                                <th class="w-5">Categoria</th>
+                                <th class="w-50">Nombre</th>
+                                <th>Estado</th>
+                                <th class="w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="contenido_tabla">
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Row -->

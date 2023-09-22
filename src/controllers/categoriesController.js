@@ -39,27 +39,32 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
-// Función para obtener todas las categorías
 exports.getCategories = (req, res) => {
-  // Convertimos el parámetro limit y offset a entero o usamos valores por defecto
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
-
-  // Iniciamos el registro del tiempo
   const startTime = performance.now();
 
-  connection.query('SELECT * FROM categories LIMIT ? OFFSET ?', [limit, offset], (error, results) => {
-    const executionTimeMs = calculateExecutionTime(startTime); // Calculamos tiempo de ejecución
-
-    // Manejo de errores de la consulta
+  connection.query('SELECT id,name,image,status FROM categories LIMIT ? OFFSET ?', [limit, offset], (error, results) => {
     if (error) {
       console.error('Error ejecutando la consulta:', error.stack);
+      const executionTimeMs = calculateExecutionTime(startTime);
       sendJsonResponse(res, 'error', error_message, null, executionTimeMs);
       return;
     }
 
-    // Enviamos respuesta en formato JSON
-    sendJsonResponse(res, 'success', success_message, results, executionTimeMs);
+    connection.query('SELECT value FROM configuration WHERE name = "total_categories"', (error, configResults) => {
+      const executionTimeMs = calculateExecutionTime(startTime);
+
+      if (error) {
+        console.error('Error ejecutando la consulta de configuración:', error.stack);
+        sendJsonResponse(res, 'error', error_message, null, executionTimeMs);
+        return;
+      }
+
+      const totalCategories = configResults.length > 0 ? configResults[0].value : null;
+
+      sendJsonResponse(res, 'success', success_message, results, executionTimeMs, totalCategories);
+    });
   });
 };
 
@@ -233,50 +238,99 @@ exports.updateCategory = (req, res) => {
 };
 
 // Función para eliminar (actualizar el estado a 0) una categoría
-exports.deleteCategory = (req, res) => {
-  const id = req.params.id;
+// exports.deleteCategory = (req, res) => {
+//   const id = req.params.id;
 
-  connection.query('UPDATE categories SET status = 0 WHERE id = ?', [id], (error) => {
-    if (error) {
-      console.error('Error al actualizar el estado:', error.stack);
-      sendJsonResponse(res, 'error', error_message);
-      return;
-    }
-    sendJsonResponse(res, 'success', success_message);
-  });
-};
+//   connection.query('UPDATE categories SET status = 0 WHERE id = ?', [id], (error) => {
+//     if (error) {
+//       console.error('Error al actualizar el estado:', error.stack);
+//       sendJsonResponse(res, 'error', error_message);
+//       return;
+//     }
+//     sendJsonResponse(res, 'success', success_message);
+//   });
+// };
 
 // Función para reactivar una categoría
-exports.reactivateCategory = (req, res) => {
+exports.toggleCategoryStatus = (req, res) => {
   const id = req.params.id;
 
-  connection.query('UPDATE categories SET status = 1 WHERE id = ?', [id], (error) => {
-    if (error) {
-      console.error('Error al reactivar la categoría:', error.stack);
-      sendJsonResponse(res, 'error', error_message);
+  // Primero, obtén el estado actual de la categoría
+  connection.query('SELECT status FROM categories WHERE id = ?', [id], (error, results) => {
+    if (error || results.length === 0) {
+      console.error('Error al obtener el estado de la categoría:', error?.stack);
+      sendJsonResponse(res, 'error', 'Error al obtener el estado de la categoría');
       return;
     }
-    sendJsonResponse(res, 'success', success_message);
+
+    // Cambia el estado: si es 1 ponlo en 0 y viceversa
+    const newStatus = results[0].status === 1 ? 0 : 1;
+
+    // Luego, actualiza el estado de la categoría con el nuevo valor
+    connection.query('UPDATE categories SET status = ? WHERE id = ?', [newStatus, id], (error) => {
+      if (error) {
+        console.error('Error al actualizar el estado de la categoría:', error.stack);
+        sendJsonResponse(res, 'error', 'Error al actualizar el estado de la categoría');
+        return;
+      }
+      sendJsonResponse(res, 'success', 'Estado de la categoría actualizado exitosamente',newStatus);
+    });
   });
 };
 
-// Función para buscar categorías
-exports.searchCategories = (req, res) => {
-  const search = `%${req.query.name}%`; // Usamos % para buscar subcadenas en SQL
-  const limit = parseInt(req.query.limit, 10) || 10;
-  const offset = parseInt(req.query.offset, 10) || 0;
 
+// Función para buscar categorías, compatible con data-tables
+exports.searchCategories = (req, res) => {
+  let draw = parseInt(req.query.draw);
+  let start = parseInt(req.query.start) || 0;
+  let length = parseInt(req.query.length) || 10;
+  let search = req.query.search.value || ''; // Para filtrado global
+  let orderColumn = req.query.order[0].column; // Índice de columna por la que se ordena
+  let orderDir = req.query.order[0].dir; // Dirección de ordenación, asc o desc
+  
+  // Columnas que se pueden ordenar y filtrar.
+  let columns = ['id', 'name'];
+  let orderBy = columns[orderColumn];
+  
+  search = `%${search}%`;
+  
   const startTime = performance.now();
 
-  connection.query('SELECT * FROM categories WHERE name LIKE ? LIMIT ? OFFSET ?', [search, limit, offset], (error, results) => {
-    const executionTimeMs = Math.round(performance.now() - startTime);
-
-    if (error) {
-      console.error('Error al ejecutar la consulta:', error.stack);
-      sendJsonResponse(res, 'error', error_message, null, executionTimeMs);
-      return;
+  connection.query('SELECT COUNT(*) AS total FROM categories', (err, totalResult) => {
+    if (err) {
+      console.error('Error al ejecutar la consulta:', err.stack);
+      return res.status(500).json({ error: 'Error interno del servidor' });
     }
+    
+    let total = totalResult[0].total;
 
-    sendJsonResponse(res, 'success', success_message, { categories: results, total_results: results.length }, executionTimeMs);
+    connection.query(
+      `SELECT * FROM categories WHERE name LIKE ? ORDER BY ${orderBy} ${orderDir} LIMIT ? OFFSET ?`,
+      [search, length, start],
+      (error, results) => {
+        const executionTimeMs = Math.round(performance.now() - startTime);
+  
+        if (error) {
+          console.error('Error al ejecutar la consulta:', error.stack);
+          return res.status(500).json({ error: 'Error interno del servidor' });
+        }
+  
+        connection.query('SELECT COUNT(*) AS filtered FROM categories WHERE name LIKE ?', [search], (err, filteredResult) => {
+          if (err) {
+            console.error('Error al ejecutar la consulta:', err.stack);
+            return res.status(500).json({ error: 'Error interno del servidor' });
+          }
+  
+          let filtered = filteredResult[0].filtered;
+          res.json({
+            draw: draw,
+            recordsTotal: total,
+            recordsFiltered: filtered,
+            data: results,
+            executionTimeMs: executionTimeMs
+          });
+        });
+      }
+    );
   });
 };

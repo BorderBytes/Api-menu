@@ -14,13 +14,14 @@ router.get('/:id', categoriesController.getCategoryById);
 // Crear una nueva categoría
 router.post('/', categoriesController.createCategory);
 
-// Reactivar una categoría
-router.put('/reactivate/:id', categoriesController.reactivateCategory);
+// Cambia el estado de una categoría
+router.patch('/status/:id', categoriesController.toggleCategoryStatus);
+
+// Eliminar una categoría
+// router.delete('/:id', categoriesController.deleteCategory);
 
 // Actualizar una categoría
 router.put('/:id', categoriesController.updateCategory);
 
-// Eliminar una categoría
-router.delete('/:id', categoriesController.deleteCategory);
 
 module.exports = router;
