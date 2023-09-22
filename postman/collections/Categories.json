@@ -1,0 +1,164 @@
+{
+	"info": {
+		"_postman_id": "7f8fb085-85e4-43e8-b112-820ac6b90589",
+		"name": "Categories",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "26402977-7f8fb085-85e4-43e8-b112-820ac6b90589"
+	},
+	"item": [
+		{
+			"name": "Select",
+			"id": "9c5349e6-f807-449b-b8ac-4435c9097e70",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/categories?offset=0&limit=2",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"categories"
+					],
+					"query": [
+						{
+							"key": "offset",
+							"value": "0"
+						},
+						{
+							"key": "limit",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search",
+			"id": "7be2a110-0b18-4eaf-93f0-80a5d625e028",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Insert",
+			"id": "a6b093cc-1120-4be8-b077-99a779a1abde",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Ensaladas de pollo",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"fileNotInWorkingDirectoryWarning": "This file isn't in your working directory. Teammates you share this request with won't be able to use this file. To make collaboration easier you can setup your working directory in Settings.",
+							"src": "/C:/Users/gabri/Downloads/ensalada-de-pollo.jpg"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/categories",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update",
+			"id": "2884fdc3-a38b-48d9-822e-0d670bc42c33",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "3 Hamburgesas",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"fileNotInWorkingDirectoryWarning": "This file isn't in your working directory. Teammates you share this request with won't be able to use this file. To make collaboration easier you can setup your working directory in Settings.",
+							"value": null
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/categories/1",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"categories",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete",
+			"id": "6b7d6240-dc0b-4076-a7fc-4aadff31509d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/categories/status/10003",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"categories",
+						"status",
+						"10003"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

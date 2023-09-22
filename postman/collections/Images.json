@@ -1,0 +1,33 @@
+{
+	"info": {
+		"_postman_id": "36b81e34-c255-44fc-9782-dbb5ac37779e",
+		"name": "Images",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "26402977-36b81e34-c255-44fc-9782-dbb5ac37779e"
+	},
+	"item": [
+		{
+			"name": "GET",
+			"id": "9a3af5bd-60fa-4378-86d4-95825d175412",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/images/categories/1695249284992.webp",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"images",
+						"categories",
+						"1695249284992.webp"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
