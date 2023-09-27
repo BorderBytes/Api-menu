@@ -58452,4 +58452,10 @@ html [type=button],
 i{
     pointer-events: none;
 }
+td li{
+    list-style: none;
+}
+[data-imggallery]{
+    cursor: pointer;
+}
 /*# sourceMappingURL=style.css.map */

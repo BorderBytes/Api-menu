@@ -39,8 +39,13 @@
                     </div>
             </div>
             <div class="card-footer">
-                <div class="col-md-12 mb-2">
-                    <button type="submit" class="btn btn-success btn-lg btn-block mb-1">Agregar categoria</button>
+                <div class="row justify-content-center d-flex">
+                    <div class="col-md-4">
+                        <button type="button" id="cancelar_editar" class="d-none btn btn-danger btn-md btn-block mb-1"><i class="fa fa-remove" data-bs-toggle="tooltip" title="Cancelar editar" data-bs-original-title="fa fa-remove" aria-label="fa fa-remove"></i></button>
+                    </div>
+                    <div class="col">
+                        <button id="agregar" data-id="0" type="submit" class="btn btn-success  btn-md btn-block mb-1">Agregar</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -58,8 +63,8 @@
                             <tr class="border-top">
                                 <th class="w-5">id</th>
                                 <th class="w-5">Categoria</th>
-                                <th class="w-50">Nombre</th>
-                                <th>Estado</th>
+                                <th>Nombre</th>
+                                <th class="w-5">Estado</th>
                                 <th class="w-10"></th>
                             </tr>
                         </thead>
@@ -72,4 +77,7 @@
         </div>
     </div>
 </div>
+<ul id="lightgallery" class="list-unstyled row d-none">
+    
+</ul>
 <!-- End Row -->
