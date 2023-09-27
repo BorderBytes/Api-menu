@@ -11,6 +11,7 @@ const no_data_message = null;
 // Libreria de iamgenes
 const multer  = require('multer');
 const sharp = require('sharp');
+const mkdirp = require('mkdirp'); // Asegúrate de instalar este paquete para crear directorios de manera recursiva
 const path = require('path');
 const fs = require('fs');
 const imagesDirectory = path.join(__dirname, '..', 'public', 'images/categories');
@@ -98,52 +99,78 @@ exports.getCategoryById = (req, res) => {
   });
 };
 
-// Función para crear una nueva categoría
 exports.createCategory = (req, res) => {
-  upload.single('image')(req, res, async function (uploadError) {
-      try {
-          if (uploadError) {
-              throw new Error('Error uploading file: ' + uploadError.message);
-          }
-
-          if (req.file) {
-            const ext = path.extname(req.file.filename).toLowerCase();
-            const inputImagePath = path.join(__dirname, '..', 'public', 'images/categories', req.file.filename);
-            
-            if (ext !== '.webp') {
-                const outputImagePath = path.join(__dirname, '..', 'public', 'images/categories', path.basename(req.file.filename, ext) + '.webp');
-                
-                await sharp(inputImagePath)
-                    .webp({ quality: 90 }) 
-                    .toFile(outputImagePath);
-                
-                fs.unlinkSync(inputImagePath); // Borrar la imagen original después de la conversión
-                
-                req.file.filename = path.basename(req.file.filename, ext) + '.webp';
+    upload.single('image')(req, res, async function (uploadError) {
+        try {
+            if (uploadError) {
+                throw new Error('Error uploading file: ' + uploadError.message);
             }
+
+            const { name } = req.body;
+            if (!name) {
+                throw new Error('Category name is required');
+            }
+
+            connection.query('INSERT INTO categories (name) VALUES (?)', [name], async (error, results) => {
+                if (error) {
+                    throw new Error('Error al insertar: ' + error.message);
+                }
+
+                const categoryId = results.insertId;
+                const categoryPath = path.join(__dirname, '..', 'public', 'images/categories', categoryId.toString());
+
+                // Crear un directorio para la categoría basado en su ID
+                mkdirp.sync(categoryPath);
+
+                if (req.file) {
+                    const ext = path.extname(req.file.filename).toLowerCase();
+                    const inputImagePath = path.join(categoryPath, 'original' + ext);
+                    
+                    // Mover la imagen subida a la ubicación deseada
+                    fs.renameSync(req.file.path, inputImagePath);
+
+                    let mainImagePath = inputImagePath;
+
+                    if (ext !== '.webp') {
+                        const outputImagePath = path.join(categoryPath, 'original.webp');
+                        
+                        let buffer = await sharp(mainImagePath).webp({ quality: 90 }).toBuffer();
+                        fs.writeFileSync(outputImagePath, buffer);
+                        fs.unlinkSync(mainImagePath);
+
+                        mainImagePath = outputImagePath;
+                    }
+
+                    console.log(`Procesando imágenes desde: ${mainImagePath}`);
+
+                    // Crear versiones de diferentes tamaños
+                    const sizes = {
+                        small: 100,
+                        medium: 300,
+                        big: 800
+                    };
+
+                    for (let size in sizes) {
+                        const outputPath = path.join(categoryPath, `${size}.webp`);
+                        console.log(`Creando imagen ${size} en: ${outputPath}`);
+                        
+                        let buffer = await sharp(mainImagePath)
+                            .resize(sizes[size])
+                            .webp({ quality: 90 })
+                            .toBuffer();
+                        fs.writeFileSync(outputPath, buffer);
+                    }
+                }
+
+                sendJsonResponse(res, 'success', `Category created: ${categoryId}`, { id: categoryId });
+            });
+        } catch (err) {
+            console.error(err.stack || err.message);
+            sendJsonResponse(res, 'error', err.message);
         }
-        
-
-          const { name } = req.body;
-          if (!name) {
-              throw new Error('Category name is required');
-          }
-
-          const imageFilename = req.file ? req.file.filename : null;
-
-          connection.query('INSERT INTO categories (name, image) VALUES (?, ?)', [name, imageFilename], (error, results) => {
-              if (error) {
-                  throw new Error('Error al insertar: ' + error.message);
-              }
-
-              sendJsonResponse(res, 'success', `Category created: ${results.insertId}`, { id: results.insertId });
-          });
-      } catch (err) {
-          console.error(err.stack || err.message);
-          sendJsonResponse(res, 'error', err.message);
-      }
-  });
+    });
 };
+
 
 // Función para actualizar una categoría
 exports.updateCategory = (req, res) => {
@@ -155,51 +182,28 @@ exports.updateCategory = (req, res) => {
               throw new Error('Error uploading file: ' + uploadError.message);
           }
 
+          const categoryPath = path.join(__dirname, '..', 'public', 'images/categories', id.toString());
           let newImageFilename = null;
 
           if (req.file) {
-            const ext = path.extname(req.file.filename).toLowerCase();
-            const inputImagePath = path.join(__dirname, '..', 'public', 'images/categories/', req.file.filename);
-            
-            if (ext !== '.webp') {
-                const outputImagePath = path.join(__dirname, '..', 'public', 'images/categories/', path.basename(req.file.filename, ext) + '.webp');
-                
-                await sharp(inputImagePath)
-                    .webp({ quality: 90 })
-                    .toFile(outputImagePath);
-                
-                fs.unlinkSync(inputImagePath);
-                
-                newImageFilename = path.basename(req.file.filename, ext) + '.webp';
-            } else {
-                newImageFilename = req.file.filename;
-            }
-        }
-        
+              const ext = path.extname(req.file.filename).toLowerCase();
+              const inputImagePath = path.join(categoryPath, 'original' + ext);
+              
+              // Mover la imagen subida a la ubicación deseada
+              fs.renameSync(req.file.path, inputImagePath);
 
-          if (newImageFilename) {
-              const result = await new Promise((resolve, reject) => {
-                  connection.query('SELECT image FROM categories WHERE id = ?', [id], (err, results) => {
-                      if (err || !results[0]) reject(err);
-                      resolve(results[0].image);
-                  });
-              });
+              if (ext !== '.webp') {
+                  const outputImagePath = path.join(categoryPath, 'original.webp');
+                  
+                  await sharp(inputImagePath).webp({ quality: 90 }).toBuffer();
+                  fs.writeFileSync(outputImagePath, buffer);
+                  fs.unlinkSync(inputImagePath);
+              }
 
-              const oldImageFilename = result;
-              if (oldImageFilename) {
-                  const oldImagePath = path.join(__dirname, '..', 'public', 'images/categories', oldImageFilename);
-                  const trashFolder = path.join(__dirname, '..', 'public', 'images/trash');
-                  const trashFilename = 'old_' + id + '_' + oldImageFilename;
-                  const trashPath = path.join(trashFolder, trashFilename);
-
-                  const filesWithSameId = fs.readdirSync(trashFolder).filter(file => file.startsWith('old_' + id + '_')).sort((a, b) => {
-                      return fs.statSync(path.join(trashFolder, a)).mtime.getTime() - fs.statSync(path.join(trashFolder, b)).mtime.getTime();
-                  });
-
-                  if (filesWithSameId.length >= 3) {
-                      fs.unlinkSync(path.join(trashFolder, filesWithSameId[0]));
-                  }
-
+              // Mover imagen anterior a carpeta trash
+              const oldImagePath = path.join(categoryPath, 'original.webp');
+              if (fs.existsSync(oldImagePath)) {
+                  const trashPath = path.join(__dirname, '..', 'public', 'images/trash', `${id}_old.webp`);
                   fs.renameSync(oldImagePath, trashPath);
               }
           }
