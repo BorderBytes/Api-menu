@@ -13,7 +13,7 @@ const multer  = require('multer');
 const sharp = require('sharp');
 const mkdirp = require('mkdirp'); // Asegúrate de instalar este paquete para crear directorios de manera recursiva
 const path = require('path');
-const fs = require('fs');
+const fs = require('graceful-fs');
 const imagesDirectory = path.join(__dirname, '..', 'public', 'images/categories');
 // Configuración de Multer
 const storage = multer.diskStorage({
@@ -45,7 +45,7 @@ exports.getCategories = (req, res) => {
   const offset = parseInt(req.query.offset, 10) || 0;
   const startTime = performance.now();
 
-  connection.query('SELECT id,name,image,status FROM categories LIMIT ? OFFSET ?', [limit, offset], (error, results) => {
+  connection.query('SELECT id,name,status FROM categories LIMIT ? OFFSET ?', [limit, offset], (error, results) => {
     if (error) {
       console.error('Error ejecutando la consulta:', error.stack);
       const executionTimeMs = calculateExecutionTime(startTime);
@@ -99,140 +99,154 @@ exports.getCategoryById = (req, res) => {
   });
 };
 
-exports.createCategory = (req, res) => {
+exports.createCategory = async (req, res) => {
+  try {
     upload.single('image')(req, res, async function (uploadError) {
-        try {
-            if (uploadError) {
-                throw new Error('Error uploading file: ' + uploadError.message);
+      if (uploadError) {
+        throw new Error('Error uploading file: ' + uploadError.message);
+      }
+
+      const { name } = req.body;
+      if (!name) {
+        throw new Error('Category name is required');
+      }
+
+      const insertCategory = () => {
+        return new Promise((resolve, reject) => {
+          connection.query('INSERT INTO categories (name) VALUES (?)', [name], (error, results) => {
+            if (error) {
+              reject(new Error('Error al insertar: ' + error.message));
+            } else {
+              resolve(results.insertId);
             }
+          });
+        });
+      };
 
-            const { name } = req.body;
-            if (!name) {
-                throw new Error('Category name is required');
-            }
+      const categoryId = await insertCategory();
 
-            connection.query('INSERT INTO categories (name) VALUES (?)', [name], async (error, results) => {
-                if (error) {
-                    throw new Error('Error al insertar: ' + error.message);
-                }
+      const categoryPath = path.join(__dirname, '..', 'public', 'images/categories', categoryId.toString());
+      mkdirp.sync(categoryPath);
 
-                const categoryId = results.insertId;
-                const categoryPath = path.join(__dirname, '..', 'public', 'images/categories', categoryId.toString());
+      if (req.file) {
+        const ext = path.extname(req.file.originalname).toLowerCase(); // Obtén la extensión del nombre original del archivo
 
-                // Crear un directorio para la categoría basado en su ID
-                mkdirp.sync(categoryPath);
+        if (['.jpg', '.jpeg', '.png', '.gif'].includes(ext)) { // Verifica si la extensión es una imagen válida
+          const inputImagePath = path.join(categoryPath, 'original' + ext);
+          fs.renameSync(req.file.path, inputImagePath);
 
-                if (req.file) {
-                    const ext = path.extname(req.file.filename).toLowerCase();
-                    const inputImagePath = path.join(categoryPath, 'original' + ext);
-                    
-                    // Mover la imagen subida a la ubicación deseada
-                    fs.renameSync(req.file.path, inputImagePath);
+          console.log(`Procesando imágenes desde: ${inputImagePath}`);
 
-                    let mainImagePath = inputImagePath;
+          const sizes = {
+            small: 100,
+            medium: 300,
+            big: 800
+          };
 
-                    if (ext !== '.webp') {
-                        const outputImagePath = path.join(categoryPath, 'original.webp');
-                        
-                        let buffer = await sharp(mainImagePath).webp({ quality: 90 }).toBuffer();
-                        fs.writeFileSync(outputImagePath, buffer);
-                        fs.unlinkSync(mainImagePath);
+          for (let size in sizes) {
+            const outputPath = path.join(categoryPath, `${size}.webp`);
+            console.log(`Creando imagen ${size} en: ${outputPath}`);
 
-                        mainImagePath = outputImagePath;
-                    }
+            await sharp(inputImagePath)
+              .resize(sizes[size])
+              .webp({ quality: 90 })
+              .toFile(outputPath);
 
-                    console.log(`Procesando imágenes desde: ${mainImagePath}`);
-
-                    // Crear versiones de diferentes tamaños
-                    const sizes = {
-                        small: 100,
-                        medium: 300,
-                        big: 800
-                    };
-
-                    for (let size in sizes) {
-                        const outputPath = path.join(categoryPath, `${size}.webp`);
-                        console.log(`Creando imagen ${size} en: ${outputPath}`);
-                        
-                        let buffer = await sharp(mainImagePath)
-                            .resize(sizes[size])
-                            .webp({ quality: 90 })
-                            .toBuffer();
-                        fs.writeFileSync(outputPath, buffer);
-                    }
-                }
-
-                sendJsonResponse(res, 'success', `Category created: ${categoryId}`, { id: categoryId });
-            });
-        } catch (err) {
-            console.error(err.stack || err.message);
-            sendJsonResponse(res, 'error', err.message);
+            console.log(`Archivo ${size} creado correctamente.`);
+          }
+        } else {
+          console.error('Formato de archivo no válido. Se esperaba una imagen válida.');
         }
+      }
+
+      sendJsonResponse(res, 'success', `Categoria creada correctamente Id #: ${categoryId}`, { id: categoryId });
     });
+  } catch (err) {
+    handleErrors(res, err);
+  }
 };
 
 
-// Función para actualizar una categoría
-exports.updateCategory = (req, res) => {
-  const id = req.params.id;
 
+
+
+exports.updateCategory = (req, res) => {
   upload.single('image')(req, res, async function (uploadError) {
       try {
           if (uploadError) {
               throw new Error('Error uploading file: ' + uploadError.message);
           }
 
-          const categoryPath = path.join(__dirname, '..', 'public', 'images/categories', id.toString());
-          let newImageFilename = null;
+          const { name } = req.body;
+          const categoryId = req.params.id;
+
+          if (!name) {
+              throw new Error('Category name is required');
+          }
+
+          const categoryPath = path.join(__dirname, '..', 'public', 'images/categories', categoryId.toString());
+
+          if (!fs.existsSync(categoryPath)) {
+              mkdirp.sync(categoryPath);
+          }
 
           if (req.file) {
               const ext = path.extname(req.file.filename).toLowerCase();
               const inputImagePath = path.join(categoryPath, 'original' + ext);
-              
-              // Mover la imagen subida a la ubicación deseada
+
               fs.renameSync(req.file.path, inputImagePath);
+              let mainImagePath = inputImagePath;
 
               if (ext !== '.webp') {
                   const outputImagePath = path.join(categoryPath, 'original.webp');
-                  
-                  await sharp(inputImagePath).webp({ quality: 90 }).toBuffer();
-                  fs.writeFileSync(outputImagePath, buffer);
-                  fs.unlinkSync(inputImagePath);
+
+                  const writeStream = fs.createWriteStream(outputImagePath);
+                  const imageStream = sharp(mainImagePath).webp({ quality: 90 });
+                  imageStream.pipe(writeStream);
+
+                  writeStream.on('finish', () => {
+                      console.log('Archivo escrito correctamente.');
+                  });
+
+                  writeStream.on('error', (error) => {
+                      console.error('Error al escribir el archivo:', error);
+                  });
+
+                  mainImagePath = outputImagePath;
               }
 
-              // Mover imagen anterior a carpeta trash
-              const oldImagePath = path.join(categoryPath, 'original.webp');
-              if (fs.existsSync(oldImagePath)) {
-                  const trashPath = path.join(__dirname, '..', 'public', 'images/trash', `${id}_old.webp`);
-                  fs.renameSync(oldImagePath, trashPath);
+              const sizes = {
+                  small: 100,
+                  medium: 300,
+                  big: 800
+              };
+
+              for (let size in sizes) {
+                  const outputPath = path.join(categoryPath, `${size}.webp`);
+
+                  const writeStreamSize = fs.createWriteStream(outputPath);
+                  const imageSizeStream = sharp(mainImagePath)
+                      .resize(sizes[size])
+                      .webp({ quality: 90 });
+
+                  imageSizeStream.pipe(writeStreamSize);
+
+                  writeStreamSize.on('finish', () => {
+                      console.log(`Archivo ${size} escrito correctamente.`);
+                  });
+
+                  writeStreamSize.on('error', (error) => {
+                      console.error(`Error al escribir el archivo ${size}:`, error);
+                  });
               }
           }
 
-          const { name } = req.body;
-
-          if (!name && !newImageFilename) {
-              throw new Error('Category name or image is required');
-          }
-
-          let updateQuery = 'UPDATE categories SET name = ?';
-          let updateValues = [name];
-
-          if (newImageFilename) {
-              updateQuery += ', image = ?';
-              updateValues.push(newImageFilename);
-          }
-
-          updateQuery += ' WHERE id = ?';
-          updateValues.push(id);
-
-          await new Promise((resolve, reject) => {
-              connection.query(updateQuery, updateValues, (error) => {
-                  if (error) reject(error);
-                  resolve();
-              });
+          connection.query('UPDATE categories SET name = ? WHERE id = ?', [name, categoryId], (error, results) => {
+              if (error) {
+                  throw new Error('Error al actualizar: ' + error.message);
+              }
+              sendJsonResponse(res, 'success', `Categoria actualizada correctamente Id #: ${categoryId}`, { id: categoryId });
           });
-
-          sendJsonResponse(res, 'success', 'Category updated successfully');
 
       } catch (err) {
           console.error(err.stack || err.message);

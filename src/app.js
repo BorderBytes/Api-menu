@@ -32,17 +32,41 @@ app.use('/email', emailRoutes);
 app.use('/assets', express.static(path.join(__dirname, 'public/panel/assets')));
 
 // Ruta para imagenes
-app.get('/images/:folder/:filename', (req, res) => {
-  const filepath = path.join(__dirname, 'public', 'images', req.params.folder, req.params.filename);
+app.get('/images/:folder/:id/:filename', (req, res) => {
+  const folder = req.params.folder;
+  const id = req.params.id;
+  const filename = req.params.filename;
+
+  // Construyendo la ruta para acceder a la imagen
+  const filepath = path.join(__dirname, 'public', 'images', folder, id, filename);
 
   fs.access(filepath, fs.constants.F_OK, (err) => {
-    if (err) {
-      console.error('Error accessing file:', err.stack);
-      return res.status(404).send('Image not found');
-    }
-    res.sendFile(filepath);
+      if (err) {
+          console.error('Error accessing file:', err.stack);
+          
+          // Ruta para la imagen predeterminada
+          const defaultImagePath = path.join(__dirname, 'public', 'images', folder, 'default.webp');
+          
+          // Verificamos si la imagen predeterminada existe
+          fs.access(defaultImagePath, fs.constants.F_OK, (defaultImageErr) => {
+              if (defaultImageErr) {
+                  console.error('Error accessing default image:', defaultImageErr.stack);
+                  res.status(404).send('Image not found and default image is missing');
+                  return;
+              }
+              
+              // Enviar la imagen predeterminada
+              res.sendFile(defaultImagePath);
+          });
+          
+          return;
+      }
+
+      // Enviar la imagen solicitada
+      res.sendFile(filepath);
   });
 });
+
 
 // Ruta para assets del dashboard
 app.use('/dashboard/assets', express.static(path.join(__dirname, 'public/dashboard/assets')));

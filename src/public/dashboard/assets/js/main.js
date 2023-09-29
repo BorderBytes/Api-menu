@@ -35,16 +35,16 @@ $(document).ready(function () {
 
   $(document).on("submit", "#form", function (e) {
     e.preventDefault();
-    let id = $("#agregar").data("id");
+    let id = $('[type="submit"]').data("id");
     // Para crear un nuevo registro
     let API = {
       url: `/${vista}`,
       type: "POST",
     };
-    // Para editar un regristro
+    // Para editar un registro
     if (id > 0) {
       API = {
-        url: `/${vista}/ + ${id}`,
+        url: `/${vista}/` + id,
         type: "PUT",
       };
     }
@@ -52,14 +52,16 @@ $(document).ready(function () {
     var formData = new FormData(this);
     ajaxForm(API.url, API.type, formData)
       .then((response) => {
+        notify(response.status,response.info);
         id = 0;
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  });
+});
 
-  $(document).on("click", "#eliminar,#restaurar", function (e) {
+
+  $(document).on("click", "#toggle_status", function (e) {
     let id = $(this).data("id");
     let button_element = e.target;
     loaderButton(button_element);
@@ -81,13 +83,15 @@ $(document).ready(function () {
   let image = null;
   $(document).on("click", "#editar", function () {
     $('#cancelar_editar').removeClass('d-none');
-    let name = $(this).data("name");
-    let image = $(this).data("image");
-    let id = $(this).data("id");
-    $("#agregar").data("id", id);
+    const INFO_ELEMENT = $(this).parent().parent().parent();
+    console.log(INFO_ELEMENT);
+    let name = INFO_ELEMENT.data("name");
+    let image = INFO_ELEMENT.data("image");
+    let id = INFO_ELEMENT.data("id");
+    $('[type="submit"]').data("id", id);
     $('input[name="name"]').val(name);
-    cargarDropify(image);
-    $('#agregar').addClass('btn-primary').removeClass('success').html('Editar');
+    cargarImagen(image);
+    $('[type="submit"]').addClass('btn-primary').removeClass('success').html('Editar');
   });
 
   $(document).on("click", "#cancelar_editar", function () {

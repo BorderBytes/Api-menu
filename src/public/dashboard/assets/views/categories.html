@@ -1,0 +1,61 @@
+<div class="row">
+    <div class="col-xxl-5">
+        <form id="form">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Formulario de registro</h4>
+            </div>
+            <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nombre de la categoria</label>
+                                <input type="text" name="name" class="form-control" placeholder="Nombre de la categoria" id="name">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Imagen de la categoria</label>
+                                <p class="text-muted">    Recomendamos subir una imagen del producto con un tamaño de 800x600 píxeles para garantizar una visualización óptima. Una imagen clara y adecuada puede aumentar la confianza del comprador y mejorar las ventas.</p>
+                                <input type="file"  class="filepond" label="image" name="image" data-allow-reorder="false" data-max-file-size="10MB" data-max-files="1">
+                            </div>
+                        </div>
+                    </div><!--end row-->
+            </div>
+            <div class="card-footer">
+                <div class="row d-flex justify-content-end">
+                    <div class="col-lg-3">
+                        <button type="button" class="btn btn-danger float-start w-100 d-none " id="cancelar_editar">Cancelar</button>
+                    </div>
+                    <div class="col-lg-9">
+                        <button type="submit" class=" w-100 btn btn-primary float-end ml-3">Crear registro</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+    <div class="col-xxl-7">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Registros actuales</h5>
+            </div>
+            <div class="card-body">
+                <table id="tabla" class="display table table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th scope="col">id</th>
+                            <th scope="col">image</th>
+                            <th class="w-75" scope="col">name</th>
+                            <th scope="col">status</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
