@@ -123,9 +123,9 @@ exports.createCategory = async (req, res) => {
         });
       };
 
-      const categoryId = await insertCategory();
+      const id = await insertCategory();
 
-      const categoryPath = path.join(__dirname, '..', 'public', 'images/categories', categoryId.toString());
+      const categoryPath = path.join(__dirname, '..', 'public', 'images/categories', id.toString());
       mkdirp.sync(categoryPath);
 
       if (req.file) {
@@ -159,101 +159,106 @@ exports.createCategory = async (req, res) => {
         }
       }
 
-      sendJsonResponse(res, 'success', `Categoria creada correctamente Id #: ${categoryId}`, { id: categoryId });
+      sendJsonResponse(res, 'success', `Categoria creada correctamente Id #: ${id}`, { id: id });
     });
   } catch (err) {
     handleErrors(res, err);
   }
 };
 
-
-
-
-
 exports.updateCategory = (req, res) => {
   upload.single('image')(req, res, async function (uploadError) {
-      try {
-          if (uploadError) {
-              throw new Error('Error uploading file: ' + uploadError.message);
-          }
+    try {
+      if (uploadError) {
+        throw new Error('Error uploading file: ' + uploadError.message);
+      }
 
-          const { name } = req.body;
-          const categoryId = req.params.id;
+      const { name } = req.body;
+      const id = req.params.id;
 
-          if (!name) {
-              throw new Error('Category name is required');
-          }
+      if (!name) {
+        throw new Error('Category name is required');
+      }
 
-          const categoryPath = path.join(__dirname, '..', 'public', 'images/categories', categoryId.toString());
+      const categoryPath = path.join(__dirname, '..', 'public', 'images/categories', id.toString());
 
-          if (!fs.existsSync(categoryPath)) {
-              mkdirp.sync(categoryPath);
-          }
+      if (!fs.existsSync(categoryPath)) {
+        mkdirp.sync(categoryPath);
+      }
 
-          if (req.file) {
-              const ext = path.extname(req.file.filename).toLowerCase();
-              const inputImagePath = path.join(categoryPath, 'original' + ext);
+      if (req.file) {
+        const ext = path.extname(req.file.originalname).toLowerCase();
+        const inputImagePath = path.join(categoryPath, 'original' + ext);
 
-              fs.renameSync(req.file.path, inputImagePath);
-              let mainImagePath = inputImagePath;
+        fs.renameSync(req.file.path, inputImagePath);
+        let mainImagePath = inputImagePath;
 
-              if (ext !== '.webp') {
-                  const outputImagePath = path.join(categoryPath, 'original.webp');
+        if (ext !== '.webp') {
+          const outputImagePath = path.join(categoryPath, 'original.webp');
 
-                  const writeStream = fs.createWriteStream(outputImagePath);
-                  const imageStream = sharp(mainImagePath).webp({ quality: 90 });
-                  imageStream.pipe(writeStream);
+          const writeStream = fs.createWriteStream(outputImagePath);
+          const imageStream = sharp(mainImagePath).webp({ quality: 90 });
+          imageStream.pipe(writeStream);
 
-                  writeStream.on('finish', () => {
-                      console.log('Archivo escrito correctamente.');
-                  });
+          await new Promise((resolve, reject) => {
+            writeStream.on('finish', () => {
+              console.log('Archivo escrito correctamente.');
+              resolve();
+            });
 
-                  writeStream.on('error', (error) => {
-                      console.error('Error al escribir el archivo:', error);
-                  });
-
-                  mainImagePath = outputImagePath;
-              }
-
-              const sizes = {
-                  small: 100,
-                  medium: 300,
-                  big: 800
-              };
-
-              for (let size in sizes) {
-                  const outputPath = path.join(categoryPath, `${size}.webp`);
-
-                  const writeStreamSize = fs.createWriteStream(outputPath);
-                  const imageSizeStream = sharp(mainImagePath)
-                      .resize(sizes[size])
-                      .webp({ quality: 90 });
-
-                  imageSizeStream.pipe(writeStreamSize);
-
-                  writeStreamSize.on('finish', () => {
-                      console.log(`Archivo ${size} escrito correctamente.`);
-                  });
-
-                  writeStreamSize.on('error', (error) => {
-                      console.error(`Error al escribir el archivo ${size}:`, error);
-                  });
-              }
-          }
-
-          connection.query('UPDATE categories SET name = ? WHERE id = ?', [name, categoryId], (error, results) => {
-              if (error) {
-                  throw new Error('Error al actualizar: ' + error.message);
-              }
-              sendJsonResponse(res, 'success', `Categoria actualizada correctamente Id #: ${categoryId}`, { id: categoryId });
+            writeStream.on('error', (error) => {
+              console.error('Error al escribir el archivo:', error);
+              reject(error);
+            });
           });
 
-      } catch (err) {
-          console.error(err.stack || err.message);
-          sendJsonResponse(res, 'error', err.message);
+          mainImagePath = outputImagePath;
+        }
+
+        const sizes = {
+          small: 100,
+          medium: 300,
+          big: 800
+        };
+
+        for (let size in sizes) {
+          const outputPath = path.join(categoryPath, `${size}.webp`);
+
+          const writeStreamSize = fs.createWriteStream(outputPath);
+          const imageSizeStream = sharp(mainImagePath)
+            .resize(sizes[size])
+            .webp({ quality: 90 });
+
+          imageSizeStream.pipe(writeStreamSize);
+
+          await new Promise((resolve, reject) => {
+            writeStreamSize.on('finish', () => {
+              console.log(`Archivo ${size} escrito correctamente.`);
+              resolve();
+            });
+
+            writeStreamSize.on('error', (error) => {
+              console.error(`Error al escribir el archivo ${size}:`, error);
+              reject(error);
+            });
+          });
+        }
       }
+
+      connection.query('UPDATE categories SET name = ? WHERE id = ?', [name, id], (error, results) => {
+        if (error) {
+          throw new Error('Error al actualizar: ' + error.message);
+        }
+        sendJsonResponse(res, 'success', `Categoria actualizada correctamente Id #: ${id}`, { id: id });
+      });
+
+    } catch (err) {
+      console.error(err.stack || err.message);
+      sendJsonResponse(res, 'error', err.message);
+    }
   });
 };
+
 
 // Función para eliminar (actualizar el estado a 0) una categoría
 // exports.deleteCategory = (req, res) => {
@@ -325,14 +330,37 @@ exports.searchCategories = (req, res) => {
     connection.query(
       `SELECT * FROM categories WHERE name LIKE ? ORDER BY ${orderBy} ${orderDir} LIMIT ? OFFSET ?`,
       [search, length, start],
-      (error, results) => {
+      async (error, results) => {
         const executionTimeMs = Math.round(performance.now() - startTime);
   
         if (error) {
           console.error('Error al ejecutar la consulta:', error.stack);
           return res.status(500).json({ error: 'Error interno del servidor' });
         }
-  
+
+        // Itera sobre los resultados para agregar el nombre completo de la imagen "original"
+        for (let i = 0; i < results.length; i++) {
+          const id = results[i].id;
+          const categoryPath = path.join(__dirname, '..', 'public', 'images', 'categories', id.toString());
+        
+          // Verifica si existe la carpeta de la categoría
+          if (fs.existsSync(categoryPath)) {
+            // Lee el directorio para buscar archivos en la carpeta 'original'
+            const files = fs.readdirSync(categoryPath);
+        
+            // Busca el archivo "original" con cualquier extensión
+            const originalFile = files.find(file => file.startsWith('original.'));
+        
+            if (originalFile) {
+              results[i].originalImageName = originalFile;
+            } else {
+              results[i].originalImageName = null; // O lo que desees cuando no se encuentra una imagen
+            }
+          } else {
+            results[i].originalImageName = null; // O lo que desees cuando no existe la carpeta
+          }
+        }        
+
         connection.query('SELECT COUNT(*) AS filtered FROM categories WHERE name LIKE ?', [search], (err, filteredResult) => {
           if (err) {
             console.error('Error al ejecutar la consulta:', err.stack);

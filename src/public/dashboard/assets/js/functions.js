@@ -45,11 +45,9 @@ function cargarTabla(){
         "columns": [
             {"data": "id"},
             {"data": "id", "render": function(data, type, row) {
-                if(data == null){
-                    data = 'default.webp';
-                }
                 
-            return `<img  class="img-responsive w-100 br-5" src="/images/categories/${data}/original.webp" alt="${row.name}">`;
+                
+            return `<img  class="img-responsive w-100 br-5" src="/images/categories/${data}/${row.originalImageName}" alt="${row.name}">`;
             }},
             {"data": "name"},
             {"data": "status", "render": function(data, type, row) {
@@ -66,7 +64,7 @@ function cargarTabla(){
                     td = `<li><a class="dropdown-item" id="toggle_status">Restaurar</a></li>`;
                 }
                 return `<td>
-                <div class="dropdown" data-name="${row.name}" data-image="/images/categories/${row.id}/original.webp" data-id="${row.id}">
+                <div class="dropdown" data-name="${row.name}" data-image="/images/categories/${data}/${row.originalImageName}" data-id="${row.id}">
                     <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false" class="">
                         <i class="ri-more-2-fill"></i>
                     </a>
