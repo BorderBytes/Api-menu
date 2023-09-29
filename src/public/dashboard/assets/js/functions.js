@@ -47,7 +47,7 @@ function cargarTabla(){
             {"data": "id", "render": function(data, type, row) {
                 
                 
-            return `<img  class="img-responsive w-100 br-5" src="/images/categories/${data}/${row.originalImageName}" alt="${row.name}">`;
+            return `<img  class="img-responsive w-100 br-5" src="/images/categories/${row.image}/${row.originalImageName}" alt="${row.name}">`;
             }},
             {"data": "name"},
             {"data": "status", "render": function(data, type, row) {
@@ -64,7 +64,7 @@ function cargarTabla(){
                     td = `<li><a class="dropdown-item" id="toggle_status">Restaurar</a></li>`;
                 }
                 return `<td>
-                <div class="dropdown" data-name="${row.name}" data-image="/images/categories/${data}/${row.originalImageName}" data-id="${row.id}">
+                <div class="dropdown" data-name="${row.name}" data-image="/images/categories/${row.image}/${row.originalImageName}" data-id="${row.id}">
                     <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false" class="">
                         <i class="ri-more-2-fill"></i>
                     </a>
@@ -178,7 +178,32 @@ var funcionesVista = {
         
         
     },
+    'files': function(){
+        $.ajax({
+            type: "GET",
+            url: "/images/total",
+            success: function (response) {
+                let mb = bytesTo(response.grandTotalSize);
+                let percentage = calcPercentage(response.grandTotalSize,104857600);
+                $('#file_progress').css('width',percentage + '%');
+                $('#actual_mb').text(mb);
+            }
+        });
+    }
 };
+function bytesTo(bytes, conversor = 'MB') {
+    let size = bytes / 1048576;
+    return size.toFixed(2); // Redondear a dos decimales
+}
+function calcPercentage(grandTotalSize, limit) {
+    if (grandTotalSize < 0 || limit <= 0) {
+        throw new Error("Ambos valores deben ser mayores que cero.");
+    }
+
+    const percentage = Math.round((grandTotalSize / limit) * 100);
+    return percentage;
+}
+
 // Función para mostrar el toast
 function notify(title,message) {
     const Toast = Swal.mixin({

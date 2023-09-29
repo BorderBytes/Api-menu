@@ -41,6 +41,20 @@
     <link rel="stylesheet" href="assets/template/libs/glightbox/css/glightbox.min.css">
     <!-- Sweet Alert css-->
     <link href="assets/template/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+    <style>
+/* Estilos para el fondo de carga de FilePond en modo oscuro */
+[data-bs-theme="dark"] .filepond--root .filepond--drop-label {
+    background: #262a2f !important; /* Cambia el color de fondo en modo oscuro */
+    color: #fff; /* Cambia el color del texto en modo oscuro */
+    border: 2px dashed #555; /* Cambia el borde en modo oscuro */
+}
+[data-bs-theme="dark"] .filepond--panel-center.filepond--panel-root{
+    background: #262a2f !important;
+}
+[data-bs-theme="dark"] .filepond--panel-top,[data-bs-theme="dark"] .filepond--panel-bottom,[data-bs-theme="dark"] .filepond--panel-center{
+    background: #262a2f !important;
+}
+    </style>
 </head>
 
 <body>
@@ -823,6 +837,12 @@
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="/dashboard/categories">
                                 <i class="las la-box"></i> <span>Categorias</span>
+                            </a>
+                        </li>
+                        <li class="menu-title"><span>Otro</span></li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="/dashboard/files">
+                                <i class="las la-box"></i> <span>File Manager</span>
                             </a>
                         </li>
 

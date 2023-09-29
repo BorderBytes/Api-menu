@@ -66,6 +66,70 @@ app.get('/images/:folder/:id/:filename', (req, res) => {
       res.sendFile(filepath);
   });
 });
+// Ruta para imagenes en una carpeta específica
+app.get('/images/:folder', (req, res) => {
+  const folderName = req.params.folder;
+  const folderPath = path.join(__dirname, 'public', 'images', folderName);
+
+  if (folderName === 'total') {
+    const imagesFolderPath = path.join(__dirname, 'public', 'images');
+    const totalInfo = getTopLevelFolderInfo(imagesFolderPath);
+    res.json(totalInfo);
+    return;
+  }
+
+  function getTopLevelFolderInfo(folderPath) {
+    let foldersInfo = [];
+    let grandTotalSize = 0;
+    const files = fs.readdirSync(folderPath);
+
+    files.forEach((file) => {
+      const curFile = path.join(folderPath, file);
+      if (fs.statSync(curFile).isDirectory()) {
+        const folderSize = getFolderTotalSize(curFile);
+        grandTotalSize += folderSize;
+        foldersInfo.push({ folder: file, size: folderSize });
+      }
+    });
+
+    return { foldersInfo, grandTotalSize };
+  }
+
+  function getFolderTotalSize(folderPath) {
+    let totalSize = 0;
+
+    function walkDir(currentPath) {
+      const files = fs.readdirSync(currentPath);
+
+      for (const file of files) {
+        const curFile = path.join(currentPath, file);
+
+        if (fs.statSync(curFile).isFile()) {
+          totalSize += fs.statSync(curFile).size;
+        } else if (fs.statSync(curFile).isDirectory()) {
+          walkDir(curFile);
+        }
+      }
+    }
+
+    walkDir(folderPath);
+    return totalSize;
+  }
+
+  fs.access(folderPath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error('Error accessing folder:', err.stack);
+      res.status(404).send('Folder not found');
+      return;
+    }
+
+    const folderContents = getFolderTotalSize(folderPath);
+    res.json({
+      folderName,
+      totalSize: folderContents,
+    });
+  });
+});
 
 
 // Ruta para assets del dashboard
