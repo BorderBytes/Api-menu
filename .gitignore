@@ -1,5 +1,2 @@
 .env
-*.webp
-*.png
-*.jpg
-*.jpeg
+src/public/images/*
