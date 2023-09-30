@@ -195,11 +195,17 @@ var funcionesVista = {
             url: "/images/total",
             success: function (response) {
                 let mb = bytesTo(response.grandTotalSize);
+                let mbBd = bytesTo(response.dbSize);
+                console.log(response.dbSize);
                 let percentage = calcPercentage(response.grandTotalSize,104857600);
-                $('#file_progress').css('width',percentage + '%');
-                $('#actual_mb').text(mb);
+                $('#file_progress1').css('width',percentage + '%');
+                let total = parseInt(mb + mbBd);
+                $('#size_files').text(mb);
+                $('#size_bd').text(mbBd);
+                $('#actual_mb').text(total);
                 let files = '';
                 let folders = response.foldersInfo;
+                let bdSize = response.dbSize;
                 console.log(folders);
                 for (let i = 0; i < folders.length; i++) {
                     let name = folders[i].folder;
@@ -235,7 +241,7 @@ var funcionesVista = {
                                     </div>
                                     <div class="hstack mt-4 text-muted">
                                         <span class="me-auto"><b>${totalFiles}</b> Files</span>
-                                        <span><b>${size}</b> bytes</span>
+                                        <span><b>${size}</b></span>
                                     </div>
                                 </div>
                             </div>
@@ -349,4 +355,8 @@ function cargarImagen(IMAGE_URL) {
         });
 
     return true;
+}
+
+function resetButtonsForm(){
+    $('[type="submit"]').html('Crear registro');
 }

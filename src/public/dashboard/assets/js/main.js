@@ -53,6 +53,7 @@ $(document).ready(function () {
     ajaxForm(API.url, API.type, formData)
       .then((response) => {
         notify(response.status,response.info);
+        resetButtonsForm();
         id = 0;
       })
       .catch((error) => {
