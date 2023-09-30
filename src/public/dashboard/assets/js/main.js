@@ -61,25 +61,27 @@ $(document).ready(function () {
 });
 
 
-  $(document).on("click", "#toggle_status", function (e) {
-    let id = $(this).data("id");
-    let button_element = e.target;
-    loaderButton(button_element);
-    ajaxForm("/categories/status/" + id, 'PATCH',null,false)
-      .then((response) => {
-        let tag = `<span class="badge bg-danger">Desactivada</span>`;
-        let button = `<a href="javascript:void(0)" id="restaurar" class="btn btn-square btn-success-light me-1" data-bs-toggle="tooltip" data-bs-placement="top" data-id="${id}" title="" data-bs-original-title="Remove" aria-label="Remove"><i class="icon icon-reload  fs-13"></i></a>`;
-        if (response.data == 1) {
-          tag = `<span class="badge bg-success">Disponible</span>`;
-          button = `<a href="javascript:void(0)" id="eliminar" class="btn btn-square btn-danger-light me-1" data-bs-toggle="tooltip" data-bs-placement="top" data-id="${id}" title="" data-bs-original-title="Remove" aria-label="Remove"><i class="icon icon-trash  fs-13"></i></a>`;
-        }
-        $(button_element).parent().prev().html(tag);
-        $(button_element).replaceWith(button);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  });
+$(document).on("change", "#SwitchCheck1", function (e) {
+  let button_element = e.target;
+  let id = $(button_element).data('id');
+  
+  // Realiza la llamada AJAX y cuando se complete:
+  ajaxForm("/categories/status/" + id, 'PATCH', null, false)
+    .then((response) => {
+      let tag = '';
+      let check = false;
+      if (response.data == 1) {
+        tag = ``;
+        check = true;
+      }
+      $(button_element).next().text(tag);
+      $(button_element).attr("checked", check);
+      
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+});
   let image = null;
   $(document).on("click", "#editar", function () {
     $('#cancelar_editar').removeClass('d-none');

@@ -4,6 +4,7 @@ const path = require('path');
 
 const app = express();
 const PORT = 3000;
+const { exec } = require('child_process');
 
 // Conexión de la base de datos
 require('./config/database');
@@ -71,27 +72,60 @@ app.get('/images/:folder', (req, res) => {
   const folderName = req.params.folder;
   const folderPath = path.join(__dirname, 'public', 'images', folderName);
 
+  function getFolderTotalSize(folderPath) {
+    let totalSize = 0;
+    const files = fs.readdirSync(folderPath);
+  
+    files.forEach((file) => {
+      const curFile = path.join(folderPath, file);
+      if (fs.statSync(curFile).isDirectory()) {
+        totalSize += getFolderTotalSize(curFile);
+      } else {
+        totalSize += fs.statSync(curFile).size;
+      }
+    });
+  
+    return totalSize;
+  }
+  
+  function countFoldersInDirectory(directoryPath) {
+    const files = fs.readdirSync(directoryPath);
+    let folderCount = 0;
+    
+    files.forEach((file) => {
+      const curFile = path.join(directoryPath, file);
+      if (fs.statSync(curFile).isDirectory()) {
+        folderCount++;
+      }
+    });
+    
+    return folderCount;
+  }
+  
   if (folderName === 'total') {
     const imagesFolderPath = path.join(__dirname, 'public', 'images');
     const totalInfo = getTopLevelFolderInfo(imagesFolderPath);
     res.json(totalInfo);
     return;
   }
-
+  
   function getTopLevelFolderInfo(folderPath) {
     let foldersInfo = [];
     let grandTotalSize = 0;
     const files = fs.readdirSync(folderPath);
-
+  
     files.forEach((file) => {
       const curFile = path.join(folderPath, file);
       if (fs.statSync(curFile).isDirectory()) {
         const folderSize = getFolderTotalSize(curFile);
+        const totalFolders = countFoldersInDirectory(curFile);
+        const totalFiles = totalFolders * 4;  // Multiplica por 4
+  
         grandTotalSize += folderSize;
-        foldersInfo.push({ folder: file, size: folderSize });
+        foldersInfo.push({ folder: file, size: folderSize, totalFiles: totalFiles });
       }
     });
-
+  
     return { foldersInfo, grandTotalSize };
   }
 
@@ -128,6 +162,54 @@ app.get('/images/:folder', (req, res) => {
       folderName,
       totalSize: folderContents,
     });
+  });
+});
+
+// Ver cuántos commits está por detrás y su ID
+app.get('/api/git-status', (req, res) => {
+  exec('git fetch && git rev-list HEAD...origin/main --count && git rev-parse origin/main', (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).send(`Error: ${stderr}`);
+    }
+    const [commitsBehind, latestCommitId] = stdout.split('\n').map(s => s.trim());
+    res.send({commitsBehind, latestCommitId});
+  });
+});
+
+
+// Actualizar el repositorio (git pull)
+app.get('/api/git-pull', (req, res) => {
+  exec('git pull', (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).send(`Error: ${stderr}`);
+    }
+    res.send(`Actualizado: ${stdout}`);
+  });
+});
+
+// Regresar a un commit específico por su ID
+app.get('/api/git-reset/:commitId', (req, res) => {
+  const { commitId } = req.params;
+  exec(`git reset --hard ${commitId}`, (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).send(`Error: ${stderr}`);
+    }
+    res.send(`Regresado al commit: ${commitId}`);
+  });
+});
+
+// Obtener los últimos commits que empiezan con "UPDATE:"
+app.get('/api/git-last-commits', (req, res) => {
+  exec('git log --pretty=format:"%H %s" | grep "^UPDATE:" | head -n 5', (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).send(`Error: ${stderr}`);
+    }
+    const commits = stdout.split('\n').filter(line => line).map(line => {
+      const [hash, ...messageParts] = line.split(' ');
+      const message = messageParts.join(' ');
+      return { hash, message };
+    });
+    res.send(commits);
   });
 });
 

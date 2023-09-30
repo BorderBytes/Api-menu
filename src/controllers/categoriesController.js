@@ -316,9 +316,8 @@ exports.searchCategories = (req, res) => {
   let search = req.query.search.value || ''; // Para filtrado global
   let orderColumn = req.query.order[0].column; // Índice de columna por la que se ordena
   let orderDir = req.query.order[0].dir; // Dirección de ordenación, asc o desc
-  
-  // Columnas que se pueden ordenar y filtrar.
-  let columns = ['id', 'name'];
+  // Columnas a ordenar, igual a datatables
+  let columns = ['id','image','name'];
   let orderBy = columns[orderColumn];
   
   search = `%${search}%`;

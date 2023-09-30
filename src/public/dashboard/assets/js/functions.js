@@ -28,6 +28,21 @@ function cargarTabla(){
                 }
             }
         ],
+        "columnDefs": [
+            {
+                "targets": [0], // Columna "id"
+                "orderable": true // Permitir ordenar
+            },
+            {
+                "targets": [2], // Columna "name"
+                "orderable": true, // Permitir ordenar
+                "type": "string-ci" // Ignorar mayúsculas y minúsculas al ordenar
+            },
+            {
+                "targets": [1, 3, 4],
+                "orderable": false // Otras columnas no se pueden ordenar
+            }
+        ],
         exportOptions: {
             columns: [0,2,3] // Solo exporta las columnas 0, 1, 2, y 3
         },
@@ -44,35 +59,34 @@ function cargarTabla(){
         },
         "columns": [
             {"data": "id"},
-            {"data": "id", "render": function(data, type, row) {
-                
-                
-            return `<img  class="img-responsive w-100 br-5" src="/images/categories/${row.image}/${row.originalImageName}" alt="${row.name}">`;
+            {"data": "image", "render": function(data, type, row) {
+                return `<img  class="img-responsive w-100 br-5" style="height:100px; width:100px;" src="/images/categories/${row.image}/${row.originalImageName}" alt="${row.name}">`;
             }},
             {"data": "name"},
             {"data": "status", "render": function(data, type, row) {
-                let info = ["danger","Desactivada"];
+                let info = '';
+                let estado = "";
                 if(data === 1){
-                    info = ["success","Disponible"]
+                    info = "checked";
+                    estado = "";
                 }
-                return `<td><span class="badge bg-${info[0]}">${info[1]}</span></td>`;
+                return `<td >
+                            <div class="form-check form-switch d-flex justify-content-center align-items-center" style="height:100px;">
+                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchCheck1"  data-id="${row.id}" ${info}>
+                            </div>
+                        </td>`;
             }},
             {"data": "id", "render": function(data, type, row) {
-                
-                let option = `<li><a class="dropdown-item" id="toggle_status">Eliminar</a></li>`;
-                if(row.status === 0){
-                    td = `<li><a class="dropdown-item" id="toggle_status">Restaurar</a></li>`;
-                }
                 return `<td>
                 <div class="dropdown" data-name="${row.name}" data-image="/images/categories/${row.image}/${row.originalImageName}" data-id="${row.id}">
                     <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false" class="">
                         <i class="ri-more-2-fill"></i>
                     </a>
-
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1" style="">
-                        <li><a class="dropdown-item" id="editar">Editar</a></li>
-                        ${option}
+                        <li style="cursor:pointer;"><a class="dropdown-item" id="editar">Editar</a></li>
+                        <li><a class="dropdown-item disabled " style="pointer-events:none;"><strike>Eliminar</strike></a></li>
                     </ul>
+                    
                         </td>`;
             }},
         ],
@@ -105,9 +119,6 @@ function limpiar_inputs(){
     if (existingInstance) {
         // Elimina todos los archivos cargados
         existingInstance.removeFiles();
-
-        // Si necesitas cambiar alguna opción o configuración, hazlo aquí utilizando los métodos apropiados. Por ejemplo:
-        // existingInstance.setOptions({ ... });
     }
 
 }
@@ -187,14 +198,73 @@ var funcionesVista = {
                 let percentage = calcPercentage(response.grandTotalSize,104857600);
                 $('#file_progress').css('width',percentage + '%');
                 $('#actual_mb').text(mb);
+                let files = '';
+                let folders = response.foldersInfo;
+                console.log(folders);
+                for (let i = 0; i < folders.length; i++) {
+                    let name = folders[i].folder;
+                    let size = bytesTo(folders[i].size);
+                    let totalFiles = folders[i].totalFiles;
+                    files += 
+                        `
+                        <div class="col-xxl-3 col-6 folder-card">
+                            <div class="card bg-light shadow-none" id="folder-1">
+                                <div class="card-body">
+                                    <div class="d-flex mb-1">
+                                        <div class="form-check form-check-danger mb-3 fs-15 flex-grow-1">
+                                            <input class="form-check-input" type="checkbox" value="" id="folderlistCheckbox_1" >
+                                            <label class="form-check-label" for="folderlistCheckbox_1"></label>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-ghost-primary btn-icon btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="ri-more-2-fill fs-16 align-bottom"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item view-item-btn" href="javascript:void(0);">Open</a></li>
+                                                <li><a class="dropdown-item edit-folder-list" href="#createFolderModal" data-bs-toggle="modal" role="button">Rename</a></li>
+                                                <li><a class="dropdown-item" href="#removeFolderModal" data-bs-toggle="modal" role="button">Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <i class="ri-folder-2-fill align-bottom text-warning display-5"></i>
+                                        </div>
+                                        <h6 class="fs-15 folder-name">${name}</h6>
+                                    </div>
+                                    <div class="hstack mt-4 text-muted">
+                                        <span class="me-auto"><b>${totalFiles}</b> Files</span>
+                                        <span><b>${size}</b> bytes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                }
+                $('#folderlist-data').html(files);
             }
         });
     }
 };
-function bytesTo(bytes, conversor = 'MB') {
-    let size = bytes / 1048576;
-    return size.toFixed(2); // Redondear a dos decimales
-}
+function bytesTo(sizeInBytes) {
+    const kb = 1024;
+    const mb = kb * 1024;
+    const gb = mb * 1024;
+    const tb = gb * 1024;
+  
+    if (sizeInBytes < kb) {
+      return sizeInBytes.toFixed(0) + " B";
+    } else if (sizeInBytes < mb) {
+      return (sizeInBytes / kb).toFixed(0) + " KB";
+    } else if (sizeInBytes < gb) {
+      return (sizeInBytes / mb).toFixed(0) + " MB";
+    } else if (sizeInBytes < tb) {
+      return (sizeInBytes / gb).toFixed(2) + " GB";
+    } else {
+      return (sizeInBytes / tb).toFixed(2) + " TB";
+    }
+  }
 function calcPercentage(grandTotalSize, limit) {
     if (grandTotalSize < 0 || limit <= 0) {
         throw new Error("Ambos valores deben ser mayores que cero.");
