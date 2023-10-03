@@ -251,8 +251,96 @@ var funcionesVista = {
                 $('#folderlist-data').html(files);
             }
         });
-    }
+    },
+    'update': function(){
+        $.ajax({
+            type: "GET", // Cambia "type" a GET si deseas realizar una solicitud GET
+            url: "/git/git-history",
+            success: function (response) {
+              let table = '<table>';
+              response.forEach(function (item) {
+                let inicials = getInitials(item.author.name);
+                let time = timeAgo(new Date(item.date));
+                table += `
+                  <tr>
+                    <td><button class="btn btn-success btn-sm" onclick="copyToClipboard()"><i class="mdi mdi-content-copy"></i></button> <a class="fw-medium">${item.hash}</a>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0 me-3">
+                                <div>
+                                    <div class="avatar-title bg-success-subtle text-success rounded-circle p-2">
+                                        ${inicials}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex-grow-1 overflow-hidden">
+                                <h5 class="contact-name fs-13 mb-1"><a href="#" class="link text-body">${item.author.name}</a></h5>
+                                <p class="contact-born text-muted mb-0"> ${item.author.email}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${item.message}</td>
+                    <td>${time}</td>
+                    <td><button type="button" class="btn btn-warning btn-label waves-effect waves-light"><i class="ri-error-warning-line label-icon align-middle fs-16 me-2"></i> Restaurar</button></td>
+                  </tr>`;
+              });
+          
+              table += '</table>';
+              
+              $('#update_body').html(table);
+            }
+          });
+          
+    },
 };
+function timeAgo(date) {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) {
+      return "justo ahora";
+    }
+    
+    const minutes = Math.floor(diffInSeconds / 60);
+    if (minutes < 60) {
+      return minutes === 1 ? "hace 1 minuto" : `hace ${minutes} minutos`;
+    }
+    
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) {
+      return hours === 1 ? "hace 1 hora" : `hace ${hours} horas`;
+    }
+  
+    const days = Math.floor(hours / 24);
+    if (days < 30) {
+      return days === 1 ? "hace 1 día" : `hace ${days} días`;
+    }
+  
+    const months = Math.floor(days / 30);
+    if (months < 12) {
+      return months === 1 ? "hace 1 mes" : `hace ${months} meses`;
+    }
+    
+    const years = Math.floor(months / 12);
+    return years === 1 ? "hace 1 año" : `hace ${years} años`;
+  }
+function getInitials(name) {
+    // Dividir el nombre en palabras
+    const words = name.split(" ");
+
+    // Obtener la primera letra del primer nombre
+    const firstNameInitial = words[0].charAt(0);
+
+    // Obtener la primera letra del segundo nombre o del apellido si existe
+    const lastNameInitial = words.length > 1 ? words[1].charAt(0) : words[0].charAt(0);
+
+    // Combinar las dos iniciales
+    const initials = firstNameInitial + lastNameInitial;
+
+    return initials.toUpperCase(); // Devuelve las iniciales en mayúsculas
+}
 function bytesTo(sizeInBytes) {
     const kb = 1024;
     const mb = kb * 1024;
