@@ -4,7 +4,6 @@ const path = require('path');
 
 const app = express();
 const PORT = 3000;
-const { exec } = require('child_process');
 
 // Conexión de la base de datos
 require('./config/database');
@@ -22,6 +21,7 @@ const addonsDetailRoutes = require('./routes/addonsDetailRoutes');
 const addonsRoutes = require('./routes/addonsRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const imagesRoutes = require('./routes/imagesRoutes');
+const gitRoutes = require('./routes/gitRoutes');
 
 app.use('/categories', categoriesRoutes);
 app.use('/clients', clientsRoutes);
@@ -30,7 +30,7 @@ app.use('/addons/detail', addonsDetailRoutes);
 app.use('/addons', addonsRoutes);
 app.use('/email', emailRoutes);
 app.use('/images', imagesRoutes);
-
+app.use('/git', gitRoutes);
 // Ruta para servir recursos para la plantilla de panel
 app.use('/assets', express.static(path.join(__dirname, 'public/panel/assets')));
 
