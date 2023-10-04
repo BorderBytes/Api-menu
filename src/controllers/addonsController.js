@@ -152,32 +152,43 @@ exports.updateAddon = (req, res) => {
 
 
 // Crear un nuevo addon
-exports.createAddon = (req, res) => {
-    const startTime = performance.now(); // Iniciar el temporizador
 
-    const { name, min, max, status } = req.body; // Obtener los datos del cuerpo de la petición
+exports.createAddon = (req, res) => {
+    const startTime = performance.now();
+
+    const { name, min, max, details } = req.body; // Extrayendo campos desde req.body
 
     // Verificar que se proporcionen los datos requeridos
-    if (!name || min === undefined || max === undefined || status === undefined) {
+    if (!name || min === undefined || max === undefined || !details) {
         sendJsonResponse(res, 'error', 'Todos los campos son requeridos');
         return;
     }
 
-    // Construir la consulta SQL para la inserción
-    const sql = 'INSERT INTO addons (name, min, max, status) VALUES (?, ?, ?, ?)';
-    const values = [name, min, max, status];
+    const sql = 'INSERT INTO addons (name, min, max) VALUES (?, ?, ?)';
+    const values = [name, min, max];
 
-    // Ejecutar la consulta SQL para la inserción
     connection.query(sql, values, (error, results) => {
-        const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
-
         if (error) {
-            console.error('Error while inserting:', error.stack);
-            sendJsonResponse(res, 'error', 'Error al insertar el addon', null, executionTime);
+            console.error('Error while inserting into addons:', error.stack);
+            sendJsonResponse(res, 'error', 'Error al insertar el addon');
             return;
         }
 
-        sendJsonResponse(res, 'success', `Addon creado con ID: ${results.insertId}`, { id: results.insertId }, executionTime);
+        const addonId = results.insertId;
+        const detailValues = details.map(detail => [addonId, detail.name, detail.price]);
+        const detailSql = 'INSERT INTO addon_details (addon_id, name, price) VALUES ?';
+
+        connection.query(detailSql, [detailValues], (detailError) => {
+            const executionTime = calculateExecutionTime(startTime);
+
+            if (detailError) {
+                console.error('Error while inserting into addon_details:', detailError.stack);
+                sendJsonResponse(res, 'error', 'Error al insertar los detalles del addon', null, executionTime);
+                return;
+            }
+
+            sendJsonResponse(res, 'success', `Addon creado con ID: ${addonId}`, { id: addonId }, executionTime);
+        });
     });
 };
 

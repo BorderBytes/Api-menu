@@ -21,7 +21,7 @@ const addonsDetailRoutes = require('./routes/addonsDetailRoutes');
 const addonsRoutes = require('./routes/addonsRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const imagesRoutes = require('./routes/imagesRoutes');
-const gitRoutes = require('./routes/gitRoutes');
+// const gitRoutes = require('./routes/gitRoutes');
 
 app.use('/categories', categoriesRoutes);
 app.use('/clients', clientsRoutes);
@@ -30,7 +30,7 @@ app.use('/addons/detail', addonsDetailRoutes);
 app.use('/addons', addonsRoutes);
 app.use('/email', emailRoutes);
 app.use('/images', imagesRoutes);
-app.use('/git', gitRoutes);
+// app.use('/git', gitRoutes);
 // Ruta para servir recursos para la plantilla de panel
 app.use('/assets', express.static(path.join(__dirname, 'public/panel/assets')));
 

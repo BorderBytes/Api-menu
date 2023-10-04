@@ -1,0 +1,88 @@
+<div class="row">
+    <div class="col-md-5">
+        <form id="submitAddon">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Formulario de registro</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="mb-3">
+                            <label for="complementName" class="form-label">Nombre del complemento</label>
+                            <input type="text" name="complementName" class="form-control" placeholder="Ej. Ingredientes extra" id="complementName">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="mb-3">
+                            <label for="minValue" class="form-label">Mínimo</label>
+                            <input type="number" name="minValue" class="form-control" placeholder="0" id="minValue">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="mb-3">
+                            <label for="maxValue" class="form-label">Máximo</label>
+                            <input type="number" name="maxValue" class="form-control" placeholder="0" id="maxValue">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <h3>A elegir...</h3>
+                    <di id="detalle_complemento" class="row justify-content-between align-items-center">
+                        <div class="row extra-row d-flex justify-content-center align-items-center">
+                            <div class="col-10">
+                                <div class="mb-3">
+                                    <label for="extraName" class="form-label">Nombre del extra</label>
+                                    <input type="text" name="extraName" class="form-control" placeholder="Ej. Topping de chocolate" id="extraName">
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="mb-3">
+                                    <label for="extraPrice" class="form-label">Precio</label>
+                                    <input type="text" name="extraPrice" class="form-control" placeholder="0" id="extraPrice">
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                    <div class="col-12">
+                        <button class="btn btn-success w-100 btn-sm" type="button" id="agregar_fila">Agregar una fila</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <div class="row d-flex justify-content-end">
+                    <div class="col-lg-3">
+                        <button type="button" class="btn btn-danger float-start w-100 d-none " id="cancelar_editar">Cancelar</button>
+                    </div>
+                    <div class="col-lg-9">
+                        <button type="button" class=" w-100 btn btn-primary float-end ml-3" id="crear_addon">Crear registro</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Registros actuales</h5>
+            </div>
+            <div class="card-body">
+                <table id="tabla" class="table align-middle table-bordered table-nowrap mb-0" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th style="max-width: 20px;" scope="col">id</th>
+                            <th scope="col">name</th>
+                            <th style="max-width: 50px;" scope="col">status</th>
+                            <th style="max-width: 5px;" scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
