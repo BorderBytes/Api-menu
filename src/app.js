@@ -2,11 +2,36 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
+// Credenciales
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+
 const app = express();
 const PORT = 3000;
 
+const session = require('express-session');
+
+const passport = require('passport');
+
+// Configuración de session y passport
+app.use(express.json());
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  name: 'sessionToken',
+  cookie: {
+      maxAge: 24 * 60 * 60 * 1000,  // 1 día
+      secure: false,
+      httpOnly: true
+  }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 // Conexión de la base de datos
 require('./config/database');
+
+// Importa el middleware de autenticación
+const { ensureAuthenticated } = require('./middlewares/authentication');
 
 app.use(express.json());
 
@@ -21,7 +46,6 @@ const addonsDetailRoutes = require('./routes/addonsDetailRoutes');
 const addonsRoutes = require('./routes/addonsRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const imagesRoutes = require('./routes/imagesRoutes');
-// const gitRoutes = require('./routes/gitRoutes');
 
 app.use('/categories', categoriesRoutes);
 app.use('/clients', clientsRoutes);
@@ -30,80 +54,23 @@ app.use('/addons/detail', addonsDetailRoutes);
 app.use('/addons', addonsRoutes);
 app.use('/email', emailRoutes);
 app.use('/images', imagesRoutes);
-// app.use('/git', gitRoutes);
+
 // Ruta para servir recursos para la plantilla de panel
 app.use('/assets', express.static(path.join(__dirname, 'public/panel/assets')));
-
-
-// // Ver cuántos commits está por detrás y su ID
-// app.get('/api/git-status', (req, res) => {
-//   exec('git fetch && git rev-list HEAD...origin/main --count && git rev-parse origin/main', (error, stdout, stderr) => {
-//     if (error) {
-//       return res.status(500).send(`Error: ${stderr}`);
-//     }
-//     const [commitsBehind, latestCommitId] = stdout.split('\n').map(s => s.trim());
-//     res.send({commitsBehind, latestCommitId});
-//   });
-// });
-
-
-// // Actualizar el repositorio (git pull)
-// app.get('/api/git-pull', (req, res) => {
-//   exec('git pull', (error, stdout, stderr) => {
-//     if (error) {
-//       return res.status(500).send(`Error: ${stderr}`);
-//     }
-//     res.send(`Actualizado: ${stdout}`);
-//   });
-// });
-
-// // Regresar a un commit específico por su ID
-// app.get('/api/git-reset/:commitId', (req, res) => {
-//   const { commitId } = req.params;
-//   exec(`git reset --hard ${commitId}`, (error, stdout, stderr) => {
-//     if (error) {
-//       return res.status(500).send(`Error: ${stderr}`);
-//     }
-//     res.send(`Regresado al commit: ${commitId}`);
-//   });
-// });
-
-// // Obtener los últimos commits que empiezan con "UPDATE:"
-// app.get('/api/git-last-commits', (req, res) => {
-//   exec('git log -n 50 --pretty=format:"%H %s"', (error, stdout, stderr) => {
-//     if (error) {
-//       return res.status(500).send(`Error: ${stderr}`);
-//     }
-//     const allCommits = stdout.split('\n');
-//     const filteredCommits = allCommits.filter(line => {
-//       const [hash, ...messageParts] = line.split(' ');
-//       const message = messageParts.join(' ');
-//       // Reemplazar por UPDATE: en producción
-//       return message.startsWith('');
-//     }).slice(0, 5);
-
-//     const commits = filteredCommits.map(line => {
-//       const [hash, ...messageParts] = line.split(' ');
-//       const message = messageParts.join(' ');
-//       return { hash, message };
-//     });
-//     res.send(commits);
-//   });
-// });
-
 
 // Ruta para assets del dashboard
 app.use('/dashboard/assets', express.static(path.join(__dirname, 'public/dashboard/assets')));
 
-// Ruta para /dashboard
-app.get('/dashboard', (req, res) => {
+// Rutas protegidas de /dashboard
+app.get('/dashboard', ensureAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, 'public/dashboard/index.html'));
 });
-// Ruta para /dashboard
-app.get('/dashboard/*', (req, res) => {
+
+app.get('/dashboard/*', ensureAuthenticated, (req, res) => {
   // Para cualquier otra ruta bajo /dashboard, enviar el archivo index.html
   res.sendFile(path.join(__dirname, 'public/dashboard/index.html'));
 });
+
 // Ruta para la raíz
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/app/index.html'));
