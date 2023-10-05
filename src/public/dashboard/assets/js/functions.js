@@ -104,7 +104,101 @@ function cargarTabla(){
         }
     });
 };
-
+function cargarTablaComplementos(){
+    $('#tablaAddons').DataTable().clear().destroy();
+    $('#tablaAddons').DataTable({
+        dom: "lBfrtip",
+        // buttons: [
+        //     {
+        //         extend: 'copy',
+        //         exportOptions: {
+        //             columns: [0,2,3] // Solo exporta las columnas 0, 2, y 3
+        //         }
+        //     },
+        //     {
+        //         extend: 'csv',
+        //         exportOptions: {
+        //             columns: [0,2,3] // Solo exporta las columnas 0, 2, y 3
+        //         }
+        //     },
+        //     {
+        //         extend: 'excel',
+        //         exportOptions: {
+        //             columns: [0,2,3] // Solo exporta las columnas 0, 2, y 3
+        //         }
+        //     },
+        //     {
+        //         extend: 'print',
+        //         exportOptions: {
+        //             columns: [0,2,3] // Solo exporta las columnas 0, 2, y 3
+        //         }
+        //     }
+        // ],
+        // "columnDefs": [
+        //     {
+        //         "targets": [0], // Columna "id"
+        //         "orderable": true // Permitir ordenar
+        //     },
+        //     {
+        //         "targets": [2], // Columna "name"
+        //         "orderable": true, // Permitir ordenar
+        //         "type": "string-ci" // Ignorar mayúsculas y minúsculas al ordenar
+        //     },
+        //     {
+        //         "targets": [1, 3, 4],
+        //         "orderable": false // Otras columnas no se pueden ordenar
+        //     }
+        // ],
+        // exportOptions: {
+        //     columns: [0,2,3] // Solo exporta las columnas 0, 1, 2, y 3
+        // },
+        // lengthMenu: [
+        //     [5, 10, 25],
+        //     [5, 10, 25] // Opciones para mostrar número de filas por página
+        // ],
+        order: [[0, 'desc']], // 0 es el índice de la primera columna
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "/addons/search",
+            "type": "GET",
+        },
+        "columns": [
+            {"data": "id"},
+            {"data": "name"},
+            {"data": null, "render": function(data, type, row) {
+                return `2121`;
+            }},
+            {"data": "min"},
+            {"data": "max"},
+            {"data": "status", "render": function(data, type, row) {
+                let info = '';
+                let estado = "";
+                if(data === 1){
+                    info = "checked";
+                    estado = "";
+                }
+                return `<td >
+                            <div class="form-check form-switch d-flex justify-content-center align-items-center" style="height:100px;">
+                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchCheck1"  data-id="${row.id}" ${info}>
+                            </div>
+                        </td>`;
+            }},
+            {"data": "id", "render": function(data, type, row) {
+                return `<td>
+                <div class="dropdown" data-name="${row.name}"  data-id="${row.id}">
+                    <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false" class="">
+                        <i class="ri-more-2-fill"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1" style="">
+                        <li style="cursor:pointer;"><a class="dropdown-item" id="editar">Editar</a></li>
+                        <li><a class="dropdown-item disabled " style="pointer-events:none;"><strike>Eliminar</strike></a></li>
+                    </ul>
+                </td>`;
+            }},
+        ],
+    });
+}
 function limpiar_inputs(){
     $('#cancelar_editar').addClass('d-none');
     $('input').val('');
@@ -294,6 +388,9 @@ var funcionesVista = {
           });
           
     },
+    'addons': function(){
+        cargarTablaComplementos();
+    }
 };
 function timeAgo(date) {
     const now = new Date();

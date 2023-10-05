@@ -35,62 +35,49 @@ exports.getAddons = (req, res) => {
 
 // Buscar addons
 exports.searchAddons = (req, res) => {
-    const startTime = performance.now(); // Iniciar el temporizador
+    const startTime = performance.now();
 
-    const name = req.query.name;
-    const min = req.query.min;
-    const max = req.query.max;
-    const status = req.query.status;
-    const limit = parseInt(req.query.limit) || 10;
-    const offset = parseInt(req.query.offset) || 0;
+    const searchValue = req.query['search[value]'];
+    const start = parseInt(req.query.start) || 0;
+    const length = parseInt(req.query.length) || 10;
 
-    let sql = 'SELECT * FROM addons WHERE ';
+    let sql = 'SELECT * FROM addons WHERE 1=1 ';  // "WHERE 1=1" facilita agregar condiciones adicionales
 
     const searchConditions = [];
     const searchValues = [];
 
-    if (name) {
-        searchConditions.push('name LIKE ?');
-        searchValues.push(`%${name}%`);
-    }
-
-    if (min !== undefined && !isNaN(min)) {
-        searchConditions.push('min = ?');
-        searchValues.push(parseInt(min));
-    }
-
-    if (max !== undefined && !isNaN(max)) {
-        searchConditions.push('max = ?');
-        searchValues.push(parseInt(max));
-    }
-
-    if (status !== undefined && (status === '0' || status === '1')) {
-        searchConditions.push('status = ?');
-        searchValues.push(parseInt(status));
-    }
-
-    // Verificar si no se proporcionó ningún criterio de búsqueda válido
-    if (searchConditions.length === 0) {
-        sendJsonResponse(res, 'error', '0 valid parameters');
-        return;
+    if (searchValue) {
+        // Suponiendo que deseas buscar en las columnas 'name', 'min', 'max', y 'status'
+        searchConditions.push('(name LIKE ? OR min LIKE ? OR max LIKE ? OR status LIKE ?)');
+        searchValues.push(`%${searchValue}%`, `%${searchValue}%`, `%${searchValue}%`, `%${searchValue}%`);
     }
 
     sql += searchConditions.join(' AND ');
-
-    // Agregar LIMIT y OFFSET a la consulta SQL
     sql += ' LIMIT ? OFFSET ?';
-    searchValues.push(limit, offset);
+    searchValues.push(length, start);
 
     connection.query(sql, searchValues, (error, results) => {
-        const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
-
         if (error) {
             console.error('Error executing query:', error.stack);
-            sendJsonResponse(res, 'error', 'Error executing query', null, executionTime);
+            res.json({ error: 'Error executing query' });
             return;
         }
 
-        sendJsonResponse(res, 'success', 'Addons fetched successfully', results, executionTime);
+        // Suponiendo que necesites el total de registros sin filtrar
+        connection.query('SELECT COUNT(*) as total FROM addons', (err, totalResult) => {
+            if (err) {
+                console.error('Error executing count query:', err.stack);
+                res.json({ error: 'Error executing count query' });
+                return;
+            }
+
+            res.json({
+                draw: parseInt(req.query.draw),
+                recordsTotal: totalResult[0].total, 
+                recordsFiltered: results.length,  // En un caso real, esto también puede requerir una consulta separada
+                data: results
+            });
+        });
     });
 };
 
