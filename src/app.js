@@ -1,5 +1,4 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 
 // Credenciales
@@ -27,6 +26,9 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 // Conexión de la base de datos
 require('./config/database');
 
@@ -46,6 +48,8 @@ const addonsDetailRoutes = require('./routes/addonsDetailRoutes');
 const addonsRoutes = require('./routes/addonsRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const imagesRoutes = require('./routes/imagesRoutes');
+// Autenticación
+const authRoutes = require('./routes/authRoutes');
 
 app.use('/categories', categoriesRoutes);
 app.use('/clients', clientsRoutes);
@@ -54,6 +58,7 @@ app.use('/addons/detail', addonsDetailRoutes);
 app.use('/addons', addonsRoutes);
 app.use('/email', emailRoutes);
 app.use('/images', imagesRoutes);
+app.use('/auth', authRoutes);
 
 // Ruta para servir recursos para la plantilla de panel
 app.use('/assets', express.static(path.join(__dirname, 'public/panel/assets')));

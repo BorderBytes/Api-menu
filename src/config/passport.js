@@ -1,36 +1,41 @@
 const LocalStrategy = require('passport-local').Strategy;
-const User = require('./models/user');  // Asume que tienes un modelo de usuario
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+const User = require('../models/User');
 
-passport.use(new LocalStrategy(
-    async (username, password, done) => {
-        try {
-            let user = await User.findOne({ username });
-            if (!user) {
-                return done(null, false, { message: 'Incorrect username.' });
-            }
-
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                return done(null, false, { message: 'Incorrect password.' });
-            }
-
-            return done(null, user);
-        } catch (error) {
-            return done(error);
+module.exports = function(passport) {
+    passport.use(new LocalStrategy(
+        { usernameField: 'email' }, // dado que estás usando email en lugar de username
+        function(email, password, done) {
+            // Buscar usuario en la base de datos por correo electrónico
+            connection.query('SELECT * FROM users WHERE email = ?', [email], (error, results) => {
+                if (error) {
+                    return done(error);
+                }
+                if (!results || results.length == 0) {
+                    return done(null, false, { message: 'No user found with that email.' });
+                }
+                const user = results[0];
+                bcrypt.compare(password, user.password, (err, isMatch) => {
+                    if (err) {
+                        return done(err);
+                    }
+                    if (isMatch) {
+                        return done(null, user);
+                    } else {
+                        return done(null, false, { message: 'Password incorrect.' });
+                    }
+                });
+            });
         }
-    }
-));
+    ));
 
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
+    passport.serializeUser((user, done) => {
+        done(null, user.id);
+    });
 
-passport.deserializeUser(async (id, done) => {
-    try {
-        const user = await User.findById(id);
-        done(null, user);
-    } catch (error) {
-        done(error, null);
-    }
-});
+    passport.deserializeUser((id, done) => {
+        connection.query('SELECT * FROM users WHERE id = ?', [id], (error, results) => {
+            done(error, results[0]);
+        });
+    });
+};
