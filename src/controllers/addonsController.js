@@ -68,13 +68,12 @@ exports.searchAddons = (req, res) => {
     const start = parseInt(req.query.start) || 0;
     const length = parseInt(req.query.length) || 10;
 
-    let sql = 'SELECT * FROM addons WHERE 1=1 ';  // "WHERE 1=1" facilita agregar condiciones adicionales
+    let sql = 'SELECT * FROM addons WHERE 1=1 ';
 
     const searchConditions = [];
     const searchValues = [];
 
     if (searchValue) {
-        // Suponiendo que deseas buscar en las columnas 'name', 'min', 'max', y 'status'
         searchConditions.push('(name LIKE ? OR min LIKE ? OR max LIKE ? OR status LIKE ?)');
         searchValues.push(`%${searchValue}%`, `%${searchValue}%`, `%${searchValue}%`, `%${searchValue}%`);
     }
@@ -90,38 +89,55 @@ exports.searchAddons = (req, res) => {
             return;
         }
 
-        // Suponiendo que necesites el total de registros sin filtrar
-        connection.query('SELECT COUNT(*) as total FROM addons', (err, totalResult) => {
+        const addonIds = results.map(addon => addon.id);
+        connection.query('SELECT addon_id, COUNT(*) as count FROM addon_details WHERE addon_id IN (?) GROUP BY addon_id', [addonIds], (err, counts) => {
             if (err) {
-                console.error('Error executing count query:', err.stack);
-                res.json({ error: 'Error executing count query' });
+                console.error('Error executing count details query:', err.stack);
+                res.json({ error: 'Error executing count details query' });
                 return;
             }
 
-            res.json({
-                draw: parseInt(req.query.draw),
-                recordsTotal: totalResult[0].total, 
-                recordsFiltered: results.length,  // En un caso real, esto también puede requerir una consulta separada
-                data: results
+            // Asignar conteos a resultados
+            const countMap = {};
+            counts.forEach(count => {
+                countMap[count.addon_id] = count.count;
+            });
+
+            results.forEach(addon => {
+                addon.ingredients = countMap[addon.id] || 0;
+            });
+
+            connection.query('SELECT COUNT(*) as total FROM addons', (err, totalResult) => {
+                if (err) {
+                    console.error('Error executing count query:', err.stack);
+                    res.json({ error: 'Error executing count query' });
+                    return;
+                }
+
+                res.json({
+                    draw: parseInt(req.query.draw),
+                    recordsTotal: totalResult[0].total,
+                    recordsFiltered: results.length,
+                    data: results
+                });
             });
         });
     });
 };
 
+
 // Actualizar addon
 exports.updateAddon = (req, res) => {
     const startTime = performance.now(); // Iniciar el temporizador
 
-    const id = req.params.id; // Obtener el ID del addon de los parámetros de ruta
-    const { name, min, max, status } = req.body; // Obtener los datos a actualizar del cuerpo de la petición
+    const id = req.params.id; 
+    const { name, min, max, status, details } = req.body;
 
-    // Verificar que al menos uno de los campos a actualizar esté presente en el cuerpo de la petición
-    if (!name && min === undefined && max === undefined && status === undefined) {
+    if (!name && min === undefined && max === undefined && status === undefined && !details) {
         sendJsonResponse(res, 'error', 'Least one field is required');
         return;
     }
 
-    // Construir la consulta SQL dinámicamente
     let sql = 'UPDATE addons SET ';
     const updateFields = [];
     const updateValues = [];
@@ -150,19 +166,52 @@ exports.updateAddon = (req, res) => {
     sql += ` WHERE id = ?`;
     updateValues.push(id);
 
-    // Ejecutar la consulta SQL
-    connection.query(sql, updateValues, (error) => {
-        const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
+    connection.beginTransaction(err => {
+        if (err) throw err;
 
-        if (error) {
-            console.error('Error while updating:', error.stack);
-            sendJsonResponse(res, 'error', 'Error updating addon', null, executionTime);
-            return;
-        }
+        connection.query(sql, updateValues, (error) => {
+            if (error) {
+                return connection.rollback(() => {
+                    console.error('Error while updating:', error.stack);
+                    sendJsonResponse(res, 'error', 'Error updating addon');
+                });
+            }
 
-        sendJsonResponse(res, 'success', 'Addon updated successfully', null, executionTime);
+            // Eliminar todos los detalles existentes primero
+            connection.query('DELETE FROM addon_details WHERE addon_id = ?', [id], (error) => {
+                if (error) {
+                    return connection.rollback(() => {
+                        console.error('Error deleting details:', error.stack);
+                        sendJsonResponse(res, 'error', 'Error updating addon details');
+                    });
+                }
+
+                // Insertar los nuevos detalles
+                const detailInserts = details.map(detail => [id, detail.name, detail.price]); // Asumiendo que cada detalle tiene nombre y precio
+                connection.query('INSERT INTO addon_details (addon_id, name, price) VALUES ?', [detailInserts], (error) => {
+                    if (error) {
+                        return connection.rollback(() => {
+                            console.error('Error inserting details:', error.stack);
+                            sendJsonResponse(res, 'error', 'Error updating addon details');
+                        });
+                    }
+
+                    connection.commit(err => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                throw err;
+                            });
+                        }
+
+                        const executionTime = calculateExecutionTime(startTime);
+                        sendJsonResponse(res, 'success', 'Addon updated successfully', null, executionTime);
+                    });
+                });
+            });
+        });
     });
 };
+
 
 
 // Crear un nuevo addon
@@ -206,7 +255,7 @@ exports.createAddon = (req, res) => {
     });
 };
 
-
+// Obtiene el addon en base al id, ademas incluye los detalles del addon
 exports.getAddonById = (req, res) => {
     const startTime = performance.now(); // Iniciar el temporizador
     const id = req.params.id;
@@ -214,14 +263,32 @@ exports.getAddonById = (req, res) => {
     connection.query(
         "SELECT * FROM addons WHERE id = ?",
         [id],
-        (error, results) => {
-            const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
-
-            if (error || results.length === 0) {
+        (error, addonResults) => {
+            if (error || addonResults.length === 0) {
+                const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
                 sendJsonResponse(res, 'error', 'Addon no encontrado', null, executionTime);
                 return;
             }
-            sendJsonResponse(res, 'success', null, results[0], executionTime);
+            
+            connection.query(
+                "SELECT * FROM addon_details WHERE addon_id = ?",
+                [id],
+                (error, detailsResults) => {
+                    const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
+
+                    if (error) {
+                        sendJsonResponse(res, 'error', 'Error al obtener detalles', null, executionTime);
+                        return;
+                    }
+                    
+                    const addonWithDetails = {
+                        ...addonResults[0],
+                        details: detailsResults
+                    };
+
+                    sendJsonResponse(res, 'success', null, addonWithDetails, executionTime);
+                }
+            );
         }
     );
 };

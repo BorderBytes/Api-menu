@@ -57,9 +57,9 @@ function loadListeners() { // Escuchar clics en los enlaces y cambiar la URL y c
     $(document).on("change", "#SwitchCheck1", function (e) {
         let button_element = e.target;
         let id = $(button_element).data('id');
-
+        let tabla = "";
         // Realiza la llamada AJAX y cuando se complete:
-        ajaxForm("/categories/status/" + id, 'PATCH', null, false).then((response) => {
+        ajaxForm(`/${vista}/status/${id}`, 'PATCH', null, false).then((response) => {
             let tag = '';
             let check = false;
             if (response.data == 1) {
@@ -86,7 +86,47 @@ function loadListeners() { // Escuchar clics en los enlaces y cambiar la URL y c
         cargarImagen(image);
         $('[type="submit"]').addClass('btn-primary').removeClass('success').html('Editar');
     });
-
+    $(document).on("click", "#editar_addon", function () {
+        let id = $(this).data('id');
+        $('#cancelar_editar').removeClass('d-none');
+        $('#crear_addon').data("id", id);
+        $('#crear_addon').addClass('btn-primary').removeClass('success').html('Editar');
+        $.ajax({
+            type: "GET",
+            url: `/addons/${id}`,
+            success: function (response) {
+                let data = response.data;
+                $('#complementName').val(data.name);
+                $('#minValue').val(data.min);
+                $('#maxValue').val(data.max);
+                
+                let details = data.details;
+                let detailsHtml = '';
+        
+                for (let i = 0; i < details.length; i++) {
+                    detailsHtml += `
+                    <div class="row extra-row d-flex justify-content-center align-items-center">
+                        <div class="col-7">
+                            <div class="mb-3">
+                                <label for="extraName" class="form-label">Nombre del extra</label>
+                                <input type="text" name="extraName" class="form-control" value="${details[i].name}" placeholder="Nombre del extra....">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="mb-3">
+                                <label for="extraPrice" class="form-label">Precio</label>
+                                <input type="text" name="extraPrice" class="form-control" value="${details[i].price}" placeholder="Precio">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-danger remover_extra">-</button>  <!-- Cambiado a clase -->
+                        </div>
+                    </div>`;
+                }
+                $('#detalle_complemento').html(detailsHtml);
+            }
+        });        
+    });
     $(document).on("click", "#cancelar_editar", function () {
         limpiar_inputs();
         $('#agregar').addClass('btn-success').removeClass('primary').html('Agregar');
@@ -122,16 +162,15 @@ function loadListeners() { // Escuchar clics en los enlaces y cambiar la URL y c
         let name = $('#complementName').val();
         let min = $('#minValue').val();
         let max = $('#maxValue').val();
-
         let details = [];
-
+    
         // Iterar a través de cada fila de detalles en #detalle_complemento
         $('#detalle_complemento .row').each(function () {
             let extraName = $(this).find('input[name="extraName"]').val();
             let extraPrice = $(this).find('input[name="extraPrice"]').val();
             details.push({name: extraName, price: parseFloat(extraPrice)});
         });
-
+    
         // Construir el cuerpo de la petición
         let data = {
             name: name,
@@ -139,23 +178,39 @@ function loadListeners() { // Escuchar clics en los enlaces y cambiar la URL y c
             max: parseInt(max),
             details: details
         };
-        console.log(data);
+    
+        let ajaxURL = '/addons'; // URL por defecto
+        let ajaxMethod = 'POST'; // Método por defecto
+    
+        // Si el botón tiene data-id y tiene un valor
+        let id = $(this).data('id');
+        if (id) {
+            ajaxURL = `/addons/${id}`;
+            ajaxMethod = 'PUT';
+        }
+    
         // Realizar la solicitud AJAX a la API
         $.ajax({
-            url: '/addons', // Reemplaza con la URL real de tu backend/API
-            method: 'POST',
+            url: ajaxURL,
+            method: ajaxMethod,
             contentType: 'application/json',
             data: JSON.stringify(data),
             success: function (response) {
                 console.log(response);
-                alert('Addon creado exitosamente');
+                if (ajaxMethod === 'PUT') {
+                    notify("warning","Registro actualizado");
+                    limpiar_inputs();
+                    cargarTablaComplementos();
+                } else {
+                    notify("warning","Registro creado");
+                }
             },
             error: function (error) {
                 console.error(error);
-                alert('Hubo un error al crear el addon');
+                alert('Hubo un error al procesar la solicitud');
             }
         });
-    });
+    });    
     $(document).on("click", "#agregar_fila", function () {
         let new_row = `
         <div class="row extra-row d-flex justify-content-center align-items-center">
@@ -172,14 +227,20 @@ function loadListeners() { // Escuchar clics en los enlaces y cambiar la URL y c
                 </div>
             </div>
             <div class="col-2">
-                <button class="btn btn-danger remover_extra">-</button>  <!-- Cambiado a clase -->
+                <button type="button" class="btn btn-danger remover_extra">-</button>  <!-- Cambiado a clase -->
             </div>
         </div>
     `;
         $('#detalle_complemento').append(new_row);
     });
 
-    $(document).on('click', ".remover_extra", function () { // Usando clase en lugar de ID
-        $(this).closest('.extra-row').remove(); // Selecciona el contenedor principal de la fila y lo elimina
-    });
+    $(document).on('click', ".remover_extra", function () {
+        // Verifica si hay más de un elemento con la clase .extra-row
+        if ($('.extra-row').length > 1) {
+            $(this).closest('.extra-row').remove();
+        } else {
+            notify("warning","Se requiere al menos 1 extra");
+              
+        }
+    });    
 }

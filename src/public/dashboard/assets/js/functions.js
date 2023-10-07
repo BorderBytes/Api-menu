@@ -166,9 +166,7 @@ function cargarTablaComplementos(){
         "columns": [
             {"data": "id"},
             {"data": "name"},
-            {"data": null, "render": function(data, type, row) {
-                return `2121`;
-            }},
+            {"data": "ingredients"},
             {"data": "min"},
             {"data": "max"},
             {"data": "status", "render": function(data, type, row) {
@@ -191,7 +189,7 @@ function cargarTablaComplementos(){
                         <i class="ri-more-2-fill"></i>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1" style="">
-                        <li style="cursor:pointer;"><a class="dropdown-item" id="editar">Editar</a></li>
+                        <li style="cursor:pointer;"><a class="dropdown-item"  data-id="${row.id}" id="editar_addon">Editar</a></li>
                         <li><a class="dropdown-item disabled " style="pointer-events:none;"><strike>Eliminar</strike></a></li>
                     </ul>
                 </td>`;
@@ -214,7 +212,24 @@ function limpiar_inputs(){
         // Elimina todos los archivos cargados
         existingInstance.removeFiles();
     }
-
+    if($('#detalle_complemento').length > 0){
+        $('#detalle_complemento').html(`
+            <div class="row extra-row d-flex justify-content-center align-items-center">
+                <div class="col-10">
+                    <div class="mb-3">
+                        <label for="extraName" class="form-label">Nombre del extra</label>
+                        <input type="text" name="extraName" class="form-control" placeholder="Ej. Topping de chocolate" id="extraName">
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="mb-3">
+                        <label for="extraPrice" class="form-label">Precio</label>
+                        <input type="text" name="extraPrice" class="form-control" placeholder="0" id="extraPrice">
+                    </div>
+                </div>
+            </div>
+        `);
+    }
 }
 
 
