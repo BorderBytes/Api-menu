@@ -1,7 +1,7 @@
 // Nos conectamos a la bd
 const connection = require('../config/database.js');
 // Incluimos las funciones
-const { calculateExecutionTime, sendJsonResponse } = require('../utils/utilsCRUD');
+const {calculateExecutionTime, sendJsonResponse} = require('../utils/utilsCRUD');
 // Mensaje estandar de error
 const error_message = 'Error in mysql query';
 // Mensaje estandar consulta completa
@@ -16,49 +16,49 @@ exports.getAddons = (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = parseInt(req.query.offset) || 0;
 
-    connection.query(
-        "SELECT * FROM addons LIMIT ? OFFSET ?",
-        [limit, offset],
-        (error, results) => {
-            const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
-            
-            if (error) {
-                console.error("Error executing query:", error.stack);
-                sendJsonResponse(res, 'error', 'Error executing query', null, executionTime);
-                return;
-            }
-            
-            sendJsonResponse(res, 'success', 'Addons fetched successfully', results, executionTime);
+    connection.query("SELECT * FROM addons LIMIT ? OFFSET ?", [
+        limit, offset
+    ], (error, results) => {
+        const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
+
+        if (error) {
+            console.error("Error executing query:", error.stack);
+            sendJsonResponse(res, 'error', 'Error executing query', null, executionTime);
+            return;
         }
-    );
+
+        sendJsonResponse(res, 'success', 'Addons fetched successfully', results, executionTime);
+    });
 };
 
 // Función para reactivar un addon
 exports.toggleAddonStatus = (req, res) => {
     const id = req.params.id;
-  
+
     // Primero, obtén el estado actual de la categoría
     connection.query('SELECT status FROM addons WHERE id = ?', [id], (error, results) => {
-      if (error || results.length === 0) {
-        console.error('Error al obtener el estado de la categoría:', error?.stack);
-        sendJsonResponse(res, 'error', 'Error al obtener el estado de la categoría');
-        return;
-      }
-  
-      // Cambia el estado: si es 1 ponlo en 0 y viceversa
-      const newStatus = results[0].status === 1 ? 0 : 1;
-  
-      // Luego, actualiza el estado de la categoría con el nuevo valor
-      connection.query('UPDATE addons SET status = ? WHERE id = ?', [newStatus, id], (error) => {
-        if (error) {
-          console.error('Error al actualizar el estado de la categoría:', error.stack);
-          sendJsonResponse(res, 'error', 'Error al actualizar el estado de la categoría');
-          return;
+        if (error || results.length === 0) {
+            console.error('Error al obtener el estado de la categoría:', error ?. stack);
+            sendJsonResponse(res, 'error', 'Error al obtener el estado de la categoría');
+            return;
         }
-        sendJsonResponse(res, 'success', 'Estado de la categoría actualizado exitosamente',newStatus);
-      });
+
+        // Cambia el estado: si es 1 ponlo en 0 y viceversa
+        const newStatus = results[0].status === 1 ? 0 : 1;
+
+        // Luego, actualiza el estado de la categoría con el nuevo valor
+        connection.query('UPDATE addons SET status = ? WHERE id = ?', [
+            newStatus, id
+        ], (error) => {
+            if (error) {
+                console.error('Error al actualizar el estado de la categoría:', error.stack);
+                sendJsonResponse(res, 'error', 'Error al actualizar el estado de la categoría');
+                return;
+            }
+            sendJsonResponse(res, 'success', 'Estado de la categoría actualizado exitosamente', newStatus);
+        });
     });
-  };
+};
 
 // Buscar addons
 exports.searchAddons = (req, res) => {
@@ -68,70 +68,86 @@ exports.searchAddons = (req, res) => {
     const start = parseInt(req.query.start) || 0;
     const length = parseInt(req.query.length) || 10;
 
-    let sql = 'SELECT * FROM addons WHERE 1=1 ';
-
     const searchConditions = [];
     const searchValues = [];
 
     if (searchValue) {
-        searchConditions.push('(name LIKE ? OR min LIKE ? OR max LIKE ? OR status LIKE ?)');
-        searchValues.push(`%${searchValue}%`, `%${searchValue}%`, `%${searchValue}%`, `%${searchValue}%`);
+        searchConditions.push('name LIKE ?');
+        searchValues.push(`%${searchValue}%`);
     }
 
-    sql += searchConditions.join(' AND ');
+    let sql = 'SELECT * FROM addons WHERE 1=1';
+
+    if (searchConditions.length) {
+        sql += ' AND ' + searchConditions.join(' AND ');
+    }
+
     sql += ' LIMIT ? OFFSET ?';
     searchValues.push(length, start);
 
     connection.query(sql, searchValues, (error, results) => {
         if (error) {
             console.error('Error executing query:', error.stack);
-            res.json({ error: 'Error executing query' });
-            return;
+            return res.json({ error: 'Error executing query' });
         }
 
         const addonIds = results.map(addon => addon.id);
-        connection.query('SELECT addon_id, COUNT(*) as count FROM addon_details WHERE addon_id IN (?) GROUP BY addon_id', [addonIds], (err, counts) => {
-            if (err) {
-                console.error('Error executing count details query:', err.stack);
-                res.json({ error: 'Error executing count details query' });
-                return;
-            }
 
-            // Asignar conteos a resultados
-            const countMap = {};
-            counts.forEach(count => {
-                countMap[count.addon_id] = count.count;
-            });
-
-            results.forEach(addon => {
-                addon.ingredients = countMap[addon.id] || 0;
-            });
-
-            connection.query('SELECT COUNT(*) as total FROM addons', (err, totalResult) => {
+        if (addonIds.length > 0) {
+            connection.query('SELECT addon_id, COUNT(*) as count FROM addon_details WHERE addon_id IN (?) GROUP BY addon_id', [addonIds], (err, counts) => {
                 if (err) {
-                    console.error('Error executing count query:', err.stack);
-                    res.json({ error: 'Error executing count query' });
-                    return;
+                    console.error('Error executing count details query:', err.stack);
+                    return res.json({ error: 'Error executing count details query' });
                 }
 
-                res.json({
-                    draw: parseInt(req.query.draw),
-                    recordsTotal: totalResult[0].total,
-                    recordsFiltered: results.length,
-                    data: results
+                const countMap = {};
+                counts.forEach(count => {
+                    countMap[count.addon_id] = count.count;
+                });
+
+                results.forEach(addon => {
+                    addon.ingredients = countMap[addon.id] || 0;
+                });
+
+                connection.query('SELECT COUNT(*) as total FROM addons', (err, totalResult) => {
+                    if (err) {
+                        console.error('Error executing count query:', err.stack);
+                        return res.json({ error: 'Error executing count query' });
+                    }
+
+                    res.json({
+                        draw: parseInt(req.query.draw),
+                        recordsTotal: totalResult[0].total,
+                        recordsFiltered: results.length,
+                        data: results
+                    });
                 });
             });
-        });
+        } else {
+            res.json({
+                draw: parseInt(req.query.draw),
+                recordsTotal: 0,
+                recordsFiltered: 0,
+                data: []
+            });
+        }
     });
 };
+
 
 
 // Actualizar addon
 exports.updateAddon = (req, res) => {
     const startTime = performance.now(); // Iniciar el temporizador
 
-    const id = req.params.id; 
-    const { name, min, max, status, details } = req.body;
+    const id = req.params.id;
+    const {
+        name,
+        min,
+        max,
+        status,
+        details
+    } = req.body;
 
     if (!name && min === undefined && max === undefined && status === undefined && !details) {
         sendJsonResponse(res, 'error', 'Least one field is required');
@@ -167,7 +183,9 @@ exports.updateAddon = (req, res) => {
     updateValues.push(id);
 
     connection.beginTransaction(err => {
-        if (err) throw err;
+        if (err) 
+            throw err;
+        
 
         connection.query(sql, updateValues, (error) => {
             if (error) {
@@ -213,13 +231,13 @@ exports.updateAddon = (req, res) => {
 };
 
 
-
 // Crear un nuevo addon
 
 exports.createAddon = (req, res) => {
     const startTime = performance.now();
 
-    const { name, min, max, details } = req.body; // Extrayendo campos desde req.body
+    const {name, min, max, details} = req.body;
+    // Extrayendo campos desde req.body
 
     // Verificar que se proporcionen los datos requeridos
     if (!name || min === undefined || max === undefined || !details) {
@@ -250,7 +268,9 @@ exports.createAddon = (req, res) => {
                 return;
             }
 
-            sendJsonResponse(res, 'success', `Addon creado con ID: ${addonId}`, { id: addonId }, executionTime);
+            sendJsonResponse(res, 'success', `Addon creado con ID: ${addonId}`, {
+                id: addonId
+            }, executionTime);
         });
     });
 };
@@ -260,43 +280,36 @@ exports.getAddonById = (req, res) => {
     const startTime = performance.now(); // Iniciar el temporizador
     const id = req.params.id;
 
-    connection.query(
-        "SELECT * FROM addons WHERE id = ?",
-        [id],
-        (error, addonResults) => {
-            if (error || addonResults.length === 0) {
-                const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
-                sendJsonResponse(res, 'error', 'Addon no encontrado', null, executionTime);
+    connection.query("SELECT * FROM addons WHERE id = ?", [id], (error, addonResults) => {
+        if (error || addonResults.length === 0) {
+            const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
+            sendJsonResponse(res, 'error', 'Addon no encontrado', null, executionTime);
+            return;
+        }
+
+        connection.query("SELECT * FROM addon_details WHERE addon_id = ?", [id], (error, detailsResults) => {
+            const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
+
+            if (error) {
+                sendJsonResponse(res, 'error', 'Error al obtener detalles', null, executionTime);
                 return;
             }
-            
-            connection.query(
-                "SELECT * FROM addon_details WHERE addon_id = ?",
-                [id],
-                (error, detailsResults) => {
-                    const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución
 
-                    if (error) {
-                        sendJsonResponse(res, 'error', 'Error al obtener detalles', null, executionTime);
-                        return;
-                    }
-                    
-                    const addonWithDetails = {
-                        ...addonResults[0],
-                        details: detailsResults
-                    };
+            const addonWithDetails = {
+                ...addonResults[0],
+                details: detailsResults
+            };
 
-                    sendJsonResponse(res, 'success', null, addonWithDetails, executionTime);
-                }
-            );
-        }
-    );
+            sendJsonResponse(res, 'success', null, addonWithDetails, executionTime);
+        });
+    });
 };
 
 // Desactivar un addon (cambiar estado a 0)
 exports.deleteAddon = (req, res) => {
     const startTime = performance.now(); // Iniciar el temporizador
-    const id = req.params.id; // Obtener el ID del addon de los parámetros de ruta
+    const id = req.params.id;
+    // Obtener el ID del addon de los parámetros de ruta
 
     // Construir la consulta SQL para cambiar el estado a 0
     const sql = 'UPDATE addons SET status = 0 WHERE id = ?';
@@ -323,7 +336,7 @@ exports.deleteAddon = (req, res) => {
 // Reactivar una addon
 exports.reactivateAddon = (req, res) => {
     const startTime = performance.now(); // Iniciar el temporizador
-    const id = req.params.id; 
+    const id = req.params.id;
 
     connection.query('UPDATE addons SET status = 1 WHERE id = ?', [id], (error) => {
         const executionTime = calculateExecutionTime(startTime); // Calcular tiempo de ejecución

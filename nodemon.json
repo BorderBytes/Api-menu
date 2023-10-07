@@ -1,0 +1,6 @@
+{
+    "ignore": ["src/public/**/*"],
+    "verbose": true,
+    "watch": ["src/"],
+    "script": "src/app.js"
+  }

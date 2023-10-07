@@ -313,7 +313,7 @@ exports.searchCategories = (req, res) => {
   let draw = parseInt(req.query.draw);
   let start = parseInt(req.query.start) || 0;
   let length = parseInt(req.query.length) || 10;
-  let search = req.query.search.value || ''; // Para filtrado global
+  let search = (req.query.search && req.query.search.value) ? req.query.search.value : ''; // Para filtrado global
   let orderColumn = req.query.order[0].column; // Índice de columna por la que se ordena
   let orderDir = req.query.order[0].dir; // Dirección de ordenación, asc o desc
   // Columnas a ordenar, igual a datatables

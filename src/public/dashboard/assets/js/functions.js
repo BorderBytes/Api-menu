@@ -298,6 +298,80 @@ var funcionesVista = {
         
         
     },
+    'products': function() {
+        // Registrar plugins
+        FilePond.registerPlugin(
+            FilePondPluginFileEncode,
+            FilePondPluginFileValidateSize,
+            FilePondPluginImageExifOrientation,
+            FilePondPluginImagePreview,
+        );
+
+        // Crear instancia FilePond
+        FilePond.create(document.querySelector('.filepond'), {
+            storeAsFile: true,
+        });
+        // Inicializar el primer select (categories)
+const selectElementCategories = $('#choices-select');
+selectElementCategories.select2({
+    placeholder: 'Buscar categorías...',
+    minimumInputLength: 2,
+    ajax: {
+        url: '/categories/search',
+        type: 'GET',
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return {
+                draw: 1,
+                start: 0,
+                length: 10,
+                search: { value: params.term || '' },  // Usa el término de búsqueda o una cadena vacía
+                'order[0][column]': 2,
+                'order[0][dir]': 'asc'
+            };
+        },
+        processResults: function (response) {
+            return {
+                results: response.data.map(item => {
+                    return { id: item.id, text: item.name };
+                })
+            };
+        }
+    }
+});
+
+// Inicializar el segundo select (addons)
+const selectElementAddons = $('#choices-select2');
+selectElementAddons.select2({
+    placeholder: 'Buscar addons...',
+    minimumInputLength: 2,
+    ajax: {
+        url: '/addons/search',
+        type: 'GET',
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return {
+                draw: 1,
+                start: 0,
+                length: 10,
+                search: { value: params.term || '' },  // Usa el término de búsqueda o una cadena vacía
+                'order[0][column]': 2,
+                'order[0][dir]': 'asc'
+            };
+        },
+        processResults: function (response) {
+            return {
+                results: response.data.map(item => {
+                    return { id: item.id, text: item.name };
+                })
+            };
+        }
+    }
+});
+
+    },
     'files': function(){
         $.ajax({
             type: "GET",
