@@ -14,6 +14,9 @@ router.get('/:id', addonsController.getAddonById);
 // Actualizar un addon
 router.put('/:id', addonsController.updateAddon);
 
+// Cambia el estado de una categoría
+router.patch('/status/:id', addonsController.toggleAddonStatus);
+
 // Crear un addon
 router.post('/', addonsController.createAddon);
 

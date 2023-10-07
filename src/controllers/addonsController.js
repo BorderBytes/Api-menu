@@ -33,6 +33,33 @@ exports.getAddons = (req, res) => {
     );
 };
 
+// Función para reactivar un addon
+exports.toggleAddonStatus = (req, res) => {
+    const id = req.params.id;
+  
+    // Primero, obtén el estado actual de la categoría
+    connection.query('SELECT status FROM addons WHERE id = ?', [id], (error, results) => {
+      if (error || results.length === 0) {
+        console.error('Error al obtener el estado de la categoría:', error?.stack);
+        sendJsonResponse(res, 'error', 'Error al obtener el estado de la categoría');
+        return;
+      }
+  
+      // Cambia el estado: si es 1 ponlo en 0 y viceversa
+      const newStatus = results[0].status === 1 ? 0 : 1;
+  
+      // Luego, actualiza el estado de la categoría con el nuevo valor
+      connection.query('UPDATE addons SET status = ? WHERE id = ?', [newStatus, id], (error) => {
+        if (error) {
+          console.error('Error al actualizar el estado de la categoría:', error.stack);
+          sendJsonResponse(res, 'error', 'Error al actualizar el estado de la categoría');
+          return;
+        }
+        sendJsonResponse(res, 'success', 'Estado de la categoría actualizado exitosamente',newStatus);
+      });
+    });
+  };
+
 // Buscar addons
 exports.searchAddons = (req, res) => {
     const startTime = performance.now();
