@@ -48,6 +48,7 @@ const addonsDetailRoutes = require('./routes/addonsDetailRoutes');
 const addonsRoutes = require('./routes/addonsRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const imagesRoutes = require('./routes/imagesRoutes');
+const productsRoutes = require('./routes/productsRoutes');
 // Autenticación
 const authRoutes = require('./routes/authRoutes');
 
@@ -58,6 +59,7 @@ app.use('/addons/detail', addonsDetailRoutes);
 app.use('/addons', addonsRoutes);
 app.use('/email', emailRoutes);
 app.use('/images', imagesRoutes);
+app.use('/products', productsRoutes);
 app.use('/auth', authRoutes);
 
 // Ruta para servir recursos para la plantilla de panel

@@ -1,0 +1,114 @@
+<div class="row">
+    <div class="col-md-5">
+        <form id="form">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Formulario de registro</h4>
+            </div>
+            <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nombre del producto</label>
+                                <input type="text" name="name" class="form-control" placeholder="Nombre del producto" id="name">
+                            </div> 
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Descripción</label>
+                                <input type="text" name="description" class="form-control" placeholder="Descripción" id="description">
+                            </div>
+                        </div>
+                        <div class="row justify-content-between">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="preparation_time" class="form-label">Tiempo de preparación</label>
+                                    <input type="number" name="preparation_time" class="form-control" placeholder="Tiempo de preparación" id="preparation_time">
+                                </div>
+                            </div>
+                            <div class="col-6  d-none">
+                                <div class="mb-3">
+                                    <label for="base" class="form-label">En base a:</label>
+                                    <select name="base" class="form-select">
+                                        <option selected>Minutos</option>
+                                        <option>Horas</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Precio</label>
+                                <input type="number" name="price" class="form-control" placeholder="Precio de venta" id="price">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="price_per_kg" class="form-label">Venta por peso(Kilogramos)</label>
+                                <input type="number" name="price_per_kg" class="form-control" placeholder="Tiempo de preparación" id="price_per_kg">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="category_id" class="form-label">Selecciona una categoria</label>
+                                <select class="form-select" name="category_id" id="category_id"></select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="ingredients" class="form-label">Selecciona los complementos una categoria</label>
+                                <select class="form-select" id="ingredients" name="ingredients" multiple></select>
+                                <input type="hidden" name="ingredientsArray" id="ingredientsArray">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Imagen de la categoria</label>
+                                <p class="text-muted">Recomendamos subir una imagen del producto con un tamaño de 800x600 píxeles para garantizar una visualización óptima. Una imagen clara y adecuada puede aumentar la confianza del comprador y mejorar las ventas.</p>
+                                <input type="file"  class="filepond" label="image" name="image" data-allow-reorder="false" data-max-file-size="10MB" data-max-files="1">
+                            </div>
+                        </div>
+                    </div><!--end row-->
+            </div>
+            <div class="card-footer">
+                <div class="row d-flex justify-content-end">
+                    <div class="col-lg-3">
+                        <button type="button" class="btn btn-danger float-start w-100 d-none " id="cancelar_editar_producto">Cancelar</button>
+                    </div>
+                    <div class="col-lg-9">
+                        <button type="submit" id="crear_producto" class=" w-100 btn btn-primary float-end ml-3">Crear registro</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Registros actuales</h5>
+            </div>
+            <div class="card-body">
+                <table id="tablaProductos" class="table align-middle table-bordered table-nowrap mb-0" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th style="max-width: 20px;" scope="col">id</th>
+                            <th style="max-width: 50px;">Category</th>
+                            <th style="max-width: 100px; max-height: 100px;" scope="col">image</th>
+                            <th scope="col">name</th>
+                            <th scope="col">description</th>
+                            <th scope="col" style="max-width: 10px;"> <i class="mdi mdi-account-clock"></i> </th>
+                            <th scope="col" style="max-width: 10px;">$</th>
+                            <th scope="col" style="max-width: 10px;">$/KG</th>
+                            <th style="max-width: 50px;" scope="col">status</th>
+                            <th style="max-width: 5px;" scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

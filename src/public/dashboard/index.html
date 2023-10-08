@@ -902,32 +902,23 @@ html[data-bs-theme="dark"] .select2-search__field {
                                 <i class="mdi mdi-home"></i> <span>Inicio</span>
                             </a>
                         </li>
-                        <li class="menu-title"><span>Inventario</span></li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="/dashboard/categories">
-                                <i class="las la-box"></i> <span>Categorias</span>
+                            <a href="#sidebarEcommerce" class="nav-link" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarEcommerce" >
+                                <i class="las la-box"></i> <span>Inventario</span>
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="/dashboard/addons">
-                                <i class="las la-plus"></i> <span>Complementos</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="/dashboard/products">
-                                <i class="las la-plus"></i> <span>Productos</span>
-                            </a>
-                        </li>
-                        <li class="menu-title"><span>Comercio</span></li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="/dashboard/addons">
-                                <i class="las la-plus"></i> <span>Clientes</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="/dashboard/addons">
-                                <i class="las la-plus"></i> <span>Ordenes</span>
-                            </a>
+                            <div class="collapse menu-dropdown" id="sidebarEcommerce">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="/dashboard/categories" class="nav-link"> Categorias </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/dashboard/addons" class="nav-link" > Complementos </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/dashboard/products" class="nav-link" > Productos </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
                         <li class="menu-title"><span>Otro</span></li>
                         <li class="nav-item">

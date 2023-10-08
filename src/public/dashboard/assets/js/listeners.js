@@ -29,12 +29,15 @@ function loadListeners() { // Escuchar clics en los enlaces y cambiar la URL y c
 
     $(document).on("submit", "#form", function (e) {
         e.preventDefault();
+    
         let id = $('[type="submit"]').data("id");
+        
         // Para crear un nuevo registro
         let API = {
             url: `/${vista}`,
             type: "POST"
         };
+    
         // Para editar un registro
         if (id > 0) {
             API = {
@@ -42,17 +45,92 @@ function loadListeners() { // Escuchar clics en los enlaces y cambiar la URL y c
                 type: "PUT"
             };
         }
+    
+        // Deshabilita temporalmente el select "ingredients" para que sus valores no se envíen
+        $("#ingredients").prop('disabled', true);
+    
         // Tomar datos del formulario
         var formData = new FormData(this);
+    
+        // Verificar si el select "ingredients" tiene el plugin Select2 activado
+        if ($("#ingredients").data('select2')) {
+            // Tomar los valores seleccionados del select "ingredients" con Select2
+            let selectedIngredients = $("#ingredients").val();
+    
+            // Si hay valores seleccionados, conviértelos a string JSON y agrégales al formData
+            if (selectedIngredients && selectedIngredients.length) {
+                let ingredientsString = JSON.stringify(selectedIngredients);
+                formData.append("ingredients", ingredientsString);
+            }
+        }
+    
+        // Habilitar nuevamente el select "ingredients" para que el usuario pueda interactuar con él después del envío
+        $("#ingredients").prop('disabled', false);
+    
         ajaxForm(API.url, API.type, formData).then((response) => {
             notify(response.status, response.info);
-            resetButtonsForm();
+            limpiar_inputs();
+            if(vista === 'products'){
+                cargarTablaProductos();
+            }else{
+                cargarTablaComplementos();
+            }
             id = 0;
         }).catch((error) => {
             console.error("Error:", error);
         });
     });
-
+        
+    $(document).on("click", "#editar_producto", function() {
+        let id = $(this).data('id');
+        
+        ajaxForm(`/${vista}/${id}`, 'GET', null, false).then((response) => {
+            let data = response.data.product;
+        
+            // Establece los valores de los campos de entrada del producto
+            $("input[name='name']").val(data.name);
+            $("input[name='description']").val(data.description);
+            $("input[name='preparation_time']").val(data.preparation_time);
+            $("input[name='price']").val(data.price);
+            $("input[name='price_per_kg']").val(data.price_per_kg);
+        
+            destruirInputs();
+            $('select').val(null).trigger('change');
+    
+            // Añadir la opción para la categoría y seleccionarla
+            let $categorySelect = $("select[name='category_id']");
+            let categoryOption = new Option(data.name, data.category_id, true, true);
+            $categorySelect.append(categoryOption).trigger('change');
+        
+            // Actualiza las opciones del select para los addons
+            let $ingredientsSelect = $("select[name='ingredients']");
+            $ingredientsSelect.empty(); // limpiar las opciones existentes
+    
+            let addedAddons = {};
+    
+            response.data.addons.forEach(addon => {
+                if (!addedAddons[addon.id]) {
+                    let option = new Option(addon.name, addon.id, true, true);
+                    $ingredientsSelect.append(option);
+                    addedAddons[addon.id] = true;
+                }
+            });
+    
+            $ingredientsSelect.trigger('change'); // notificar a Select2 para actualizar la vista
+        
+            iniciarInputs();
+        
+            // Maneja la imagen
+            let image = `/images/products/${data.image}/${data.originalImageName}`;
+            cargarImagen(image);
+            $('#crear_producto').html('Editar');
+            $('#crear_producto').data('id',id);
+            $('#cancelar_editar').removeClass('d-none');
+        });
+    });
+    
+    
+    
 
     $(document).on("change", "#SwitchCheck1", function (e) {
         let button_element = e.target;
