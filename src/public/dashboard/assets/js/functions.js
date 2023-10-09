@@ -359,11 +359,11 @@ function cargarTablaOrdenes() {
         },
         columns: [
             { data: 'id' },
-            { data: 'payment_method_id' },
-            { data: 'order_type_id' },
-            { data: 'order_status_id' },
-            { data: 'client_id' },
-            { data: 'address_id' },
+            { data: 'payment_method_name' },
+            { data: 'order_type_name' },
+            { data: 'order_status_name' },
+            { data: 'client_name' },
+            { data: 'address' },
             { data: 'order_date'},
             { data: 'shipping_cost'},
             { data: 'total_order'}

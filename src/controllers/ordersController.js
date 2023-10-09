@@ -12,19 +12,17 @@ const no_data_message = null;
 const path = require('path');
 const fs = require('graceful-fs');
 
-// Función para buscar órdenes, compatible con data-tables
 exports.searchOrders = (req, res) => {
   let draw = parseInt(req.query.draw);
   let start = parseInt(req.query.start) || 0;
   let length = parseInt(req.query.length) || 10;
-  let search = (req.query.search && req.query.search.value) ? req.query.search.value : ''; // Para filtrado global
-  let orderColumn = req.query.order[0].column; // Índice de columna por la que se ordena
-  let orderDir = req.query.order[0].dir; // Dirección de ordenación, asc o desc
-  // Columnas a ordenar, igual a datatables
-  let columns = ['id','payment_method_id','order_type_id','order_status_id','client_id','address_id','order_date','shipping_cost','total_order'];
-  let orderBy = columns[orderColumn];
+  let search = (req.query.search && req.query.search.value) ? req.query.search.value : '';
+  let orderColumn = req.query.order[0].column;
+  let orderDir = req.query.order[0].dir;
   
-  search = `%${search}%`; // Prepara el valor de búsqueda para el LIKE
+  let columns = ['orders.id', 'payment_methods.name', 'order_types.name', 'order_statuses.name', 'clients.name', 'client_addresses.address', 'orders.order_date', 'orders.shipping_cost', 'orders.total_order'];
+  let orderBy = columns[orderColumn];
+  search = `%${search}%`;
   
   const startTime = performance.now();
 
@@ -37,7 +35,15 @@ exports.searchOrders = (req, res) => {
     let total = totalResult[0].total;
 
     connection.query(
-      `SELECT * FROM orders WHERE id LIKE ? ORDER BY ${orderBy} ${orderDir} LIMIT ? OFFSET ?`,
+      `SELECT orders.id, payment_methods.name AS payment_method_name, order_types.name AS order_type_name, order_statuses.name AS order_status_name, clients.name AS client_name, client_addresses.address, orders.order_date, orders.shipping_cost, orders.total_order 
+      FROM orders 
+      LEFT JOIN payment_methods ON orders.payment_method_id = payment_methods.id
+      LEFT JOIN order_types ON orders.order_type_id = order_types.id
+      LEFT JOIN order_statuses ON orders.order_status_id = order_statuses.id
+      LEFT JOIN clients ON orders.client_id = clients.id
+      LEFT JOIN client_addresses ON orders.address_id = client_addresses.id
+      WHERE orders.id LIKE ? 
+      ORDER BY ${orderBy} ${orderDir} LIMIT ? OFFSET ?`,
       [search, length, start],
       async (error, results) => {
         const executionTimeMs = Math.round(performance.now() - startTime);
@@ -66,4 +72,5 @@ exports.searchOrders = (req, res) => {
     );
   });
 };
+
 

@@ -5,7 +5,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const PORT = 3000;
+const PORT = '0.0.0.0';
 
 const session = require('express-session');
 
@@ -92,7 +92,7 @@ app.use((req, res) => {
 });
 
 // Iniciar servicio
-app.listen(3000, '0.0.0.0', () => {
+app.listen(3000, PORT, () => {
   console.log('Server running on port 3000');
 });
 
