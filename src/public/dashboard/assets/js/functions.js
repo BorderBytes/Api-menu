@@ -569,6 +569,82 @@ var funcionesVista = {
     },
     'addons': function () {
         cargarTablaComplementos();
+    },
+    'profile': function () {
+        $(document).on('input', '#name', function(){
+            $('#title_name').html($(this).val());
+        })
+        $.ajax({
+            type: "GET",
+            url: "/business",
+            success: function (response) {
+                $('#name').val(response.name);
+                $('#title_name').html(response.name);
+                $('#image_profile').attr('src', `/images/business/${response.image}/${response.originalFileName}`);
+                $('#cover_image').attr('src',`/images/business/${response.image_cover}/${response.originalCoverFileName}`);
+                $('#phone').val(response.phone);
+            }
+        });
+        $.ajax({
+            type: "GET",
+            url: "/business/directions",
+            success: function (response) {
+                $('#address').val(response.address);
+                $('#latitude').val(response.latitude);
+                $('#longitude').val(response.longitude);
+            }
+        });
+        $.ajax({
+            type: "GET",
+            url: "/business/schedules",
+            success: function (response) {
+                let data = response.data;
+                let combinedHTML = ""; // Aquí vamos a ir acumulando el HTML
+        
+                data.forEach((schedule, index) => {
+                    // Check if the schedule day is selected
+                    let dayOptions = ['0', '1', '2', '3', '4', '5', '6'].map(day => {
+                        return `<option value="${day}" ${day == schedule.day ? 'selected' : ''}>${['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][day]}</option>`;
+                    }).join('');
+        
+                    let deleteButtonHTML = index === 0 ? "" : `
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-danger">-</button>
+                        </div>
+                    `;
+        
+                    combinedHTML += `<div class="row justify-content-center d-flex align-items-center">
+                        <div class="col-lg-4">
+                            <div class="mb-3">
+                                <label for="day" class="form-label">Día</label>
+                                <select name="day" class="form-control">
+                                    ${dayOptions}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="mb-3">
+                                <label for="open_hour" class="form-label">Apertura</label>
+                                <input name="open_hour" class="form-control" type="time" value="${schedule.open_hour}">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="mb-3">
+                                <label for="close_hour" class="form-label">Cierre</label>
+                                <input name="close_hour" class="form-control" type="time" value="${schedule.close_hour}">
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                        ${deleteButtonHTML}
+                        </div>
+                    </div>`;
+                });
+        
+                // Ahora, puedes agregar el combinedHTML a algún contenedor de tu página. Por ejemplo:
+                $('#elements').html(combinedHTML);
+            }
+        });
+        
     }
 };
 function iniciarInputs(){

@@ -128,7 +128,7 @@ exports.getFile = (req, res) => {
 
     fs.access(filepath, fs.constants.F_OK, (err) => {
         if (err) {
-            // Tu código para manejar errores aquí
+            res.status(404).send('Archivo no encontrado');
             return;
         }
 

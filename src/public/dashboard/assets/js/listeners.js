@@ -129,9 +129,153 @@ function loadListeners() { // Escuchar clics en los enlaces y cambiar la URL y c
         });
     });
     
-    
-    
+    $(document).on('click', '#actualizar_cambios_perfil', function(){
+        let name = $('#name').val();
+        let phone = $('#phone').val();
+        $.ajax({
+            type: "PUT",
+            url: "/business/1",
+            data:{name:name,phone:phone},
+            success: function (response) {
+                notify('success','Cambios actualizados');
+            }
+        });
+    });
 
+    $(document).on('click', '#actualizar_cambios_dir', function(){
+        let address = $('#address').val();
+        let latitude = $('#latitude').val();
+        let longitude = $('#longitude').val();
+        $.ajax({
+            type: "PUT",
+            url: "/business/1",
+            data:{address:address,latitude:latitude,longitude:longitude},
+            success: function (response) {
+                notify('success','Cambios actualizados');
+            }
+        });
+    });
+    
+    $(document).on('click','#agregar_row_horario', function(){
+        let html = `<div class="row justify-content-center d-flex align-items-center">
+        <!--end col-->
+        <div class="col-lg-4">
+            <div class="mb-3">
+                <label for="day" class="form-label">Día</label>
+                <select name="day" class="form-control">
+                    <option value="1">Lunes</option>
+                    <option value="2">Martes</option>
+                    <option value="3">Miercoles</option>
+                    <option value="4">Jueves</option>
+                    <option value="5">Viernes</option>
+                    <option value="6">Sabado</option>
+                    <option value="0">Domingo</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="mb-3">
+                <label for="open_hour" class="form-label">Apertura</label>
+                <input name="open_hour" class="form-control" type="time">
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="mb-3">
+                <label for="close_hour" class="form-label">Cierre</label>
+                <input name="close_hour" class="form-control" type="time">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="mt-2">
+                <button type="button" class="btn btn-danger " id="quitar_horario">-</button>  <!-- Cambiado a clase -->
+            </div>
+        </div>
+    </div>`;
+    $(`#elements`).append(html);
+    });
+    $(document).on('click','#quitar_horario', function(){
+        $(this).closest('.row').remove();
+    })
+    $(document).on('click','#crear_horario', function(){
+        event.preventDefault();
+
+        var dataArray = [];
+
+        // Iterar sobre cada fila
+        $("#elements .row").each(function () {
+            var row = $(this);
+            var day = row.find("select[name='day']").val();
+            var open_hour = row.find("input[name='open_hour']").val();
+            var close_hour = row.find("input[name='close_hour']").val();
+
+            // Crear un objeto con los datos y añadirlo al array
+            dataArray.push({
+                day: day,
+                open_hour: open_hour,
+                close_hour: close_hour
+            });
+        });
+
+        // Realizar petición AJAX
+        $.ajax({
+            type: "POST",
+            url: "/business/schedules", // Asegúrate de cambiar esto por la URL de tu backend
+            data: JSON.stringify(dataArray),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                notify("success","Datos enviados exitosamente!");
+            },
+            error: function (errMsg) {
+                console.error("Error al enviar los datos.", errMsg);
+            }
+        });
+
+    })
+    $(document).on('change', '#profile-img-file-input', function(){
+        var formData = new FormData(); // Crea un objeto FormData para enviar archivos
+
+        formData.append('image', this.files[0]); // Agrega la imagen seleccionada al objeto FormData
+
+        $.ajax({
+            type: "PATCH",
+            url: "/business/profilePicture",
+            data: formData, // Usa el objeto FormData para enviar la imagen
+            processData: false, // Evita que jQuery procese los datos automáticamente
+            contentType: false, // Evita que jQuery configure automáticamente el tipo de contenido
+            success: function (response) {
+                $('#image_profile').attr('src', response.data.imageUrl);
+            }
+        });
+    })
+    $(document).on('change', '#profile-foreground-img-file-input', function(){
+        var formData = new FormData(); // Crea un objeto FormData para enviar archivos
+
+        formData.append('image', this.files[0]); // Agrega la imagen seleccionada al objeto FormData
+
+        $.ajax({
+            type: "PATCH",
+            url: "/business/coverImage",
+            data: formData, // Usa el objeto FormData para enviar la imagen
+            processData: false, // Evita que jQuery procese los datos automáticamente
+            contentType: false, // Evita que jQuery configure automáticamente el tipo de contenido
+            success: function (response) {
+                $('#cover_image').attr('src', response.data.imageUrl);
+            }
+        });
+    })
+    $(document).on('click','#cambiar_password', function(){
+        let oldPassword = $('#oldpasswordInput').val();
+        let newPassword = $("#newpasswordInput").val();
+        $.ajax({
+            type: "PATCH",
+            url: "/business/password",
+            data: {oldPassword:oldPassword,newPassword:newPassword},
+            success: function (response) {
+                notify(response.status,response.message);
+            }
+        });
+    })
     $(document).on("change", "#SwitchCheck1", function (e) {
         let button_element = e.target;
         let id = $(button_element).data('id');
