@@ -2,10 +2,10 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 22-09-2023 a las 23:01:39
--- Versión del servidor: 8.0.31
--- Versión de PHP: 8.0.26
+-- Host: 127.0.0.1:3306
+-- Generation Time: Oct 09, 2023 at 10:53 PM
+-- Server version: 8.0.31
+-- PHP Version: 8.0.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,12 +18,12 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `borderbytes_menu_api`
+-- Database: `borderbytes_menu_api`
 --
 
 DELIMITER $$
 --
--- Procedimientos
+-- Procedures
 --
 DROP PROCEDURE IF EXISTS `InsertarRegistros`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertarRegistros` ()   BEGIN
@@ -45,7 +45,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `addons`
+-- Table structure for table `addons`
 --
 
 DROP TABLE IF EXISTS `addons`;
@@ -56,12 +56,21 @@ CREATE TABLE IF NOT EXISTS `addons` (
   `max` int DEFAULT '99',
   `status` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `addons`
+--
+
+INSERT INTO `addons` (`id`, `name`, `min`, `max`, `status`) VALUES
+(1, 'Bebida a elegir', 1, 1, 1),
+(2, 'Ensalada a eligir', 1, 1, 1),
+(3, 'test edit', 11, 11, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `addon_details`
+-- Table structure for table `addon_details`
 --
 
 DROP TABLE IF EXISTS `addon_details`;
@@ -73,12 +82,27 @@ CREATE TABLE IF NOT EXISTS `addon_details` (
   `status` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `addon_id` (`addon_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `addon_details`
+--
+
+INSERT INTO `addon_details` (`id`, `addon_id`, `name`, `price`, `status`) VALUES
+(30, 1, 'Coca Cola 600ml', '22.00', 1),
+(29, 1, 'Sprite 600ml', '30.00', 1),
+(34, 2, 'Ensalada 2', '23.00', 1),
+(33, 2, 'Ensalada 1', '22.00', 1),
+(7, 3, '1 edit', '11.00', 1),
+(8, 3, '2 edit', '22.00', 1),
+(28, 1, 'Mandarina 600ml', '23.00', 1),
+(31, 1, 'Fanta 600ml', '26.00', 1),
+(32, 1, 'Agua 600ml', NULL, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `branch_hours`
+-- Table structure for table `branch_hours`
 --
 
 DROP TABLE IF EXISTS `branch_hours`;
@@ -88,25 +112,45 @@ CREATE TABLE IF NOT EXISTS `branch_hours` (
   `close_hour` time NOT NULL,
   `day` tinyint NOT NULL COMMENT 'day of the week represented as a number',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `branch_hours`
+--
+
+INSERT INTO `branch_hours` (`id`, `open_hour`, `close_hour`, `day`) VALUES
+(3, '08:00:00', '22:00:00', 1),
+(4, '22:00:00', '22:00:00', 2);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `categories`
+-- Table structure for table `categories`
 --
 
 DROP TABLE IF EXISTS `categories`;
 CREATE TABLE IF NOT EXISTS `categories` (
   `id` smallint NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) NOT NULL,
   `status` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Disparadores `categories`
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `image`, `status`) VALUES
+(1, 'Prueba editar2', '4632a14b-ad92-4b5e-9cab-d4d1ad3a7837', 1),
+(2, 'Prueba', '2fcf4702-cf24-4a34-925b-818b9f3b5da2', 1),
+(3, 'asd', '6efc18e1-de32-4fcd-8b06-9182a4824eba', 1),
+(4, 'cd', '30e139be-c030-4fb7-9d99-c4a4c92c06eb', 1),
+(5, 'bb', 'd8d28120-6ab1-47b6-b994-b8672298b34d', 1),
+(6, 'test', '00407fb5-29eb-4e10-a789-551be5da9215', 1);
+
+--
+-- Triggers `categories`
 --
 DROP TRIGGER IF EXISTS `total_categoires`;
 DELIMITER $$
@@ -119,7 +163,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `clients`
+-- Table structure for table `clients`
 --
 
 DROP TABLE IF EXISTS `clients`;
@@ -130,10 +174,10 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `phone` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Volcado de datos para la tabla `clients`
+-- Dumping data for table `clients`
 --
 
 INSERT INTO `clients` (`id`, `user_id`, `name`, `phone`) VALUES
@@ -142,7 +186,7 @@ INSERT INTO `clients` (`id`, `user_id`, `name`, `phone`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `client_addresses`
+-- Table structure for table `client_addresses`
 --
 
 DROP TABLE IF EXISTS `client_addresses`;
@@ -155,40 +199,46 @@ CREATE TABLE IF NOT EXISTS `client_addresses` (
   `status` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `client_id` (`client_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `client_addresses`
+--
+
+INSERT INTO `client_addresses` (`id`, `client_id`, `address`, `latitude`, `longitude`, `status`) VALUES
+(1, 1, 'Francisco coss 1187', 27, -100, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `configuration`
+-- Table structure for table `configuration`
 --
 
 DROP TABLE IF EXISTS `configuration`;
 CREATE TABLE IF NOT EXISTS `configuration` (
   `id` tinyint NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `value` varchar(255) NOT NULL,
+  `image` varchar(255) NOT NULL,
+  `image_cover` varchar(255) NOT NULL,
+  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `latitude` decimal(10,6) NOT NULL,
+  `longitude` decimal(10,6) NOT NULL,
+  `automatic` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Volcado de datos para la tabla `configuration`
+-- Dumping data for table `configuration`
 --
 
-INSERT INTO `configuration` (`id`, `name`, `value`) VALUES
-(1, 'name', 'Mi empresa'),
-(2, 'phone', '8781383809'),
-(3, 'address', 'Francisco coss 1187'),
-(4, 'latitude', '0'),
-(5, 'longitude', '0'),
-(6, 'Automatic', '1'),
-(7, 'total_views', '0'),
-(8, 'total_categories', '10015');
+INSERT INTO `configuration` (`id`, `name`, `image`, `image_cover`, `phone`, `address`, `latitude`, `longitude`, `automatic`) VALUES
+(1, 'BorderMenu', '89239363-ab30-44d2-a70d-8315256aeb82', '837d4548-253a-4baa-9caf-1a3a73c4c134', '8781383809', 'Frasdasdasd', '1.000000', '1.000000', 0);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `orders`
+-- Table structure for table `orders`
 --
 
 DROP TABLE IF EXISTS `orders`;
@@ -208,12 +258,19 @@ CREATE TABLE IF NOT EXISTS `orders` (
   KEY `order_status_id` (`order_status_id`),
   KEY `client_id` (`client_id`),
   KEY `address_id` (`address_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `payment_method_id`, `order_type_id`, `order_status_id`, `client_id`, `address_id`, `order_date`, `shipping_cost`, `total_order`) VALUES
+(1, 1, 1, 1, 1, 1, '2023-10-09 02:52:51', '200.00', '100.00');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `order_addons`
+-- Table structure for table `order_addons`
 --
 
 DROP TABLE IF EXISTS `order_addons`;
@@ -225,12 +282,12 @@ CREATE TABLE IF NOT EXISTS `order_addons` (
   `subtotal` decimal(10,2) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `order_product_id` (`order_product_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `order_products`
+-- Table structure for table `order_products`
 --
 
 DROP TABLE IF EXISTS `order_products`;
@@ -246,12 +303,12 @@ CREATE TABLE IF NOT EXISTS `order_products` (
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`),
   KEY `product_id` (`product_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `order_statuses`
+-- Table structure for table `order_statuses`
 --
 
 DROP TABLE IF EXISTS `order_statuses`;
@@ -259,12 +316,28 @@ CREATE TABLE IF NOT EXISTS `order_statuses` (
   `id` tinyint NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `order_statuses`
+--
+
+INSERT INTO `order_statuses` (`id`, `name`) VALUES
+(1, 'Revisión de pago'),
+(2, 'Pedido en espera'),
+(3, 'Aceptado por sucursal'),
+(4, 'Aceptado por repartidor'),
+(5, 'Pedido terminado'),
+(6, 'Pedido en entrega'),
+(7, 'Pedido entregado'),
+(8, 'Cancelado por sucursal'),
+(9, 'Cancelado por cliente'),
+(10, 'Cancelado por repartidor');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `order_types`
+-- Table structure for table `order_types`
 --
 
 DROP TABLE IF EXISTS `order_types`;
@@ -273,12 +346,20 @@ CREATE TABLE IF NOT EXISTS `order_types` (
   `name` varchar(50) NOT NULL,
   `status` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `order_types`
+--
+
+INSERT INTO `order_types` (`id`, `name`, `status`) VALUES
+(1, 'Domicilio', 1),
+(2, 'Entregar', 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `payment_methods`
+-- Table structure for table `payment_methods`
 --
 
 DROP TABLE IF EXISTS `payment_methods`;
@@ -286,12 +367,20 @@ CREATE TABLE IF NOT EXISTS `payment_methods` (
   `id` tinyint NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `payment_methods`
+--
+
+INSERT INTO `payment_methods` (`id`, `name`) VALUES
+(1, 'En efectivo'),
+(2, 'Transferencia');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `products`
+-- Table structure for table `products`
 --
 
 DROP TABLE IF EXISTS `products`;
@@ -299,6 +388,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `category_id` smallint NOT NULL,
   `name` varchar(250) NOT NULL,
+  `image` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `preparation_time` int DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
@@ -308,12 +398,26 @@ CREATE TABLE IF NOT EXISTS `products` (
   `status` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `category_id` (`category_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `category_id`, `name`, `image`, `description`, `preparation_time`, `price`, `price_per_kg`, `total_views`, `total_purchases`, `status`) VALUES
+(1, 2, 'asd', '5f4afae3-637a-41d6-af4c-3236138a24fe', 'asd', 1, '1.00', '1.00', 0, 0, 1),
+(2, 2, 'Prueba', 'b477f4ab-d21c-4194-a6ad-d60b75820b43', 'test', 1, '1.00', '1.00', 0, 0, 1),
+(3, 1, 'test', '13d44090-dc4c-4eb4-9698-087bc95ef624', 'te', 1, '12.00', '13.00', 0, 0, 1),
+(4, 6, 'Prueba', '416a968d-c2a7-4ea1-8cf8-d3fcc4fa3cc3', '12', 1, '1.00', '1.00', 0, 0, 1),
+(5, 2, 'tesa', '73e77695-514d-46d5-bd76-6caa0fe4f500', 'tea', 2, '2.00', '2.00', 0, 0, 1),
+(6, 6, 'z', '389b2d87-da7a-40fb-a1b7-6f3de066aa94', 'z', 1, '1.00', '1.00', 0, 0, 1),
+(7, 6, 'be', '3cb1c11a-d07a-4a05-909d-e52adcfdf87a', 'be', 1, '1.00', '1.00', 0, 0, 1),
+(8, 2, 'asd 6', '7c023d7b-b979-4a04-8c14-c88efc21e384', 'asd', 1, '1.00', '1.00', 0, 0, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `product_addons`
+-- Table structure for table `product_addons`
 --
 
 DROP TABLE IF EXISTS `product_addons`;
@@ -324,12 +428,34 @@ CREATE TABLE IF NOT EXISTS `product_addons` (
   PRIMARY KEY (`id`),
   KEY `addon_id` (`addon_id`),
   KEY `product_id` (`product_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `product_addons`
+--
+
+INSERT INTO `product_addons` (`id`, `addon_id`, `product_id`) VALUES
+(1, 1, 4),
+(2, 2, 4),
+(3, 1, 1),
+(4, 2, 1),
+(5, 1, 1),
+(6, 2, 1),
+(7, 2, 2),
+(8, 3, 2),
+(9, 1, 2),
+(10, 1, 3),
+(11, 1, 4),
+(12, 1, 5),
+(13, 1, 6),
+(14, 1, 7),
+(28, 2, 8),
+(27, 1, 8);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `users`
+-- Table structure for table `users`
 --
 
 DROP TABLE IF EXISTS `users`;
@@ -342,21 +468,22 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`),
   KEY `level_id` (`level_id`),
   KEY `status_id` (`status_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Volcado de datos para la tabla `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `level_id`, `status_id`, `email`, `password`) VALUES
 (1, 1, 1, '1', '1'),
-(2, 1, 1, 'a@test.com', '$2b$10$/tXWOhYZGHQyFON4e/CSEuv0GQpUWQuiOb6JbOXwXzQsFsDa5tgVC'),
-(3, 1, 1, 'a1@test.com', '$2b$10$.qFZXMqIy0XW2v1jdoVhQOaFatWPZt/mD6r5qPOFFhcyqiiUtc60y');
+(2, 1, 1, 'gabrielvallejo2000@gmail.com', '$2b$10$/tXWOhYZGHQyFON4e/CSEuv0GQpUWQuiOb6JbOXwXzQsFsDa5tgVC'),
+(3, 1, 1, 'gabrielvallejo2001@gmail.com', '$2b$10$.qFZXMqIy0XW2v1jdoVhQOaFatWPZt/mD6r5qPOFFhcyqiiUtc60y'),
+(4, 2, 1, 'usuario@example.com', '$2b$10$iFHWpp43bjkPyvjY.lTS4.ACbb0SEqyo5YhwYKd4uCcRgEn/O6pLi');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `user_levels`
+-- Table structure for table `user_levels`
 --
 
 DROP TABLE IF EXISTS `user_levels`;
@@ -364,12 +491,21 @@ CREATE TABLE IF NOT EXISTS `user_levels` (
   `id` tinyint NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_levels`
+--
+
+INSERT INTO `user_levels` (`id`, `name`) VALUES
+(1, 'root'),
+(2, 'business'),
+(3, 'client');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `user_statuses`
+-- Table structure for table `user_statuses`
 --
 
 DROP TABLE IF EXISTS `user_statuses`;
@@ -377,7 +513,7 @@ CREATE TABLE IF NOT EXISTS `user_statuses` (
   `id` tinyint NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
