@@ -51,6 +51,7 @@ const imagesRoutes = require('./routes/imagesRoutes');
 const productsRoutes = require('./routes/productsRoutes');
 const businessRoutes = require('./routes/businessRoutes');
 const authRoutes = require('./routes/authRoutes');
+const ordersRoutes = require('./routes/ordersRoutes');
 
 app.use('/categories', categoriesRoutes);
 app.use('/clients', clientsRoutes);
@@ -62,6 +63,7 @@ app.use('/images', imagesRoutes);
 app.use('/products', productsRoutes);
 app.use('/auth', authRoutes);
 app.use('/business', businessRoutes);
+app.use('/orders', ordersRoutes);
 
 // Ruta para servir recursos para la plantilla de panel
 app.use('/assets', express.static(path.join(__dirname, 'public/panel/assets')));

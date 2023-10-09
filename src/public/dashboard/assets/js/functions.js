@@ -346,6 +346,30 @@ function cargarTablaProductos() {
         }
     });
 }
+function cargarTablaOrdenes() {
+    $('#orderTable').DataTable().clear().destroy();
+    $('#orderTable').DataTable({
+        "lengthChange": false,
+        "searching": false,
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "/orders/search",
+            "type": "GET"
+        },
+        columns: [
+            { data: 'id' },
+            { data: 'payment_method_id' },
+            { data: 'order_type_id' },
+            { data: 'order_status_id' },
+            { data: 'client_id' },
+            { data: 'address_id' },
+            { data: 'order_date'},
+            { data: 'shipping_cost'},
+            { data: 'total_order'}
+        ]
+    });
+}
 function limpiar_inputs() {
     $('#cancelar_editar').addClass('d-none');
     $('input').val('');
@@ -645,6 +669,17 @@ var funcionesVista = {
             }
         });
         
+    },
+    'orders':function(){
+        cargarTablaOrdenes();
+         // Obten el elemento de entrada de fecha por su ID
+        const fechaInput = document.getElementById("fecha_orden_select");
+
+        // Inicializa Flatpickr
+        flatpickr(fechaInput, {
+            dateFormat: "Y-m-d", // Formato de fecha deseado (puedes ajustarlo según tus necesidades)
+            // Otras opciones personalizadas aquí...
+        });
     }
 };
 function iniciarInputs(){
