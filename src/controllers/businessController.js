@@ -16,7 +16,7 @@ const path = require('path');
 const fs = require('graceful-fs');
 const imagesDirectory = path.join(__dirname, '..', 'public', 'images/categories');
 const {v4: uuidv4} = require('uuid');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 // Configuración de Multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {

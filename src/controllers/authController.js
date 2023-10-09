@@ -1,7 +1,7 @@
 // Nos conectamos a la bd
 const connection = require('../config/database.js');
 const path = require('path');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const passport = require('passport');
 // Aquí van los métodos serializeUser y deserializeUser
 passport.serializeUser(function(user, done) {
