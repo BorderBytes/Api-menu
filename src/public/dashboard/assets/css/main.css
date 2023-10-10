@@ -1,0 +1,90 @@
+ /* Estilos para el fondo de carga de FilePond en modo oscuro */
+ [data-bs-theme="dark"] .filepond--root .filepond--drop-label {
+    background: #262a2f !important;
+    /* Cambia el color de fondo en modo oscuro */
+    color: #fff;
+    /* Cambia el color del texto en modo oscuro */
+    border: 2px dashed #555;
+    /* Cambia el borde en modo oscuro */
+}
+
+[data-bs-theme="dark"] .filepond--panel-center.filepond--panel-root {
+    background: #262a2f !important;
+}
+
+[data-bs-theme="dark"] .filepond--panel-top,
+[data-bs-theme="dark"] .filepond--panel-bottom,
+[data-bs-theme="dark"] .filepond--panel-center {
+    background: #262a2f !important;
+}
+
+table img {
+    object-fit: contain;
+}
+
+html[data-bs-theme="dark"] .select2-container {
+    background-color: #262a2f;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .select2-dropdown {
+    background-color: #262a2f;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .select2-search__field {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .select2-results__option {
+    background-color: #262a2f;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .select2-results__option--highlighted {
+    background-color: #555;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .select2-selection--single {
+    background-color: #262a2f;
+    border-color: #555;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .select2-selection--single .select2-selection__rendered {
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .select2-selection--single .select2-selection__arrow b {
+    border-color: #fff transparent transparent transparent;
+}
+
+/* Puedes agregar más estilos osc
+/* Estilos para select2 multiple en modo oscuro */
+html[data-bs-theme="dark"] .select2-selection--multiple {
+    background-color: #262a2f;
+    border-color: #555;
+}
+
+html[data-bs-theme="dark"] .select2-selection--multiple .select2-selection__choice {
+    background-color: #555;
+    border-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .select2-selection--multiple .select2-selection__choice__remove {
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .select2-selection--multiple .select2-selection__choice__remove:hover {
+    background-color: #444;
+}
+
+html[data-bs-theme="dark"] .select2-search__field {
+    background-color: transparent;
+    /* Asegurándonos de que el campo de búsqueda tenga un fondo transparente */
+}
+
+/* Continuación de los estilos anteriores... */
