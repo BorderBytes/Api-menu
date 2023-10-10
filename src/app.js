@@ -1,10 +1,16 @@
 const express = require('express');
+const http = require('http');
+const { setupWebSocket } = require('./controllers/socketController');
 const path = require('path');
 
 // Credenciales
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
+const server = http.createServer(app);
+
+// Configura socket.io
+setupWebSocket(server);
 const PORT = '0.0.0.0';
 
 const session = require('express-session');
@@ -92,7 +98,7 @@ app.use((req, res) => {
 });
 
 // Iniciar servicio
-app.listen(3000, PORT, () => {
+server.listen(3000, PORT, () => {
   console.log('Server running on port 3000');
 });
 

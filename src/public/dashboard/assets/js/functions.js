@@ -1,3 +1,4 @@
+let tableInstance; // Instancia de la tabla
 function cargarTabla() {
     $('#tabla').DataTable().clear().destroy();
     $('#tabla').DataTable({
@@ -347,7 +348,8 @@ function cargarTablaProductos() {
     });
 }
 function cargarTablaOrdenes() {
-    $('#orderTable').DataTable().clear().destroy();
+    if (!tableInstance) {
+    tableInstance = $('#orderTable').DataTable().clear().destroy();
     $('#orderTable').DataTable({
         "lengthChange": false,
         "searching": false,
@@ -358,18 +360,154 @@ function cargarTablaOrdenes() {
             "type": "GET"
         },
         columns: [
-            { data: 'id' },
-            { data: 'payment_method_name' },
-            { data: 'order_type_name' },
-            { data: 'order_status_name' },
-            { data: 'client_name' },
-            { data: 'address' },
-            { data: 'order_date'},
-            { data: 'shipping_cost'},
-            { data: 'total_order'}
+            {
+                "data": "id",
+                "render": function (data, type, row) {
+                    return '<div class="form-check"><input class="form-check-input" type="checkbox" id="checkAll" value="option"></div>';
+                }
+            },
+            {
+                'data': 'id',
+                "render": function (data, row, type) {
+                    return '<a href="apps-ecommerce-order-details.html" class="fw-medium link-primary">#VZ12</a>';
+                }
+            },
+            {
+                data: 'payment_method_name'
+            },
+            {
+                data: 'order_type_name'
+            }, {
+                data: 'order_status_id',
+                "render": function(data,type,row){
+                    return estadoOrden(data);
+                }
+            }, {
+                data: 'client_name'
+            }, {
+                data: 'address'
+            }, {
+                data: 'order_date',
+                "render": function (data, type, row) {
+                    date = data;
+                    let fecha = new Date(date);
+                    return formatDateToCustomFormat(fecha);
+
+                }
+            }, {
+                data: 'shipping_cost'
+            }, {
+                data: 'total_order'
+            }, {
+                "data": "id",
+                "render": function (data, type, row) {
+                    return `<ul class="list-inline hstack gap-2 mb-0">
+                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" aria-label="View" data-bs-original-title="View">
+                        <a href="apps-ecommerce-order-details.html" class="text-primary d-inline-block">
+                            <i class="ri-eye-fill fs-16"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" aria-label="Edit" data-bs-original-title="Edit">
+                        <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn">
+                            <i class="ri-pencil-fill fs-16"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" aria-label="Remove" data-bs-original-title="Remove">
+                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                            <i class="ri-delete-bin-5-fill fs-16"></i>
+                        </a>
+                    </li>
+                </ul>`;
+                }
+            }
         ]
     });
+    } else {
+        tableInstance.ajax.reload(null, false); // Recarga los datos sin cambiar de página.
+    }
 }
+function formatDateToCustomFormat(date) {
+    const monthNames = [
+        "Ene",
+        "Feb",
+        "Mar",
+        "Abr",
+        "May",
+        "Jun",
+        "Jul",
+        "Ago",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dic"
+    ];
+
+    const day = date.getDate();
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `<td class="date">${day} ${month}, ${year} <small class="text-muted">${hours}:${minutes} ${
+        hours < 12 ? 'AM' : 'PM'
+    }</small></td>`;
+}
+
+function estadoOrden(estado) {
+    // Define un objeto con los mensajes para cada estado.
+    const mensajes = {
+        1: {
+            estado: 'warning',
+            mensaje: "Revisar pago"
+        },
+        2: {
+            estado: "warning",
+            mensaje: "Pedido en espera"
+        },
+        3: {
+            estado: "warning",
+            mensaje: "Pedido aceptado"
+        },
+        4: {
+            estado: "primary",
+            mensaje: "Aceptado por repartidor"
+        },
+        5: {
+            estado: "primary",
+            mensaje: "Pedido listo"
+        },
+        6: {
+            estado: "primary",
+            mensaje: "Pedido en entrega"
+        },
+        7: {
+            estado: "success",
+            mensaje: "Pedido completado"
+        },
+        8: {
+            estado: "danger",
+            mensaje: "Cancelado por sucursal"
+        },
+        9: {
+            estado: "danger",
+            mensaje: "Cancelado por cliente"
+        },
+        10: {
+            estado: "danger",
+            mensaje: "Cancelado por repartidor, en espera"
+        }
+    };
+
+    // Comprueba si el estado existe en el objeto de mensajes.
+    if (estado in mensajes) {
+        const mensajeEstado = mensajes[estado];
+        const mensajeHTML = `<span class="badge bg-${mensajeEstado.estado}-subtle text-${mensajeEstado.estado} text-uppercase">${mensajeEstado.mensaje}</span>`;
+        return mensajeHTML;
+    } else {
+        return "Estado desconocido"; // Un mensaje por defecto si el estado no se encuentra en el objeto.
+    }
+}
+
 function limpiar_inputs() {
     $('#cancelar_editar').addClass('d-none');
     $('input').val('');
@@ -595,7 +733,7 @@ var funcionesVista = {
         cargarTablaComplementos();
     },
     'profile': function () {
-        $(document).on('input', '#name', function(){
+        $(document).on('input', '#name', function () {
             $('#title_name').html($(this).val());
         })
         $.ajax({
@@ -604,8 +742,16 @@ var funcionesVista = {
             success: function (response) {
                 $('#name').val(response.name);
                 $('#title_name').html(response.name);
-                $('#image_profile').attr('src', `/images/business/${response.image}/${response.originalFileName}`);
-                $('#cover_image').attr('src',`/images/business/${response.image_cover}/${response.originalCoverFileName}`);
+                $('#image_profile').attr('src', `/images/business/${
+                    response.image
+                }/${
+                    response.originalFileName
+                }`);
+                $('#cover_image').attr('src', `/images/business/${
+                    response.image_cover
+                }/${
+                    response.originalCoverFileName
+                }`);
                 $('#phone').val(response.phone);
             }
         });
@@ -624,19 +770,38 @@ var funcionesVista = {
             success: function (response) {
                 let data = response.data;
                 let combinedHTML = ""; // Aquí vamos a ir acumulando el HTML
-        
-                data.forEach((schedule, index) => {
-                    // Check if the schedule day is selected
-                    let dayOptions = ['0', '1', '2', '3', '4', '5', '6'].map(day => {
-                        return `<option value="${day}" ${day == schedule.day ? 'selected' : ''}>${['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][day]}</option>`;
+
+                data.forEach((schedule, index) => { // Check if the schedule day is selected
+                    let dayOptions = [
+                        '0',
+                        '1',
+                        '2',
+                        '3',
+                        '4',
+                        '5',
+                        '6'
+                    ].map(day => {
+                        return `<option value="${day}" ${
+                            day == schedule.day ? 'selected' : ''
+                        }>${
+                            [
+                                'Domingo',
+                                'Lunes',
+                                'Martes',
+                                'Miércoles',
+                                'Jueves',
+                                'Viernes',
+                                'Sábado'
+                            ][day]
+                        }</option>`;
                     }).join('');
-        
+
                     let deleteButtonHTML = index === 0 ? "" : `
                         <div class="mt-2">
                             <button type="button" class="btn btn-danger">-</button>
                         </div>
                     `;
-        
+
                     combinedHTML += `<div class="row justify-content-center d-flex align-items-center">
                         <div class="col-lg-4">
                             <div class="mb-3">
@@ -649,13 +814,17 @@ var funcionesVista = {
                         <div class="col-lg-3">
                             <div class="mb-3">
                                 <label for="open_hour" class="form-label">Apertura</label>
-                                <input name="open_hour" class="form-control" type="time" value="${schedule.open_hour}">
+                                <input name="open_hour" class="form-control" type="time" value="${
+                        schedule.open_hour
+                    }">
                             </div>
                         </div>
                         <div class="col-lg-3">
                             <div class="mb-3">
                                 <label for="close_hour" class="form-label">Cierre</label>
-                                <input name="close_hour" class="form-control" type="time" value="${schedule.close_hour}">
+                                <input name="close_hour" class="form-control" type="time" value="${
+                        schedule.close_hour
+                    }">
                             </div>
                         </div>
                         <div class="col-lg-2">
@@ -663,91 +832,123 @@ var funcionesVista = {
                         </div>
                     </div>`;
                 });
-        
+
                 // Ahora, puedes agregar el combinedHTML a algún contenedor de tu página. Por ejemplo:
                 $('#elements').html(combinedHTML);
             }
         });
-        
+
     },
-    'orders':function(){
-        cargarTablaOrdenes();
-         // Obten el elemento de entrada de fecha por su ID
+    'orders': function () {
+        initOrders();
+
+        // Obten el elemento de entrada de fecha por su ID
         const fechaInput = document.getElementById("fecha_orden_select");
 
         // Inicializa Flatpickr
         flatpickr(fechaInput, {
-            dateFormat: "Y-m-d", // Formato de fecha deseado (puedes ajustarlo según tus necesidades)
+            dateFormat: "Y-m-d",
+            // Formato de fecha deseado (puedes ajustarlo según tus necesidades)
             // Otras opciones personalizadas aquí...
         });
     }
 };
-function iniciarInputs(){
- // Inicializar el primer select (categories)
- const selectElementCategories = $('#category_id');
- selectElementCategories.select2({
-     placeholder: 'Buscar categorías...',
-     minimumInputLength: 2,
-     ajax: {
-         url: '/categories/search',
-         type: 'GET',
-         dataType: 'json',
-         delay: 250,
-         data: function (params) {
-             return {
-                 draw: 1,
-                 start: 0,
-                 length: 10,
-                 search: {
-                     value: params.term || ''
-                 }, // Usa el término de búsqueda o una cadena vacía
-                 'order[0][column]': 2,
-                 'order[0][dir]': 'asc'
-             };
-         },
-         processResults: function (response) {
-             return {
-                 results: response.data.map(item => {
-                     return {id: item.id, text: item.name};
-                 })
-             };
-         }
-     }
- });
+function initOrders() {
+    // Conexión con Socket.io
+    const socket = io.connect('http://localhost:3000');
 
- // Inicializar el segundo select (addons)
- const selectElementAddons = $('#ingredients');
- selectElementAddons.select2({
-     placeholder: 'Buscar addons...',
-     minimumInputLength: 2,
-     ajax: {
-         url: '/addons/search',
-         type: 'GET',
-         dataType: 'json',
-         delay: 250,
-         data: function (params) {
-             return {
-                 draw: 1,
-                 start: 0,
-                 length: 10,
-                 search: {
-                     value: params.term || ''
-                 }, // Usa el término de búsqueda o una cadena vacía
-                 'order[0][column]': 2,
-                 'order[0][dir]': 'asc'
-             };
-         },
-         processResults: function (response) {
-             return {
-                 results: response.data.map(item => {
-                     return {id: item.id, text: item.name};
-                 })
-             };
-         }
-     }
- });
+    // Escuchar el evento 'updateOrders' desde el servidor.
+    socket.on('updateOrders', (data) => {
+        console.log('Evento updateOrders recibido:', data);
+        
+        if (tableInstance) {
+            console.log('Recargando datos de la tabla...');
+            tableInstance.ajax.reload(null, false); 
+        } else {
+            console.log('La instancia de la tabla aún no está disponible.');
+        }
+    });
+    
+
+    // No necesitas la función requestUpdatedOrders, así que la eliminamos.
+
+    // Llamar a cargarTablaOrdenes al inicio para inicializar la tabla.
+    cargarTablaOrdenes();
+
+    // El código para manejar la fecha se mantiene igual.
+    const fechaInput = document.getElementById("fecha_orden_select");
+    flatpickr(fechaInput, {
+        dateFormat: "Y-m-d",
+        // Resto de opciones...
+    });
 }
-function destruirInputs(){
+
+
+function iniciarInputs() { // Inicializar el primer select (categories)
+    const selectElementCategories = $('#category_id');
+    selectElementCategories.select2({
+        placeholder: 'Buscar categorías...',
+        minimumInputLength: 2,
+        ajax: {
+            url: '/categories/search',
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    draw: 1,
+                    start: 0,
+                    length: 10,
+                    search: {
+                        value: params.term || ''
+                    }, // Usa el término de búsqueda o una cadena vacía
+                    'order[0][column]': 2,
+                    'order[0][dir]': 'asc'
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response.data.map(item => {
+                        return {id: item.id, text: item.name};
+                    })
+                };
+            }
+        }
+    });
+
+    // Inicializar el segundo select (addons)
+    const selectElementAddons = $('#ingredients');
+    selectElementAddons.select2({
+        placeholder: 'Buscar addons...',
+        minimumInputLength: 2,
+        ajax: {
+            url: '/addons/search',
+            type: 'GET',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    draw: 1,
+                    start: 0,
+                    length: 10,
+                    search: {
+                        value: params.term || ''
+                    }, // Usa el término de búsqueda o una cadena vacía
+                    'order[0][column]': 2,
+                    'order[0][dir]': 'asc'
+                };
+            },
+            processResults: function (response) {
+                return {
+                    results: response.data.map(item => {
+                        return {id: item.id, text: item.name};
+                    })
+                };
+            }
+        }
+    });
+}
+function destruirInputs() {
     const selectElementCategories = $('#category_id');
     selectElementCategories.select2('destroy');
     const ingredients = $('#ingredients');
