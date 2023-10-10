@@ -1,20 +1,14 @@
 const express = require('express');
-const http = require('http');
-const { setupWebSocket } = require('./controllers/socketController');
 const path = require('path');
+const http = require('http'); // Importa el módulo http
 
 // Credenciales
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const server = http.createServer(app);
-
-// Configura socket.io
-setupWebSocket(server);
 const PORT = '0.0.0.0';
 
 const session = require('express-session');
-
 const passport = require('passport');
 
 // Configuración de session y passport
@@ -25,16 +19,17 @@ app.use(session({
   saveUninitialized: false,
   name: 'sessionToken',
   cookie: {
-      maxAge: 24 * 60 * 60 * 1000,  // 1 día
-      secure: false,
-      httpOnly: true
-  }
+    maxAge: 24 * 60 * 60 * 1000, // 1 día
+    secure: false,
+    httpOnly: true,
+  },
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 // Conexión de la base de datos
 require('./config/database');
 
@@ -97,8 +92,33 @@ app.use((req, res) => {
   res.status(404).send('404 - Page Not Found');
 });
 
-// Iniciar servicio
+// Crear un servidor HTTP independiente para los sockets
+const server = http.createServer(app);
+
+// Importa socket.io y vincúlalo al servidor HTTP
+const socketConfig = require('./config/socket');
+const io = socketConfig.init(server);
+io.on('connection', (socket) => {
+    // Verificar la ruta de referencia del cliente
+    const referer = socket.request.headers.referer;
+
+    if (referer && referer.includes('/dashboard')) { // Cambio aquí: usamos 'includes' en lugar de 'endsWith'
+        socket.join('dashboardRoom');
+        
+        console.log('Un cliente desde /dashboard se ha conectado');
+
+        
+
+        socket.on('disconnect', () => {
+            console.log('Un cliente desde /dashboard se ha desconectado');
+            
+        });
+    } else {
+        console.log('Un cliente se ha conectado (no desde /dashboard)');
+    }
+});
+
+// Iniciar el servidor HTTP con sockets en el mismo puerto que Express
 server.listen(3000, PORT, () => {
   console.log('Server running on port 3000');
 });
-

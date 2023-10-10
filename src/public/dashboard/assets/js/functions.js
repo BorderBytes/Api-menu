@@ -840,6 +840,20 @@ var funcionesVista = {
 
     },
     'orders': function () {
+        const socket = io.connect(window.location.origin); // Esto se conectará a la URL actual, que debe ser '/dashboard'.
+            //setInterval(function(){
+              //  socket.emit('chat message', 1);
+            //},5000);
+            // En el archivo HTML del cliente, en el bloque de script
+            socket.on('status', (msg) => {
+                console.log(`Mensaje: ${msg}`);
+            
+                // Puedes hacer lo que desees con el número aquí
+            });
+    
+          socket.on('chat message', function(msg){
+            console.log(2);
+          });
         initOrders();
 
         // Obten el elemento de entrada de fecha por su ID
@@ -854,20 +868,6 @@ var funcionesVista = {
     }
 };
 function initOrders() {
-    // Conexión con Socket.io
-    const socket = io.connect('http://localhost:3000');
-
-    // Escuchar el evento 'updateOrders' desde el servidor.
-    socket.on('updateOrders', (data) => {
-        console.log('Evento updateOrders recibido:', data);
-        
-        if (tableInstance) {
-            console.log('Recargando datos de la tabla...');
-            tableInstance.ajax.reload(null, false); 
-        } else {
-            console.log('La instancia de la tabla aún no está disponible.');
-        }
-    });
     
 
     // No necesitas la función requestUpdatedOrders, así que la eliminamos.

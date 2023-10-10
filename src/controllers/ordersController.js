@@ -11,6 +11,11 @@ const no_data_message = null;
 
 const path = require('path');
 const fs = require('graceful-fs');
+const socketConfig = require('../config/socket.js');
+
+// Enviar actualizacion a dash cada x cambio
+//const io = socketConfig.getIO();
+//io.to('dashboardRoom').emit('status', 'controlador');
 
 exports.searchOrders = (req, res) => {
     let draw = parseInt(req.query.draw);
