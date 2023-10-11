@@ -85,3 +85,146 @@ exports.searchOrders = (req, res) => {
         });
     });
 };
+exports.getOrderById = (req, res) => {
+    let orderId = req.params.id;
+    if (!orderId) {
+        return res.status(400).json({error: 'Order ID is required'});
+    }
+
+    const startTime = performance.now();
+
+    connection.query(`SELECT orders.id, payment_methods.name AS payment_method_name, order_types.name AS order_type_name, order_statuses.id AS order_status_id, clients.name AS client_name, client_addresses.address, orders.order_date, orders.shipping_cost, orders.total_order 
+      FROM orders 
+      INNER JOIN payment_methods ON orders.payment_method_id = payment_methods.id
+      INNER JOIN order_types ON orders.order_type_id = order_types.id
+      INNER JOIN order_statuses ON orders.order_status_id = order_statuses.id
+      INNER JOIN clients ON orders.client_id = clients.id
+      INNER JOIN client_addresses ON orders.address_id = client_addresses.id
+      WHERE orders.id = ?`, [
+        orderId
+    ], async (error, results) => {
+        const executionTimeMs = Math.round(performance.now() - startTime);
+
+        if (error) {
+            console.error('Error executing the query:', error.stack);
+            return res.status(500).json({error: 'Internal server error'});
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({error: 'Order not found'});
+        }
+
+        // Getting the totalSubtotal
+        const products = await getProductsByOrderIdHelper(orderId);
+        const totalSubtotal = products.reduce((acc, product) => acc + (product.price * product.quantity), 0);
+
+        const total = totalSubtotal + results[0].shipping_cost;
+
+        res.json({
+            data: {...results[0], totalSubtotal, total},
+            executionTimeMs: executionTimeMs
+        });
+    });
+};
+
+const getProductsByOrderIdHelper = (orderId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(`
+            SELECT order_products.id, order_products.product_id, products.name AS product_name, products.image AS product_image, order_products.unit_kg, order_products.price, order_products.quantity, order_products.comments,order_products.subtotal
+            FROM order_products
+            INNER JOIN products ON order_products.product_id = products.id
+            WHERE order_products.order_id = ?`, [
+            orderId
+        ], (error, products) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(products);
+            }
+        });
+    });
+};
+
+exports.getProductsByOrderId = (req, res) => {
+    // Assuming the order ID is passed as a query parameter
+    let orderId = req.params.id;
+    if (!orderId) {
+        return res.status(400).json({error: 'Order ID is required'});
+    }
+
+    const startTime = performance.now();
+
+    getProductsByOrderIdHelper(orderId).then(products => {
+        const executionTimeMs = Math.round(performance.now() - startTime);
+
+        if (products.length === 0) {
+            return res.status(404).json({error: 'No products found for the given order ID'});
+        }
+
+        res.json({
+            data: products,
+            executionTimeMs: executionTimeMs
+        });
+    }).catch(error => {
+        console.error('Error executing the query:', error.stack);
+        return res.status(500).json({error: 'Internal server error'});
+    });
+};
+
+exports.getOrderLogsById = (req, res) => {
+    // Extracting the order ID from request parameters
+    let orderId = req.params.id;
+    if (!orderId) {
+        return res.status(400).json({error: 'Order ID is required'});
+    }
+
+    const startTime = performance.now();
+
+    connection.query(`
+      SELECT id, id_order, prev_status, new_status, date 
+      FROM order_logs 
+      WHERE id_order = ? 
+      ORDER BY date DESC`, [
+        orderId
+    ], (error, logs) => {
+        const executionTimeMs = Math.round(performance.now() - startTime);
+
+        if (error) {
+            console.error('Error executing the query:', error.stack);
+            return res.status(500).json({error: 'Internal server error'});
+        }
+
+        if (logs.length === 0) {
+            return res.status(404).json({error: 'No logs found for the given order ID'});
+        }
+
+        res.json({
+            data: logs,
+            executionTimeMs: executionTimeMs
+        });
+    });
+};
+
+exports.getAllOrderStatuses = (req, res) => {
+    const startTime = performance.now();
+
+    connection.query(`
+      SELECT * FROM order_statuses 
+      ORDER BY id DESC`, [], (error, statuses) => {
+        const executionTimeMs = Math.round(performance.now() - startTime);
+
+        if (error) {
+            console.error('Error executing the query:', error.stack);
+            return res.status(500).json({error: 'Internal server error'});
+        }
+
+        if (statuses.length === 0) {
+            return res.status(404).json({error: 'No order statuses found'});
+        }
+
+        res.json({
+            data: statuses,
+            executionTimeMs: executionTimeMs
+        });
+    });
+};

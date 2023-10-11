@@ -1,431 +1,3 @@
-let tableInstance; // Instancia de la tabla
-function cargarTabla() {
-    $('#tabla').DataTable().clear().destroy();
-    $('#tabla').DataTable({
-        dom: "lBfrtip",
-        buttons: [
-            {
-                extend: 'copy',
-                exportOptions: {
-                    columns: [0, 2, 3] // Solo exporta las columnas 0, 2, y 3
-                }
-            }, {
-                extend: 'csv',
-                exportOptions: {
-                    columns: [0, 2, 3] // Solo exporta las columnas 0, 2, y 3
-                }
-            }, {
-                extend: 'excel',
-                exportOptions: {
-                    columns: [0, 2, 3] // Solo exporta las columnas 0, 2, y 3
-                }
-            }, {
-                extend: 'print',
-                exportOptions: {
-                    columns: [0, 2, 3] // Solo exporta las columnas 0, 2, y 3
-                }
-            }
-        ],
-        "columnDefs": [
-            {
-                "targets": [0], // Columna "id"
-                "orderable": true // Permitir ordenar
-            }, {
-                "targets": [2], // Columna "name"
-                "orderable": true, // Permitir ordenar
-                "type": "string-ci" // Ignorar mayúsculas y minúsculas al ordenar
-            }, {
-                "targets": [
-                    1, 3, 4
-                ],
-                "orderable": false // Otras columnas no se pueden ordenar
-            }
-        ],
-        exportOptions: {
-            columns: [0, 2, 3] // Solo exporta las columnas 0, 1, 2, y 3
-        },
-        lengthMenu: [
-            [
-                5, 10, 25
-            ],
-            [5, 10, 25] // Opciones para mostrar número de filas por página
-        ],
-        order: [
-            [0, 'desc']
-        ], // 0 es el índice de la primera columna
-        "processing": true,
-        "serverSide": true,
-        "ajax": {
-            "url": "/categories/search",
-            "type": "GET"
-        },
-        "columns": [
-            {
-                "data": "id"
-            },
-            {
-                "data": "image",
-                "render": function (data, type, row) {
-                    return `<img  class="img-responsive w-100 br-5" style="height:100px; width:100px;" src="/images/categories/${
-                        row.image
-                    }/${
-                        row.originalImageName
-                    }" alt="${
-                        row.name
-                    }">`;
-                }
-            },
-            {
-                "data": "name"
-            },
-            {
-                "data": "status",
-                "render": function (data, type, row) {
-                    let info = '';
-                    let estado = "";
-                    if (data === 1) {
-                        info = "checked";
-                        estado = "";
-                    }
-                    return `<td >
-                            <div class="form-check form-switch d-flex justify-content-center align-items-center" style="height:100px;">
-                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchCheck1"  data-id="${
-                        row.id
-                    }" ${info}>
-                            </div>
-                        </td>`;
-                }
-            }, {
-                "data": "id",
-                "render": function (data, type, row) {
-                    return `<td>
-                <div class="dropdown" data-name="${
-                        row.name
-                    }" data-image="/images/categories/${
-                        row.image
-                    }/${
-                        row.originalImageName
-                    }" data-id="${
-                        row.id
-                    }">
-                    <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false" class="">
-                        <i class="ri-more-2-fill"></i>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1" style="">
-                        <li style="cursor:pointer;"><a class="dropdown-item" id="editar">Editar</a></li>
-                        <li><a class="dropdown-item disabled " style="pointer-events:none;"><strike>Eliminar</strike></a></li>
-                    </ul>
-                    
-                        </td>`;
-                }
-            },
-        ],
-        "drawCallback": function () {
-            const tableWrapper = document.querySelector("#tabla");
-            if (tableWrapper) {}
-
-            // Aplicar GLightbox para las imágenes dentro de la tabla
-            GLightbox({
-                selector: "#tabla img",
-                title: !1
-            });
-        }
-    });
-};
-function cargarTablaComplementos() {
-    $('#tablaAddons').DataTable().clear().destroy();
-    $('#tablaAddons').DataTable({
-        dom: "lBfrtip",
-        buttons: [
-            {
-                extend: 'copy'
-            }, {
-                extend: 'csv'
-            }, {
-                extend: 'excel'
-            }, {
-                extend: 'print'
-            }
-        ],
-        "columnDefs": [
-            {
-                "targets": [
-                    0,
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6
-                ],
-                "orderable": false // Otras columnas no se pueden ordenar
-            }
-        ],
-        lengthMenu: [
-            [
-                5, 10, 25
-            ],
-            [5, 10, 25] // Opciones para mostrar número de filas por página
-        ],
-        order: [
-            [0, 'desc']
-        ], // 0 es el índice de la primera columna
-        "processing": true,
-        "serverSide": true,
-        "ajax": {
-            "url": "/addons/search",
-            "type": "GET"
-        },
-        "columns": [
-            {
-                "data": "id"
-            },
-            {
-                "data": "name"
-            },
-            {
-                "data": "ingredients"
-            },
-            {
-                "data": "min"
-            }, {
-                "data": "max"
-            }, {
-                "data": "status",
-                "render": function (data, type, row) {
-                    let info = '';
-                    let estado = "";
-                    if (data === 1) {
-                        info = "checked";
-                        estado = "";
-                    }
-                    return `<td >
-                            <div class="form-check form-switch d-flex justify-content-center align-items-center" style="height:100px;">
-                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchCheck1"  data-id="${
-                        row.id
-                    }" ${info}>
-                            </div>
-                        </td>`;
-                }
-            }, {
-                "data": "id",
-                "render": function (data, type, row) {
-                    return `<td>
-                <div class="dropdown" data-name="${
-                        row.name
-                    }"  data-id="${
-                        row.id
-                    }">
-                    <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false" class="">
-                        <i class="ri-more-2-fill"></i>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1" style="">
-                        <li style="cursor:pointer;"><a class="dropdown-item"  data-id="${
-                        row.id
-                    }" id="editar_addon">Editar</a></li>
-                        <li><a class="dropdown-item disabled " style="pointer-events:none;"><strike>Eliminar</strike></a></li>
-                    </ul>
-                </td>`;
-                }
-            },
-        ]
-    });
-}
-function cargarTablaProductos() {
-    $('#tablaProductos').DataTable().clear().destroy();
-    $('#tablaProductos').DataTable({
-        dom: "lBfrtip",
-        buttons: [
-            {
-                extend: 'copy'
-            }, {
-                extend: 'csv'
-            }, {
-                extend: 'excel'
-            }, {
-                extend: 'print'
-            }
-        ],
-        // "columnDefs": [
-        //     {
-        //         "targets": [0,1,2,3,4,5,6],
-        //         "orderable": false // Otras columnas no se pueden ordenar
-        //     }
-        // ],
-        lengthMenu: [
-            [
-                5, 10, 25
-            ],
-            [5, 10, 25] // Opciones para mostrar número de filas por página
-        ],
-        order: [
-            [0, 'desc']
-        ], // 0 es el índice de la primera columna
-        "processing": true,
-        "serverSide": true,
-        "ajax": {
-            "url": "/products/search",
-            "type": "GET"
-        },
-        "columns": [
-            {
-                "data": "id"
-            },
-            {
-                "data": "category_id"
-            },
-            {
-                "data": "image",
-                "render": function (data, type, row) {
-                    return `<img  class="img-responsive w-100 br-5" style="height:100px; width:100px;" src="/images/products/${
-                        row.image
-                    }/${
-                        row.originalImageName
-                    }" alt="${
-                        row.name
-                    }">`;
-                }
-            },
-            {
-                "data": "name"
-            }, {
-                "data": "description"
-            }, {
-                "data": "preparation_time"
-            }, {
-                "data": "price"
-            }, {
-                "data": "price_per_kg"
-            }, {
-                "data": "status",
-                "render": function (data, type, row) {
-                    let info = '';
-                    let estado = "";
-                    if (data === 1) {
-                        info = "checked";
-                        estado = "";
-                    }
-                    return `<td>
-                            <div class="form-check form-switch d-flex justify-content-center align-items-center" style="height:100px;">
-                                <input class="form-check-input" type="checkbox" role="switch" id="SwitchCheck1"  data-id="${
-                        row.id
-                    }" ${info}>
-                            </div>
-                        </td>`;
-                }
-            }, {
-                "data": "id",
-                "render": function (data, type, row) {
-                    return `<td>
-                <div class="dropdown" data-name="${
-                        row.name
-                    }"  data-id="${
-                        row.id
-                    }">
-                    <a href="#" role="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false" class="">
-                        <i class="ri-more-2-fill"></i>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1" style="">
-                        <li style="cursor:pointer;"><a class="dropdown-item"  data-id="${
-                        row.id
-                    }" id="editar_producto">Editar</a></li>
-                        <li><a class="dropdown-item disabled " style="pointer-events:none;"><strike>Eliminar</strike></a></li>
-                    </ul>
-                </td>`;
-                }
-            },
-        ],
-        "drawCallback": function () {
-            const tableWrapper = document.querySelector("#tablaProductos");
-            if (tableWrapper) {}
-
-            // Aplicar GLightbox para las imágenes dentro de la tabla
-            GLightbox({
-                selector: "#tablaProductos img",
-                title: !1
-            });
-        }
-    });
-}
-function cargarTablaOrdenes() {
-    if (!tableInstance) {
-    tableInstance = $('#orderTable').DataTable().clear().destroy();
-    $('#orderTable').DataTable({
-        "lengthChange": false,
-        "searching": false,
-        "processing": true,
-        "serverSide": true,
-        "ajax": {
-            "url": "/orders/search",
-            "type": "GET"
-        },
-        columns: [
-            {
-                "data": "id",
-                "render": function (data, type, row) {
-                    return '<div class="form-check"><input class="form-check-input" type="checkbox" id="checkAll" value="option"></div>';
-                }
-            },
-            {
-                'data': 'id',
-                "render": function (data, row, type) {
-                    return '<a href="apps-ecommerce-order-details.html" class="fw-medium link-primary">#VZ12</a>';
-                }
-            },
-            {
-                data: 'payment_method_name'
-            },
-            {
-                data: 'order_type_name'
-            }, {
-                data: 'order_status_id',
-                "render": function(data,type,row){
-                    return estadoOrden(data);
-                }
-            }, {
-                data: 'client_name'
-            }, {
-                data: 'address'
-            }, {
-                data: 'order_date',
-                "render": function (data, type, row) {
-                    date = data;
-                    let fecha = new Date(date);
-                    return formatDateToCustomFormat(fecha);
-
-                }
-            }, {
-                data: 'shipping_cost'
-            }, {
-                data: 'total_order'
-            }, {
-                "data": "id",
-                "render": function (data, type, row) {
-                    return `<ul class="list-inline hstack gap-2 mb-0">
-                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" aria-label="View" data-bs-original-title="View">
-                        <a href="apps-ecommerce-order-details.html" class="text-primary d-inline-block">
-                            <i class="ri-eye-fill fs-16"></i>
-                        </a>
-                    </li>
-                    <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" aria-label="Edit" data-bs-original-title="Edit">
-                        <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn">
-                            <i class="ri-pencil-fill fs-16"></i>
-                        </a>
-                    </li>
-                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" aria-label="Remove" data-bs-original-title="Remove">
-                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
-                            <i class="ri-delete-bin-5-fill fs-16"></i>
-                        </a>
-                    </li>
-                </ul>`;
-                }
-            }
-        ]
-    });
-    } else {
-        tableInstance.ajax.reload(null, false); // Recarga los datos sin cambiar de página.
-    }
-}
 function formatDateToCustomFormat(date) {
     const monthNames = [
         "Ene",
@@ -580,6 +152,10 @@ function obtenerVistaDeURL() {
     }
     return 'main'; // Retorna 'inicio' como vista por defecto si no se encuentra otra vista en la URL o si está vacía
 }
+function obtenerIdDeURL() {
+    const parametrosURL = new URLSearchParams(window.location.search);
+    return parametrosURL.get('orderId');
+}
 
 // Función para cambiar la URL sin recargar la página
 function cambiarURL(url) {
@@ -592,281 +168,6 @@ function cargarScript(url, callback) {
     document.head.appendChild(script);
 }
 
-var funcionesVista = {
-    'main': function () {
-        charts();
-    },
-    'categories': function () {
-        // Registrar plugins
-        // Registrar plugins
-        FilePond.registerPlugin(FilePondPluginFileEncode, FilePondPluginFileValidateSize, FilePondPluginImageExifOrientation, FilePondPluginImagePreview,);
-
-        // Crear instancia FilePond
-        FilePond.create(document.querySelector('.filepond'), {storeAsFile: true});
-        cargarTabla();
-
-
-    },
-    'products': function () {
-        cargarTablaProductos();
-        // Registrar plugins
-        FilePond.registerPlugin(FilePondPluginFileEncode, FilePondPluginFileValidateSize, FilePondPluginImageExifOrientation, FilePondPluginImagePreview,);
-
-        // Crear instancia FilePond
-        FilePond.create(document.querySelector('.filepond'), {storeAsFile: true});
-        iniciarInputs();
-
-    },
-    'files': function () {
-        $.ajax({
-            type: "GET",
-            url: "/images/total",
-            success: function (response) {
-                let mb = bytesTo(response.grandTotalSize);
-                let mbBd = bytesTo(response.dbSize);
-                console.log(response.dbSize);
-                let percentage = calcPercentage(response.grandTotalSize, 104857600);
-                $('#file_progress1').css('width', percentage + '%');
-                let total = parseInt(mb + mbBd);
-                $('#size_files').text(mb);
-                $('#size_bd').text(mbBd);
-                $('#actual_mb').text(total);
-                let files = '';
-                let folders = response.foldersInfo;
-                let bdSize = response.dbSize;
-                console.log(folders);
-                for (let i = 0; i < folders.length; i++) {
-                    let name = folders[i].folder;
-                    let size = bytesTo(folders[i].size);
-                    let totalFiles = folders[i].totalFiles;
-                    files += `
-                        <div class="col-xxl-3 col-6 folder-card">
-                            <div class="card bg-light shadow-none" id="folder-1">
-                                <div class="card-body">
-                                    <div class="d-flex mb-1">
-                                        <div class="form-check form-check-danger mb-3 fs-15 flex-grow-1">
-                                            <input class="form-check-input" type="checkbox" value="" id="folderlistCheckbox_1" >
-                                            <label class="form-check-label" for="folderlistCheckbox_1"></label>
-                                        </div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-ghost-primary btn-icon btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="ri-more-2-fill fs-16 align-bottom"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item view-item-btn" href="javascript:void(0);">Open</a></li>
-                                                <li><a class="dropdown-item edit-folder-list" href="#createFolderModal" data-bs-toggle="modal" role="button">Rename</a></li>
-                                                <li><a class="dropdown-item" href="#removeFolderModal" data-bs-toggle="modal" role="button">Delete</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-
-                                    <div class="text-center">
-                                        <div class="mb-2">
-                                            <i class="ri-folder-2-fill align-bottom text-warning display-5"></i>
-                                        </div>
-                                        <h6 class="fs-15 folder-name">${name}</h6>
-                                    </div>
-                                    <div class="hstack mt-4 text-muted">
-                                        <span class="me-auto"><b>${totalFiles}</b> Files</span>
-                                        <span><b>${size}</b></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        `;
-                }
-                $('#folderlist-data').html(files);
-            }
-        });
-    },
-    'update': function () {
-        $.ajax({
-            type: "GET", // Cambia "type" a GET si deseas realizar una solicitud GET
-            url: "/git/git-history",
-            success: function (response) {
-                let table = '<table>';
-                response.forEach(function (item) {
-                    let inicials = getInitials(item.author.name);
-                    let time = timeAgo(new Date(item.date));
-                    table += `
-                  <tr>
-                    <td><button class="btn btn-success btn-sm" onclick="copyToClipboard()"><i class="mdi mdi-content-copy"></i></button> <a class="fw-medium">${
-                        item.hash
-                    }</a>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-start">
-                            <div class="flex-shrink-0 me-3">
-                                <div>
-                                    <div class="avatar-title bg-success-subtle text-success rounded-circle p-2">
-                                        ${inicials}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex-grow-1 overflow-hidden">
-                                <h5 class="contact-name fs-13 mb-1"><a href="#" class="link text-body">${
-                        item.author.name
-                    }</a></h5>
-                                <p class="contact-born text-muted mb-0"> ${
-                        item.author.email
-                    }</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>${
-                        item.message
-                    }</td>
-                    <td>${time}</td>
-                    <td><button type="button" class="btn btn-warning btn-label waves-effect waves-light"><i class="ri-error-warning-line label-icon align-middle fs-16 me-2"></i> Restaurar</button></td>
-                  </tr>`;
-                });
-
-                table += '</table>';
-
-                $('#update_body').html(table);
-            }
-        });
-
-    },
-    'addons': function () {
-        cargarTablaComplementos();
-    },
-    'profile': function () {
-        $(document).on('input', '#name', function () {
-            $('#title_name').html($(this).val());
-        })
-        $.ajax({
-            type: "GET",
-            url: "/business",
-            success: function (response) {
-                $('#name').val(response.name);
-                $('#title_name').html(response.name);
-                $('#image_profile').attr('src', `/images/business/${
-                    response.image
-                }/${
-                    response.originalFileName
-                }`);
-                $('#cover_image').attr('src', `/images/business/${
-                    response.image_cover
-                }/${
-                    response.originalCoverFileName
-                }`);
-                $('#phone').val(response.phone);
-            }
-        });
-        $.ajax({
-            type: "GET",
-            url: "/business/directions",
-            success: function (response) {
-                $('#address').val(response.address);
-                $('#latitude').val(response.latitude);
-                $('#longitude').val(response.longitude);
-            }
-        });
-        $.ajax({
-            type: "GET",
-            url: "/business/schedules",
-            success: function (response) {
-                let data = response.data;
-                let combinedHTML = ""; // Aquí vamos a ir acumulando el HTML
-
-                data.forEach((schedule, index) => { // Check if the schedule day is selected
-                    let dayOptions = [
-                        '0',
-                        '1',
-                        '2',
-                        '3',
-                        '4',
-                        '5',
-                        '6'
-                    ].map(day => {
-                        return `<option value="${day}" ${
-                            day == schedule.day ? 'selected' : ''
-                        }>${
-                            [
-                                'Domingo',
-                                'Lunes',
-                                'Martes',
-                                'Miércoles',
-                                'Jueves',
-                                'Viernes',
-                                'Sábado'
-                            ][day]
-                        }</option>`;
-                    }).join('');
-
-                    let deleteButtonHTML = index === 0 ? "" : `
-                        <div class="mt-2">
-                            <button type="button" class="btn btn-danger">-</button>
-                        </div>
-                    `;
-
-                    combinedHTML += `<div class="row justify-content-center d-flex align-items-center">
-                        <div class="col-lg-4">
-                            <div class="mb-3">
-                                <label for="day" class="form-label">Día</label>
-                                <select name="day" class="form-control">
-                                    ${dayOptions}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="mb-3">
-                                <label for="open_hour" class="form-label">Apertura</label>
-                                <input name="open_hour" class="form-control" type="time" value="${
-                        schedule.open_hour
-                    }">
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div class="mb-3">
-                                <label for="close_hour" class="form-label">Cierre</label>
-                                <input name="close_hour" class="form-control" type="time" value="${
-                        schedule.close_hour
-                    }">
-                            </div>
-                        </div>
-                        <div class="col-lg-2">
-                        ${deleteButtonHTML}
-                        </div>
-                    </div>`;
-                });
-
-                // Ahora, puedes agregar el combinedHTML a algún contenedor de tu página. Por ejemplo:
-                $('#elements').html(combinedHTML);
-            }
-        });
-
-    },
-    'orders': function () {
-        const socket = io.connect(window.location.origin); // Esto se conectará a la URL actual, que debe ser '/dashboard'.
-            //setInterval(function(){
-              //  socket.emit('chat message', 1);
-            //},5000);
-            // En el archivo HTML del cliente, en el bloque de script
-            socket.on('status', (msg) => {
-                console.log(`Mensaje: ${msg}`);
-            
-                // Puedes hacer lo que desees con el número aquí
-            });
-    
-          socket.on('chat message', function(msg){
-            console.log(2);
-          });
-        initOrders();
-
-        // Obten el elemento de entrada de fecha por su ID
-        const fechaInput = document.getElementById("fecha_orden_select");
-
-        // Inicializa Flatpickr
-        flatpickr(fechaInput, {
-            dateFormat: "Y-m-d",
-            // Formato de fecha deseado (puedes ajustarlo según tus necesidades)
-            // Otras opciones personalizadas aquí...
-        });
-    }
-};
 function initOrders() {
     
 
@@ -1101,4 +402,66 @@ function cargarImagen(IMAGE_URL) { // Obtener el blob de la imagen a partir de l
 
 function resetButtonsForm() {
     $('[type="submit"]').html('Crear registro');
+}
+// Función para obtener los detalles del pedido basado en el ID proporcionado
+function obtenerDetallesDelPedido(orderId) {
+    $.ajax({
+        type: "GET",
+        url: `/orders/${orderId}`,
+        success: function (response) {
+            let data = response.data;
+
+            // Mostrar detalles del pedido
+            $('#id_orden').text(data.id);
+            $('#costo_envio').text(data.shipping_cost);
+            $('#subtotal').text(data.totalSubtotal);
+            $('#total_orden').text(data.total);
+        },
+        error: function (error) {
+            console.error("Error al obtener los detalles del pedido:", error);
+        }
+    });
+}
+
+// Función para obtener y mostrar los productos asociados con un ID de pedido dado
+function obtenerProductosDelPedido(orderId) {
+    $.ajax({
+        type: "GET",
+        url: `/orders/products/${orderId}/`,
+        success: function (response) {
+            let contenidoHtml = construirHtmlProductos(response.data);
+            $('#productos_orden').prepend(contenidoHtml);
+        },
+        error: function (error) {
+            console.error("Error al obtener los productos del pedido:", error);
+        }
+    });
+}
+
+// Función auxiliar para generar el HTML de los productos basado en los datos proporcionados
+function construirHtmlProductos(productos) {
+    let html = '';
+    $.each(productos, function (i, producto) { 
+        html += `
+        <tr>
+            <td>
+                <div class="d-flex">
+                    <div class="flex-shrink-0 avatar-md bg-light rounded p-1">
+                        <img src="/images/products/${producto.product_image}/small.webp" alt="${producto.product_name}" class="img-fluid d-block">
+                    </div>
+                    <div class="d-flex align-items-center ms-3">
+                        <h5 class="fs-15">
+                            <a href="apps-ecommerce-product-details.html" class="link-primary">${producto.product_name}</a>
+                        </h5>
+                    </div>
+                </div>
+            </td>
+            <td>$${producto.price}</td>
+            <td>${producto.quantity}</td>
+            <td>${producto.comments}</td>
+            <td class="fw-medium text-end">$${producto.subtotal}</td>
+        </tr>
+        `;
+    });
+    return html;
 }
