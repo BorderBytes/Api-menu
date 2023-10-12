@@ -66,8 +66,8 @@ app.use('/auth', authRoutes);
 app.use('/business', businessRoutes);
 app.use('/orders', ordersRoutes);
 
-// Ruta para servir recursos para la plantilla de panel
-app.use('/assets', express.static(path.join(__dirname, 'public/panel/assets')));
+// Ruta para los assets de app
+app.use('/app/assets', express.static(path.join(__dirname, 'public/app/assets')));
 
 // Ruta para assets del dashboard
 app.use('/dashboard/assets', express.static(path.join(__dirname, 'public/dashboard/assets')));

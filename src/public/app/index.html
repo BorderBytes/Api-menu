@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="assets/estilos.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <body>
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-brand mx-auto">MiRestaurante</div>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-bell"></i></a>
+                    </li>
+                </ul>                
+            </nav>
+            <div class="input-group mt-3">
+                <input class="form-control search-input" type="search" placeholder="¿Qué quieres comer?" aria-label="Search">
+                <div class="input-group-append">
+                    <button class="btn filter-btn" type="button"><i class="fas fa-sliders-h"></i></button>
+                </div>
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            
+            
+            <div class="mt-4">
+                <h4>Categorias</h4>
+                <div class="d-flex justify-content-between">
+                    <div class="card">
+                        <img class="card-img-top" src="https://via.placeholder.com/400x300" alt="Pizza">
+                        <div class="card-body text-center">
+                            <p class="card-text">Pizza</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img class="card-img-top" src="https://via.placeholder.com/400x300" alt="Pizza">
+                        <div class="card-body text-center">
+                            <p class="card-text">Hamburguesas</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img class="card-img-top" src="https://via.placeholder.com/400x300" alt="Pizza">
+                        <div class="card-body text-center">
+                            <p class="card-text">Ensalada</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="mt-4">
+                <h4><i class="fas fa-fire"></i> Productos populares</h4>
+                <div class="card">
+                    <img class="card-img-top" src="https://via.placeholder.com/400x300" alt="Pizza">
+                    <div class="card-body">
+                        <h5 class="card-title">Combo 3 hamburguesas individuales</h5>
+                        <p class="card-text">Disfruta de nuestra selección especial con el Combo 3 Hamburguesas Individuales. Tres sabores únicos que satisfarán tus antojos.</p>
+                        <p class="card-text">MXN $240.00</p>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <img class="card-img-top" src="https://via.placeholder.com/400x300" alt="Pizza">
+                    <div class="card-body">
+                        <h5 class="card-title">Combo 10 boneless + salsa</h5>
+                        <p class="card-text">Diez boneless crujientes acompañados de nuestra salsa especial diaria. Perfecto para un antojo rápido y delicioso.</p>
+                        <p class="card-text">MXN $240.00</p>
+                    </div>
+                </div>
+            
+                <div class="card mt-3">
+                    <img class="card-img-top" src="https://via.placeholder.com/400x300" alt="Pizza">
+                    <div class="card-body">
+                        <h5 class="card-title">Pizza GRANDE de 4 ingredientes</h5>
+                        <p class="card-text">Pizza de tamaño grande con tu elección de cuatro ingredientes frescos. Una combinación perfecta para saborear en cada rebanada.</p>
+                        <p class="card-text">MXN $99.00</p>
+                    </div>
+                </div>
+            
+                <div class="fixed-footer">
+                    <div class="footer-content">
+                        <div class="footer-text">
+                            <p>1 Producto</p>
+                            <h4>$399.00</h4>
+                        </div>
+                        <button class="btn footer-btn">Ver carrito</button>
+                    </div>
+                </div>
+                              
+            </div>
+</body>
+<style>
+        body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+}
+
+.container {
+    padding: 20px;
+    max-width: 600px; /* Establecer según el ancho que desees para móviles */
+}
+
+/* Navbar */
+.navbar {
+    background-color: #F7F7F7; /* Gris claro */
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.navbar-brand {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.nav-item a {
+    font-size: 20px;
+    color: #B1B1B1; /* Color gris para los íconos */
+}
+
+.nav-item a:hover {
+    color: #929292; /* Un gris un poco más oscuro para el hover */
+}
+
+/* Input de búsqueda */
+.input-group .btn {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.input-group .btn i {
+    color: #B1B1B1;
+}
+
+
+.form-control {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card img.card-img-top {
+    width: 100%;
+    height: 150px; /* Puede ajustar según el tamaño deseado */
+    object-fit: cover;
+}
+
+.card-body h5 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.card-text {
+    color: #777;
+}
+
+.card:not(:last-child) {
+    margin-bottom: 20px;
+}
+
+.btn {
+    border-radius: 20px;
+}
+
+.btn-dark {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Añade espacio entre las tarjetas de categorías */
+.d-flex .card:not(:last-child) {
+    margin-right: 15px; /* Antes estaba en 10px, lo aumentamos un poco */
+}
+
+/* Estilo para las imágenes de las tarjetas */
+.card img.card-img-top {
+    height: 180px; /* Antes estaba en 150px, lo aumentamos para darle más altura */
+}
+
+/* Ajustes para el cuerpo de las tarjetas */
+.card-body {
+    padding: 10px 15px; /* Añadir más padding para separar el contenido de los bordes de la tarjeta */
+}
+
+/* Espaciado general */
+.mt-3, .mt-4 {
+    margin-top: 20px !important; 
+}
+
+/* Tarjetas de categorías */
+.d-flex .card:not(:last-child) {
+    margin-right: 20px; /* Aumenta el margen entre las tarjetas */
+}
+
+/* Imágenes de tarjetas */
+.card img.card-img-top {
+    height: 120px; /* Disminuye el tamaño para que se vean más proporcionadas */
+}
+
+/* Tarjetas de productos populares */
+.card {
+    margin-bottom: 20px; /* Añade más espacio entre tarjetas */
+}
+
+/* Cuerpo de las tarjetas */
+.card-body {
+    padding: 15px 20px; /* Aumenta el padding para separar el contenido de los bordes */
+}
+
+/* Título de productos populares */
+.card-body h5 {
+    font-size: 16px; /* Reduce el tamaño de la fuente */
+    margin-bottom: 10px; /* Añade un espacio entre el título y la descripción */
+}
+/* Input de búsqueda con ícono dentro */
+.search-input {
+    padding-right: 40px; /* Espacio para el ícono de lupa */
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    right: 60px; /* Ajusta según la posición del ícono */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #B1B1B1;
+    pointer-events: none; /* Para que el ícono no interfiera con los clics */
+}
+
+/* Botón de filtro */
+.filter-btn {
+    background-color: #333;
+    color: #fff;
+}
+
+.filter-btn:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+/* Color de texto del título */
+.navbar-brand {
+    color: #333; /* Un gris oscuro para el título */
+}
+.fixed-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff; 
+    z-index: 1000; 
+    padding: 10px 20px; 
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-text p, .footer-text h4 {
+    margin: 0;
+    font-weight: normal;
+    color: #333; 
+}
+
+/* Botón */
+.footer-btn {
+    background-color: #333; /* Color oscuro */
+    color: #fff;
+    border: none;
+    padding: 8px 30px; /* Mayor padding para que se vea más amplio */
+    border-radius: 25px; /* Bordes más redondeados */
+    font-weight: bold;
+    font-size: 18px; /* Texto un poco más grande */
+}
+
+.footer-btn:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+/* Textos */
+.footer-text p {
+    margin: 0;
+    font-weight: normal;
+    color: #aaa;  /* Gris más claro */
+    font-size: 14px; /* Texto más pequeño */
+}
+
+.footer-text h4 {
+    margin: 0;
+    font-weight: bold;
+    color: #111; /* Gris casi negro */
+    font-size: 24px; /* Texto más grande */
+}
+
+/* Fondo */
+.fixed-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f6f6f6; /* Color de fondo más claro */
+    z-index: 1000;
+    padding: 15px 30px; /* Ajustes de padding */
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.05); /* Sombra sutil en la parte superior */
+}
+
+
+</style>
+<!-- Bootstrap JS and jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</html>

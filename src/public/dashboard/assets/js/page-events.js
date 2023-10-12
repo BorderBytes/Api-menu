@@ -280,7 +280,7 @@ var funcionesVista = {
         obtenerProductosDelPedido(idPedido);
         // Asumiendo que $ representa jQuery y que ha sido importado en tu proyecto
         // Obtener logs y status desde el servidor
-const getLogs = $.get("/orders/logs/1"); // Cambia a la ruta real de tu servidor para logs
+const getLogs = $.get(`/orders/logs/${idPedido}`); // Cambia a la ruta real de tu servidor para logs
 const getStatus = $.get("/orders/status"); // Cambia a la ruta real de tu servidor para el status
 
 $.when(getLogs, getStatus)
