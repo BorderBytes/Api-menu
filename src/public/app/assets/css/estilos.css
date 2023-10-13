@@ -1,0 +1,414 @@
+:root {
+    --bs-primary: #000000 !important;             /* Color primario base */
+    --bs-primary-hover: #1a1a1a !important;      /* Color primario al pasar el mouse */
+    --bs-primary-active: #333333 !important;     /* Color primario cuando está activo (por ejemplo, al hacer clic) */
+    --bs-primary-focus: #4d4d4d !important;      /* Color de borde al enfocarse (por ejemplo, al hacer tabulación) */
+}
+/* Fuente regular */
+@font-face {
+    font-family: 'regular';  /* nombre arbitrario para la fuente */
+    src: url('/app/assets/fonts/regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+/* Fuente  bold*/
+@font-face {
+    font-family: 'bold';  /* nombre arbitrario para la fuente */
+    src: url('/app/assets/fonts/bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+/* Fuente  black*/
+@font-face {
+    font-family: 'black';  /* nombre arbitrario para la fuente */
+    src: url('/app/assets/fonts/black.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+body {
+    font-family: 'regular';
+    background-color: #f5f5f5;
+}
+.bold{
+    font-family: bold;
+}
+.black{
+    font-family: black;
+}
+.title_page{
+    font-size: 1.6em;
+}
+.container {
+    padding: 20px;
+    max-width: 600px; /* Establecer según el ancho que desees para móviles */
+}
+
+/* Navbar */
+.navbar {
+    background-color: #F7F7F7; /* Gris claro */
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.navbar-brand {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.nav-item a {
+    font-size: 20px;
+    color: #B1B1B1; /* Color gris para los íconos */
+}
+
+.nav-item a:hover {
+    color: #929292; /* Un gris un poco más oscuro para el hover */
+}
+
+
+
+.form-control {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card img.card-img-top {
+    width: 100%;
+    height: 150px; /* Puede ajustar según el tamaño deseado */
+    object-fit: cover;
+}
+
+.card-body h5 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.card-text {
+    color: #777;
+}
+
+.card:not(:last-child) {
+    margin-bottom: 20px;
+}
+
+
+/* Añade espacio entre las tarjetas de categorías */
+.d-flex .card:not(:last-child) {
+    margin-right: 15px; /* Antes estaba en 10px, lo aumentamos un poco */
+}
+
+/* Estilo para las imágenes de las tarjetas */
+.card img.card-img-top {
+    height: 180px; /* Antes estaba en 150px, lo aumentamos para darle más altura */
+}
+
+/* Ajustes para el cuerpo de las tarjetas */
+.card-body {
+    padding: 10px 15px; /* Añadir más padding para separar el contenido de los bordes de la tarjeta */
+}
+
+/* Espaciado general */
+.mt-3, .mt-4 {
+    margin-top: 20px !important; 
+}
+
+/* Tarjetas de categorías */
+.d-flex .card:not(:last-child) {
+    margin-right: 20px; /* Aumenta el margen entre las tarjetas */
+}
+
+/* Imágenes de tarjetas */
+.card img.card-img-top {
+    height: 120px; /* Disminuye el tamaño para que se vean más proporcionadas */
+}
+
+/* Tarjetas de productos populares */
+.card {
+    margin-bottom: 20px; /* Añade más espacio entre tarjetas */
+}
+
+/* Cuerpo de las tarjetas */
+.card-body {
+    padding: 15px 20px; /* Aumenta el padding para separar el contenido de los bordes */
+}
+
+/* Título de productos populares */
+.card-body h5 {
+    font-size: 16px; /* Reduce el tamaño de la fuente */
+    margin-bottom: 10px; /* Añade un espacio entre el título y la descripción */
+}
+/* Input de búsqueda con ícono dentro */
+.search-input {
+    padding-right: 40px; /* Espacio para el ícono de lupa */
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #B1B1B1;
+    pointer-events: none;
+}
+
+/* Botón de filtro */
+.filter-btn {
+    background-color: #333;
+    color: #fff;
+}
+
+.filter-btn:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+/* Color de texto del título */
+.navbar-brand {
+    color: #333; /* Un gris oscuro para el título */
+}
+.fixed-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff; 
+    z-index: 1000; 
+    padding: 10px 20px; 
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-text p, .footer-text h4 {
+    margin: 0;
+    font-weight: normal;
+    color: #333; 
+}
+
+/* Botón */
+.footer-btn {
+    background-color: #333; /* Color oscuro */
+    color: #fff;
+    border: none;
+    padding: 8px 30px; /* Mayor padding para que se vea más amplio */
+    border-radius: 25px; /* Bordes más redondeados */
+    font-weight: bold;
+    font-size: 18px; /* Texto un poco más grande */
+}
+
+.footer-btn:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+/* Textos */
+.footer-text p {
+    margin: 0;
+    font-weight: normal;
+    color: #aaa;  /* Gris más claro */
+    font-size: 14px; /* Texto más pequeño */
+}
+
+.footer-text h4 {
+    margin: 0;
+    font-weight: bold;
+    color: #111; /* Gris casi negro */
+    font-size: 24px; /* Texto más grande */
+}
+
+/* Fondo */
+.fixed-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f6f6f6; /* Color de fondo más claro */
+    z-index: 1000;
+    padding: 15px 30px; /* Ajustes de padding */
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.05); /* Sombra sutil en la parte superior */
+}
+.fixed-navbar {
+    position: fixed;
+    top: 0;  /* Fijado en la parte superior */
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05); /* Sombra sutil en la parte inferior */
+}
+.fixed-top-group{
+    position: fixed;
+    top: 0;  /* Fijado en la parte superior */
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #f6f6f6;
+}
+.padding-after-fixed{
+    padding-top: 130px;  /* Ajusta según el alto combinado de tu navbar y input-group */
+}
+.padding-after-fixed-bottom{
+    padding-bottom: 80px;
+}
+.padding-fixed{
+    padding-bottom: 80px;
+}
+.fixed-footer, .fixed-top-group {
+    transition: transform 0.3s ease; /* Ajusta la duración según lo que consideres "minimalista" */
+}
+.card-category{
+    position: relative;
+    height: 100px;
+    width: 200px;
+}
+.image-category{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+}
+.text-category {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center;     /* Centrar verticalmente */
+    font-size: 1.3em;
+    color: white;
+}
+
+.layer-black{
+    background-color: #0000007d;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.search-input{
+    background-color: #F7F8FC;   
+        padding-left: 20px;
+}
+.view-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100vh; /* Asume que quieres una vista de altura completa, ajusta si es necesario */
+}
+
+.view {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease; /* Animación minimalista */
+}
+
+.view-1 {
+    left: 0;
+    transform: translateX(0);
+}
+
+.view-2 {
+    left: 100%; /* Inicialmente fuera de la vista */
+    transform: translateX(0);
+}
+.scrollable-content {
+    max-height: calc(100vh);  /* Ajusta este valor según la altura que desees */
+    overflow-y: auto;
+    padding-right: 0;  /* Espacio para el scrollbar */
+    scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer / Edge */
+}
+.scrollable-content::-webkit-scrollbar {
+    width: 0;
+    display: none;
+  }
+  .product-detail {
+    font-family: Arial, sans-serif;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.product-image img {
+    width: 100%;
+    max-height: calc(100vh / 3);
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 20px 0;
+}
+
+.product-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.product-description {
+    font-size: 16px;
+    line-height: 1.5;
+}
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;  /* Asegúrate de que sea un contenedor flex */
+    flex-direction: column; /* Organiza los elementos hijos en una columna */
+}
+
+.card-img-left {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    object-fit: cover;
+    width: 100%; /* Asegurarse de que la imagen cubra todo el ancho */
+    max-height: 200px;
+}
+
+.card-body {
+    padding: 10px 15px; 
+}
+
+
+
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.card-text {
+    color: #777;
+}
+.desc-category{
+    font-size: .8em;
+}
+#categorias_content {
+    display: flex;
+    overflow-x: auto;
+}
+
+.card-category {
+    flex: 0 0 auto; /* Esto garantiza que el elemento no crezca ni se encoja, y se mantenga en su tamaño automático */
+    margin-right: 15px; 
+}
+
+.card-category:last-child {
+    margin-right: 0; /* Eliminar el margen del último elemento */
+}

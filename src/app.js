@@ -41,7 +41,7 @@ app.use(express.json());
 // Middleware para servir archivos estáticos desde 'public/'
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
-// Rutas específicas
+// Rutas Dashboard (proteger)
 const categoriesRoutes = require('./routes/categoriesRoutes');
 const clientsRoutes = require('./routes/clientsRoutes');
 const usersRoutes = require('./routes/usersRoutes');
@@ -66,6 +66,9 @@ app.use('/auth', authRoutes);
 app.use('/business', businessRoutes);
 app.use('/orders', ordersRoutes);
 
+// Rutas publicas
+const publicRoutes = require('./routes/public/publicRoutes');
+app.use('/public', publicRoutes);
 // Ruta para los assets de app
 app.use('/app/assets', express.static(path.join(__dirname, 'public/app/assets')));
 
