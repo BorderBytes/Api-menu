@@ -39,8 +39,11 @@ body {
     font-size: 1.6em;
 }
 .container {
-    padding: 20px;
-    max-width: 600px; /* Establecer según el ancho que desees para móviles */
+    /* Toda la pantalla*/
+    width: 100%;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
 }
 
 /* Navbar */
@@ -342,7 +345,6 @@ body {
     color: #333;
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
 }
 
 .product-image img {

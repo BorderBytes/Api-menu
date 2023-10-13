@@ -19,6 +19,23 @@ $(document).ready(function () {
             });
         }
     });
+    $(document).on('click', '[data-product]', function () {
+        const category = $(this).data('product');
+        $.ajax({
+            type: "GET",
+            url: `/public/products/${category}`,
+            success: function (response) {
+                $('#image_product').attr('src', `/images/products/${response.data.image}/big.webp`);
+                $('#name_product').text(response.data.name);
+                $('#desc_product').text(response.data.description);
+                // Change view to 2
+                $('.view-1').css('transform', 'translateX(-100%)');
+                $('.view-2').css('transform', 'translateX(-100%)');
+                $('.view-container').attr('data-step', '2');
+                $('.fixed-top-group').hide();
+            }
+        });
+    });
 });
 
 function buildCard(category) {
@@ -32,7 +49,7 @@ function buildCard(category) {
 }
 function buildCardProduct(product){
     return `
-        <div class="card mt-3">
+        <div class="card mt-3" data-product="${product.id}">
             <div class="row no-gutters ">
                 <div class="col-md-4">
                     <img src="/images/products/${product.image}/medium.webp" alt="${product.name}" class="card-img card-img-left">

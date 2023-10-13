@@ -5,7 +5,6 @@ $(document).ready(function () {
     // Cambiar el selector para escuchar el evento de scroll en el contenedor específico
 $('#scrollable-content').on('scroll', function () {
     let st = $(this).scrollTop();
-    console.log(st);
     // Si el usuario está desplazándose hacia abajo y ha desplazado más de 50px
     if (st > lastScrollTop && st > 50) { // Ocultar el .fixed-top-group deslizándolo hacia arriba
       $('.fixed-top-group').css('transform', 'translateY(-60%)');
