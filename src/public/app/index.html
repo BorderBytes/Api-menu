@@ -15,10 +15,10 @@
 
     <body>
         <div class="container">
-            <div class="view-container " data-step="1">
-                <div class="view view-1 ">
+            <div class="view-container">
+                <div class="view view-1" data-step="0" data-ref="/">
                     <div class="fixed-top-group">
-                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light p-20">
                             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
@@ -30,54 +30,70 @@
                                 </li>
                             </ul>
                         </nav>
-                        <div class="input-group mt-3 mb-2">
+                        <div class="input-group p-20">
                             <input class="form-control search-input" type="search" placeholder="¿A donde lo enviamos?"
                                 aria-label="Search">
                             <div class="input-group-append">
-                                <button class="btn btn-primary" type="button"><i class="fas fa-location"></i></button>
+                                <button class="btn btn-dark" type="button"><i class="fas fa-location"></i></button>
                             </div>
                         </div>
                     </div>
-                    <div class="scrollable-content" id="scrollable-content">
+                    <div class="scrollable-content p-20 mt-5" id="scrollable-content">
                     <div class=" padding-after-fixed">
-                        <h4>Categorias</h4>
+                        <h4 class="bold">Categorias</h4>
                         <div class="d-flex" id="categorias_content"></div>
                     </div>
 
-                    <div class="padding-after-fixed-bottom">
-                        <h4><i class="fas fa-fire"></i> Productos populares</h4>
-                        <span id="productos_container"></span>
+                    <div class="padding-after-fixed-bottom mt-3">
+                        <h4 class="bold">Productos populares</h4>
+                        <span id="productos_container">
+                        </span>
                         
                         
                         
                     </div>
                     </div>
-                </div>
-                <div class="view view-2">
-                    <div class="product-detail">
-                        <!-- Imagen del producto -->
-                        <div class="product-image">
-                            <img id="image_product" src="" alt="">
-                        </div>
-                        
-                        <!-- Información del producto -->
-                        <div class="product-info">
-                            <h2 class="product-title" id="name_product"></h2>
-                            <p class="product-description" id="desc_product"></p>
+                    <div class="fixed-footer">
+                        <div class="footer-content">
+                            <div class="footer-text">
+                                <p>Sin productos</p>
+                                <h4>$0.00</h4>
+                            </div>
+                            <button class="btn footer-btn">Ver carrito</button>
                         </div>
                     </div>
-                    
                 </div>
-            </div>
-            <div class="fixed-footer">
-                <div class="footer-content">
-                    <div class="footer-text">
-                        <p>1 Producto</p>
-                        <h4>$399.00</h4>
+                <div class="view view-2" data-step="1" data-ref="/productos">
+                    <div class="product-detail" id="product-detail">
+                        <div class="skeleton-loader">
+                            <div class="skeleton-img"></div>
+                            <div class="skeleton-title"></div>
+                            <div class="skeleton-description small"></div>
+                            <div class="skeleton-description"></div>
+                            <div class="skeleton-description"></div>
+                            <div class="skeleton-description"></div>
+                            <div class="skeleton-description"></div>
+                            <div class="skeleton-description short"></div>
+                        </div>
                     </div>
-                    <button class="btn footer-btn">Ver carrito</button>
+                    <div class="fixed-footer">
+                <div class="row d-flex justify-content-between align-items-center">
+                    <div class="col-5">
+                        <div class="modificar_producto w-100">
+                            <button class="btn btn-light btn-sm col-4" id="decrease"><i class="fas fa-minus"></i></button>
+                            <span id="quantity" class="cantidad_producto col-4">1</span>
+                            <button class="btn btn-light btn-sm col-4" id="increase"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <button class="btn footer-btn w-100">Agregar</button>
+                    </div>
                 </div>
             </div>
+                </div>
+            </div>
+            
+            
             <button id="toggleView" class="d-none">Cambiar Vista</button>
     </body>
     <!-- Bootstrap JS and jQuery -->
@@ -85,6 +101,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-    <script src="/app/assets/js/view.js"></script>
-    <script src="/app/assets/js/main.js"></script>
+        <script src="/app/assets/js/scroll.js"></script>
+        <script src="/app/assets/js/view.js"></script>
+        <script src="/app/assets/js/cart.js"></script>
+        <script src="/app/assets/js/main.js"></script>
 </html>

@@ -69,38 +69,60 @@ exports.getCategories = (req, res) => {
         res.json({data: results, executionTimeMs: executionTimeMs});
     });
 };
-exports.getProductById = (req, res) => {
-    const startTime = performance.now();
+exports.getProductById = async (req, res) => {
+    try {
+        const startTime = performance.now();
 
-    connection.query('SELECT * FROM products WHERE id = ?', [req.params.id], (error, results) => {
-        const executionTimeMs = Math.round(performance.now() - startTime);
+        const productResults = await query('SELECT * FROM products WHERE id = ?', [req.params.id]);
 
-        if (error) {
-            console.error('Error al ejecutar la consulta:', error.stack);
-            return res.status(500).json({error: 'Error interno del servidor'});
-        }
-
-        if (results.length === 0) {
+        if (productResults.length === 0) {
             return res.status(404).json({error: 'Producto no encontrado'});
         }
 
-        const product = results[0];
+        const product = productResults[0];
         const imageName = product.image;
         const productPath = path.join(__dirname, '..', 'public', 'images', 'products', imageName);
 
         if (fs.existsSync(productPath)) {
             const files = fs.readdirSync(productPath);
             const originalFile = files.find(file => file.startsWith('original.'));
-
-            if (originalFile) {
-                product.originalImageName = originalFile;
-            } else {
-                product.originalImageName = null;
-            }
+            product.originalImageName = originalFile || null;
         } else {
             product.originalImageName = null;
         }
 
+        const addons = await query(`
+            SELECT a.id, a.name, a.min, a.max, a.status
+            FROM product_addons pa
+            JOIN addons a ON pa.addon_id = a.id
+            WHERE pa.product_id = ?`, [req.params.id]);
+
+        const detailsPromises = addons.map(async addon => {
+            const details = await query(`
+                SELECT ad.id, ad.name, ad.price, ad.status
+                FROM addon_details ad
+                WHERE ad.addon_id = ?`, [addon.id]);
+            addon.detalle = details;
+        });
+
+        await Promise.all(detailsPromises);
+
+        product.addons = addons;
+
+        const executionTimeMs = Math.round(performance.now() - startTime);
         res.json({data: product, executionTimeMs: executionTimeMs});
+
+    } catch (error) {
+        console.error('Error:', error.stack);
+        res.status(500).json({error: 'Error interno del servidor'});
+    }
+}
+
+function query(sql, params) {
+    return new Promise((resolve, reject) => {
+        connection.query(sql, params, (error, results) => {
+            if (error) reject(error);
+            else resolve(results);
+        });
     });
 }

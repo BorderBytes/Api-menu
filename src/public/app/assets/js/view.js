@@ -1,43 +1,73 @@
-$(document).ready(function () {
-    let lastScrollTop = 0;
-    let scrollTimer;
+function adjustView(targetStep) {
+  let views = $('.view-container .view');
 
-    // Cambiar el selector para escuchar el evento de scroll en el contenedor específico
-$('#scrollable-content').on('scroll', function () {
-    let st = $(this).scrollTop();
-    // Si el usuario está desplazándose hacia abajo y ha desplazado más de 50px
-    if (st > lastScrollTop && st > 50) { // Ocultar el .fixed-top-group deslizándolo hacia arriba
-      $('.fixed-top-group').css('transform', 'translateY(-60%)');
-      // Ocultar el .fixed-footer deslizándolo hacia abajo
-      $('.fixed-footer').css('transform', 'translateY(100%)');
-    } else { // Mostrar el .fixed-top-group deslizándolo hacia abajo
-      $('.fixed-top-group').css('transform', 'translateY(0)');
-      // Mostrar el .fixed-footer deslizándolo hacia arriba
-      $('.fixed-footer').css('transform', 'translateY(0)');
-    }
-    lastScrollTop = st;
-  
-    // Detectar cuando el scroll se detiene
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(function () { // Mostrar el .fixed-top-group deslizándolo hacia abajo
-      $('.fixed-top-group').css('transform', 'translateY(0)');
-      // Mostrar el .fixed-footer deslizándolo hacia arriba
-      $('.fixed-footer').css('transform', 'translateY(0)');
-    }, 500); // Tiempo en milisegundos para esperar antes de determinar que el desplazamiento se ha detenido
+  views.each(function () {
+      let view = $(this);
+      let step = view.attr('data-step');
+
+      if (step === targetStep) {
+          if (step !== "0") {
+              view.css('transform', 'translateX(-100%)');
+          }
+      } else if (step !== "0") {
+          view.css('transform', 'translateX(0)');
+      }
   });
-    $('#toggleView').on('click', function () {
-        let container = $('.view-container');
-        let currentStep = container.attr('data-step');
 
-        if (currentStep === "1") { // Cambiar a la vista 2
-            $('.view-1').css('transform', 'translateX(-100%)');
-            $('.view-2').css('transform', 'translateX(-100%)');
-            container.attr('data-step', '2');
-            $('.fixed-top-group').hide();
-        } else { // Regresar a la vista 1
-            $('.view-1').css('transform', 'translateX(0)');
-            $('.view-2').css('transform', 'translateX(0)');
-            container.attr('data-step', '1');
-        }
-    });
+  let matchedView = $(`.view[data-step="${targetStep}"]`);
+  if (matchedView.length) {
+      history.replaceState({ step: targetStep }, "", matchedView.attr('data-ref'));
+  }
+}
+
+function handleViewChange(element) {
+  let targetStep = $(element).attr('data-change');
+  let targetView = $(`.view[data-step="${targetStep}"]`);
+
+  if (targetView.length) {
+      history.pushState({ step: targetStep }, "", targetView.attr('data-ref'));
+      adjustView(targetStep);
+  }
+}
+
+function toggleViewByUrl() {
+  let currentURL = window.location.pathname;
+  let targetView = $(`.view[data-ref="${currentURL}"]`);
+
+  if (targetView.length) {
+      adjustView(targetView.attr('data-step'));
+  }
+}
+$(document).ready(function () {
+
+  // Controlador de evento para [data-change]
+  $(document).on('click', '[data-change]', function () {
+      handleViewChange(this);
+  });
+
+  
+
+  // Controlador de evento para popstate
+  $(window).on('popstate', function (e) {
+      if (e.originalEvent.state && e.originalEvent.state.step) {
+          adjustView(e.originalEvent.state.step);
+      }
+  });
+
+  var initialHeight = $('#image_product').height();
+    
+  $('.product-detail').scroll(function(){
+      var scroll = $(this).scrollTop();
+      
+      var newHeight = initialHeight - scroll;
+      if (newHeight >= 100) {  // 100px es el mínimo
+          $('#image_product').css('max-height', newHeight + 'px');
+      } else {
+          $('#image_product').css('max-height', '100px');  // Se establece el mínimo en 100px
+      }
+  });
+  // Establecer la vista inicial basada en la URL
+  toggleViewByUrl();
+
 });
+
