@@ -26,11 +26,11 @@
                             <div class="navbar-brand mx-auto bold title_page">MiRestaurante</div>
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#"><i class="fas fa-bell"></i></a>
+                                    <a class="nav-link" id="full_screen"><i class="fa-solid fa-expand"></i></a>
                                 </li>
                             </ul>
                         </nav>
-                        <div class="input-group p-20">
+                        <div class="input-group p-20" data-change="2">
                             <input class="form-control search-input" type="search" placeholder="¿A donde lo enviamos?"
                                 aria-label="Search">
                             <div class="input-group-append">
@@ -53,15 +53,15 @@
                         
                     </div>
                     </div>
-                    <div class="fixed-footer">
+                    <div class="fixed-footer d-none" id="footer_total">
                         <div class="footer-content">
                             <div class="footer-text">
-                                <p>Sin productos</p>
-                                <h4>$0.00</h4>
+                                <p id="total-num-products">Sin productos</p>
+                                <h4>$ <span id="total-price-products">0.00</span></h4>
                             </div>
                             <button class="btn footer-btn">Ver carrito</button>
                         </div>
-                    </div>
+                            </div>
                 </div>
                 <div class="view view-2" data-step="1" data-ref="/productos">
                     <div class="product-detail" id="product-detail">
@@ -91,6 +91,47 @@
                 </div>
             </div>
                 </div>
+                <!-- Vista mapa direccion -->
+                <div class="view view-3" data-step="2" data-ref="/direccion">
+                    <div class="row" style="height:100vh;">
+                        <div class="col-md-12">
+                            <div id="map" style="width: 100%; height: 100%;"></div>
+                            <input type="text" id="address-input" class="form-control" placeholder="Escribe la dirección" style="position: absolute; top: 5%; left: 50%; transform: translate(-50%, -50%); width: 90%;" />
+                        </div>
+                        <div class="modal-slide-up hide-modal" id="modal_direction">
+                            <div class="modal-content">
+                                <div class="modal-line my-3">
+                                    <div class="icon-container">
+                                        <i class="fa-regular fa-clock text-gray"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray">Tiempo de entrega estimado</span><br>
+                                        <span class="text-black">30 minutos</span>
+                                    </div>
+                                </div>
+                                <div class="modal-line my-3">
+                                    <div class="icon-container">
+                                        <i class="fa-solid fa-location-crosshairs text-gray"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray">Dirección de entrega</span><br>
+                                        <span class="text-black" id="direccion_entrega_label"></span>
+                                    </div>
+                                </div>
+                                <div class="modal-buttons mt-3 d-flex justify-content-between align-items-center">
+                                    <div class="col-6">
+                                        <button class="btn btn-dark w-100">Continuar</button>
+                                    </div>
+                                    <div class="col-5">
+                                        <button class="btn btn-light w-100" id="cancelar_direccion_modal">Editar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
             </div>
             
             
@@ -104,5 +145,6 @@
         <script src="/app/assets/js/scroll.js"></script>
         <script src="/app/assets/js/view.js"></script>
         <script src="/app/assets/js/cart.js"></script>
+        <script src="/app/assets/js/map.js"></script>
         <script src="/app/assets/js/main.js"></script>
 </html>

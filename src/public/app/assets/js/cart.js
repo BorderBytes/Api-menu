@@ -12,10 +12,10 @@ class ShoppingCart {
     }
 
     addItem(item) {
-        // Calculate the individual subtotal for the product
-        item.subTotal = item.price * item.quantity;
-        item.numberOfIngredients = item.extras ? item.extras.length : 0; // Assuming extras is an array
-        
+        // Calculate the individual subtotal for the product including extras
+        const extrasTotal = item.extras.reduce((acc, extra) => acc + extra.price, 0); // Sum of all extras' prices
+        item.subTotal = (item.price + extrasTotal) * item.quantity;
+
         this.items.push(item);
         this.calculateTotal();
     }
@@ -23,6 +23,9 @@ class ShoppingCart {
     calculateTotal() {
         this.total = this.items.reduce((acc, item) => acc + item.subTotal, 0);
     }
+    getTotalQuantity() {
+        return this.items.reduce((acc, item) => acc + item.quantity, 0);
+    }    
 }
 
 // Instancia del carrito
@@ -38,10 +41,15 @@ $(document).ready(function () {
             imgSrc: productContainer.find("#image_product").attr("src"),
             price: parseFloat(productContainer.find("#precio_producto").text()),
             quantity: parseInt(productContainer.find("#quantity").text()) || 1,
-            extras: gatherExtras(productContainer) // Assume this is a function that returns an array of selected extras
+            extras: gatherExtras(productContainer) // Gather the selected extras
         };
 
         cartInstance.addItem(product);
+        updateDataCantAttribute(product.id, product.quantity); // Updating the data-cant attribute
+        // Hacemos back a la página anterior
+        window.history.back();
+        updateDOMTotals();
+        updateFooterDisplay();
         console.log(cartInstance);
     });
 
@@ -124,10 +132,47 @@ function gatherExtras(container) {
     const extras = [];
     container.find(".form-check-input:checked").each(function () {
         const extra = {
+            id: $(this).data("id"),
             name: $(this).data("name"), // Assuming you have a data-name attribute
             price: extractPriceFromCheckbox($(this), container)
         };
         extras.push(extra);
     });
     return extras;
+}
+// SRP: Update the data-cant attribute for the product with the given id
+function updateDataCantAttribute(productId, addedQuantity) {
+    const productElement = $(`[data-product="${productId}"]`);
+
+    // If the product element exists
+    if(productElement.length > 0) {
+        let currentQuantity = productElement.data("cant") || 0; // Getting the current quantity from the data-cant attribute. If it doesn't exist, default to 0.
+        let newQuantity = currentQuantity + addedQuantity; // Adding the new quantity
+        
+        productElement.attr("data-cant", newQuantity); // Updating the data-cant attribute with the new quantity
+    }
+    $('#quantity').text(1);
+}
+// SRP: Update the total number of products and total price in the DOM
+function updateDOMTotals() {
+    // Update total number of products
+    const totalQuantity = cartInstance.getTotalQuantity();
+    if(totalQuantity === 0) {
+        $("#total-num-products").text("Sin productos");
+    } else {
+        $("#total-num-products").text(`${totalQuantity} productos`);
+    }
+
+    // Update total price of products
+    $("#total-price-products").text(cartInstance.total.toFixed(2));
+}
+// SRP: Update the display of the footer based on the number of products in the cart
+function updateFooterDisplay() {
+    const totalProducts = cartInstance.getTotalQuantity();
+
+    if (totalProducts > 0) {
+        $("#footer_total").removeClass("d-none");
+    } else {
+        $("#footer_total").addClass("d-none");
+    }
 }

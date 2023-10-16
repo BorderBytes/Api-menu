@@ -95,6 +95,15 @@ app.get('/productos', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/app/index.html'));
 });
 
+// Ruta para "direccion/" seguido de cualquier número de parámetros
+app.get('/direccion/:params+', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/app/index.html'));
+});
+// Ruta para productos sin parámetros
+app.get('/direccion', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/app/index.html'));
+});
+
 // Ruta para "producto/" seguido de cualquier número de parámetros
 app.get('/producto/:params+', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/app/index.html'));

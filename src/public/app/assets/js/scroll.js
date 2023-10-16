@@ -1,5 +1,5 @@
 function cargarScrollImagen(){
-  var initialHeight = 300;  // Lo almacenamos como número para facilitar los cálculos
+  var initialHeight = 400;  // Lo almacenamos como número para facilitar los cálculos
   
   $('.product-detail').scroll(function(){
       var scroll = $(this).scrollTop();

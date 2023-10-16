@@ -1,4 +1,21 @@
 $(document).ready(function () {
+    document.getElementById("full_screen").addEventListener("click", function() {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().then(changeIcon);
+        } else {
+          document.documentElement.requestFullscreen().then(changeIcon);
+        }
+      });
+      
+      function changeIcon() {
+        const btn = document.getElementById("full_screen");
+        if (document.fullscreenElement) {
+          btn.innerHTML = `<i class="fa-solid fa-compress"></i>`; // ícono para salir de pantalla completa
+        } else {
+          btn.innerHTML = `<i class="fa-solid fa-expand"></i>`; // ícono para pantalla completa
+        }
+      }
+      
     $.ajax({
         type: "GET",
         url: "/public/categories",
@@ -58,6 +75,13 @@ $(document).ready(function () {
             }
         });
     });
+    $(document).on('click', '.search-input', function () {
+        loadGoogleMapsAPI().then(() => {
+            initMap();
+        }).catch(err => {
+            console.error("Error al cargar Google Maps API: ", err);
+        });
+    });
     function crearElementoProducto(image, name, description, price, addons,id_product) {
         let addonHTML = '';
     
@@ -73,7 +97,7 @@ $(document).ready(function () {
                                 </div>
                                 <div class="col-2 text-right">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="checkbox_${detalle.id}">
+                                        <input class="form-check-input" type="checkbox" data-name="${detalle.name}" data-id="${detalle.id}" id="checkbox_${detalle.id}">
                                         <label class="form-check-label" for="checkbox_${detalle.id}"></label>
                                     </div>
                                 </div>

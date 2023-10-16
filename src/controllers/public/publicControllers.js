@@ -126,3 +126,18 @@ function query(sql, params) {
         });
     });
 }
+
+exports.getBusinessLocation = (req, res) => {
+    const startTime = performance.now();
+
+    connection.query('SELECT latitude,longitude FROM configuration', (error, results) => {
+        const executionTimeMs = Math.round(performance.now() - startTime);
+
+        if (error) {
+            console.error('Error al ejecutar la consulta:', error.stack);
+            return res.status(500).json({error: 'Error interno del servidor'});
+        }
+
+        res.json({data: results, executionTimeMs: executionTimeMs});
+    });
+}

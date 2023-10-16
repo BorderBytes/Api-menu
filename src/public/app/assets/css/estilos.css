@@ -331,6 +331,10 @@ body {
     left: 100%; /* Inicialmente fuera de la vista */
     transform: translateX(0);
 }
+.view-3 {
+    left: 100%; /* Inicialmente fuera de la vista */
+    transform: translateX(0);
+}
 .scrollable-content {
     max-height: calc(100vh);  /* Ajusta este valor según la altura que desees */
     overflow-y: auto;
@@ -349,7 +353,9 @@ body {
     margin: 0 auto;
     height: 100%;
 }
-
+.product-image{
+    max-height: 400px;
+}
 .product-image img {
     width: 100%;
     height: calc(100vh / 2);
@@ -464,7 +470,8 @@ body {
 
 .skeleton-img {
     width: 100%;
-    height: calc(100vh / 2);
+    height: 400px;
+    max-height: 400px;
     border-radius: 8px;
     margin-bottom: 10px;
 }
@@ -541,7 +548,8 @@ h3 .toggle-icon {
     width: 100%;
     height: auto;
     transition: max-height 0.3s ease-out;
-    max-height: 400px;  /* Puedes ajustar este valor según necesites */
+    height: 400px;  /* Puedes ajustar este valor según necesites */
+    max-height: 400px;
 }
 
 .product-info {
@@ -556,4 +564,108 @@ h3 .toggle-icon {
     position: relative;
     z-index: 1;
     padding-bottom: 200px !important;
+}
+/* Estilo base para el div */
+[data-cant] {
+    position: relative; /* Esto permite que los elementos absolutamente posicionados dentro de este div se relacionen con él */
+}
+
+/* Estilo para el número en la esquina */
+[data-cant]::before {
+    content: attr(data-cant); /* Asume que tienes un atributo personalizado en el div llamado "data-qty" que contiene el número */
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #298929;
+    color: white; /* Color del número */
+    padding: 5px 15px; /* Espacio alrededor del número */
+    border-bottom-left-radius: 15px; /* Redondeo para que se vea bien en la esquina */
+    font-weight: bold;
+    z-index: 1;
+}
+
+/* Estilos adicionales para asegurarte de que el número sea siempre visible */
+[data-cant]::before {
+    white-space: nowrap; /* Asegura que el número no se envuelva a la línea siguiente */
+    text-align: center; /* Centra el número horizontalmente */
+}
+#address-input {
+    border-radius: 20px;
+    padding: 10px 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.btn-light{
+    border: .5px solid #dcdcdc;
+}
+.modal-slide-up {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0;
+    transform: translateY(0%);
+    transition: transform 0.3s ease-in-out;
+}
+.hide-modal{
+    transform: translateY(100%) !important;
+}
+.modal-content {
+    background: #fff;
+    padding: 30px 40px 20px 30px;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.icon-container {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.icon-container::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 2px;
+    height: calc(100% + 10px);
+    background: linear-gradient(to bottom, green, rgba(0,255,0,0.5), rgba(0,255,0,0.2));
+    z-index: -1;
+}
+
+.text-gray {
+    color: gray;
+}
+
+.text-black {
+    color: black;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-continue, .btn-edit {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-continue {
+    background: green;
+    color: white;
+}
+
+.btn-edit {
+    background: #f2f2f2;
 }
