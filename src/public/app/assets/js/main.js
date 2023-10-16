@@ -51,14 +51,14 @@ $(document).ready(function () {
                     let description = response.data.description;
                     let price = response.data.price;
                     let addon_array = response.data.addons;
-                    let html = crearElementoProducto(image, name, description, price,addon_array);
+                    let html = crearElementoProducto(image, name, description, price,addon_array,id_product);
                     $('#product-detail').html(html);
                     cargarScrollImagen();
                 }, 800);
             }
         });
     });
-    function crearElementoProducto(image, name, description, price, addons) {
+    function crearElementoProducto(image, name, description, price, addons,id_product) {
         let addonHTML = '';
     
         if (addons && addons.length > 0) {
@@ -100,8 +100,8 @@ $(document).ready(function () {
             <div class="product-image">
                 <img id="image_product" src="/images/products/${image}/big.webp" alt="${name}">
             </div>
-            <div class="product-info py-3 mt-3">
-                <div class="badge bg-custom mb-2"><i class="fa-solid fa-dollar-sign"></i> <span class="ml-2">25,00</span></div>
+            <div class="product-info py-3 mt-3" data-id="${id_product}">
+                <div class="badge bg-custom mb-2"><i class="fa-solid fa-dollar-sign"></i> <span class="ml-2" id="precio_producto">${price}</span></div>
                 <div class="badge bg-custom mb-2"><i class="fas fa-clock"></i> <span class="ml-2">30 min</span></div>
                 <h2 class="product-title" id="name_product">${name}</h2>
                 <p class="product-description pb-2" id="desc_product">${description}</p>
