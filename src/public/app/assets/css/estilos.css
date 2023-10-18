@@ -335,6 +335,10 @@ body {
     left: 100%; /* Inicialmente fuera de la vista */
     transform: translateX(0);
 }
+.view-4 {
+    left: 100%;
+    transform: translateX(0);
+}
 .scrollable-content {
     max-height: calc(100vh);  /* Ajusta este valor según la altura que desees */
     overflow-y: auto;
@@ -668,4 +672,147 @@ h3 .toggle-icon {
 
 .btn-edit {
     background: #f2f2f2;
+}
+/* Estilos generales para el contenedor móvil */
+.mobile-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    height: 400px;
+    overflow-y: scroll;
+}
+.bottom-checkout{
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    left: 0;
+    padding: 0 20px 0 20px;
+}
+/* Encabezado del carrito */
+.cart-title {
+    font-weight: bold;
+}
+
+.back-btn,
+.remove-btn {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+/* Estilos para los productos */
+.product-item {
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 15px;
+}
+
+.product-img img {
+    width: 50px;
+    height: auto;
+}
+
+.product-details h6 {
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.product-details p {
+    margin-bottom: 10px;
+    font-size: 0.8em;
+}
+
+.quantity-control .qty-input {
+    width: 40px;
+    text-align: center;
+    border: 1px solid #e5e5e5;
+    margin: 0 5px;
+}
+
+.product-price {
+    font-weight: bold;
+}
+
+/* Sección del código promocional */
+.promo-code-input {
+    flex: 1;
+    padding: 5px 10px;
+    border: 1px solid #e5e5e5;
+}
+
+.apply-btn {
+    padding: 5px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+/* Resumen del total */
+.total-summary .summary-label {
+    font-size: 0.9em;
+}
+
+.total-summary .summary-value {
+    font-weight: bold;
+}
+
+/* Botón de pago */
+.proceed-btn {
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+.card {
+    position: relative; 
+    cursor: pointer;
+    transition: all 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* Añadimos transiciones suaves para varios elementos */
+    padding: 20px; 
+    border: 1px solid transparent; 
+}
+
+.card:hover {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.icon-circular {
+    background-color: #FFF6ED;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px auto; 
+}
+
+.icon-circular i {
+    font-size: 24px;
+}
+
+/* Estilo para la card activa */
+.card.active {
+    background-color: #FAFAFA; 
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15); 
+    border-color: #FF953F; 
+}
+
+.card.active:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 25px;
+    height: 4px;
+    background-color: #FF953F;
+    border-radius: 2px;
+    transition: width 0.3s ease, height 0.3s ease; /* Animación suave para el indicador inferior */
 }

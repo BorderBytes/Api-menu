@@ -84,7 +84,7 @@ function initMap() {
 
     let centerIcon = {
         url: '/images/map-icon/1/marker.png',
-        scaledSize: new google.maps.Size(60, 60)
+        scaledSize: new google.maps.Size(90, 90)
     };
     
     markerA = new google.maps.Marker({
@@ -139,7 +139,7 @@ function geocodeAndRoute(geocoder, resultsMap) {
                                     map: map,
                                     icon: {
                                         url: '/images/map-icon/1/marker.png',  // Asume que este es el camino a tu ícono
-                                        scaledSize: new google.maps.Size(60, 60) 
+                                        scaledSize: new google.maps.Size(90, 90) 
                                     }
                                 });
                             } else {
@@ -154,7 +154,7 @@ function geocodeAndRoute(geocoder, resultsMap) {
                                 map: map,
                                 icon: {
                                     url: '/images/map-icon/1/user.png',  // Cambia esto al camino de tu ícono de tienda/local
-                                    scaledSize: new google.maps.Size(60, 60) 
+                                    scaledSize: new google.maps.Size(90, 90) 
                                 }
                             });                          
                         } else {

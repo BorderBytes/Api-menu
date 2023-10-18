@@ -1,67 +1,66 @@
 <!DOCTYPE html>
 <html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="/app/assets/css/estilos.css" rel="stylesheet">
-</head>
-
-<body>
-
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tienda</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+        <link href="/app/assets/css/estilos.css" rel="stylesheet">
+    </head>
+    <body></body>
     <body>
         <div class="container">
             <div class="view-container">
                 <div class="view view-1" data-step="0" data-ref="/">
                     <div class="fixed-top-group">
                         <nav class="navbar navbar-expand-lg navbar-light bg-light p-20">
-                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div class="navbar-brand mx-auto bold title_page">MiRestaurante</div>
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link" id="full_screen"><i class="fa-solid fa-expand"></i></a>
+                                    <a class="nav-link" id="full_screen">
+                                        <i class="fa-solid fa-expand"></i>
+                                    </a>
                                 </li>
                             </ul>
                         </nav>
                         <div class="input-group p-20" data-change="2">
-                            <input class="form-control search-input" type="search" placeholder="¿A donde lo enviamos?"
-                                aria-label="Search">
+                            <input class="form-control search-input" type="search" placeholder="¿A donde lo enviamos?" aria-label="Search">
                             <div class="input-group-append">
-                                <button class="btn btn-dark" type="button"><i class="fas fa-location"></i></button>
+                                <button class="btn btn-dark" type="button">
+                                    <i class="fas fa-location"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="scrollable-content p-20 mt-5" id="scrollable-content">
-                    <div class=" padding-after-fixed">
-                        <h4 class="bold">Categorias</h4>
-                        <div class="d-flex" id="categorias_content"></div>
-                    </div>
+                        <div class=" padding-after-fixed">
+                            <h4 class="bold">Categorias</h4>
+                            <div class="d-flex" id="categorias_content"></div>
+                        </div>
 
-                    <div class="padding-after-fixed-bottom mt-3">
-                        <h4 class="bold">Productos populares</h4>
-                        <span id="productos_container">
-                        </span>
-                        
-                        
-                        
-                    </div>
+                        <div class="padding-after-fixed-bottom mt-3">
+                            <h4 class="bold">Productos populares</h4>
+                            <span id="productos_container"></span>
+
+
+                        </div>
                     </div>
                     <div class="fixed-footer d-none" id="footer_total">
                         <div class="footer-content">
                             <div class="footer-text">
                                 <p id="total-num-products">Sin productos</p>
-                                <h4>$ <span id="total-price-products">0.00</span></h4>
+                                <h4>$
+                                    <span id="total-price-products">0.00</span>
+                                </h4>
                             </div>
-                            <button class="btn footer-btn">Ver carrito</button>
+                            <button class="btn footer-btn" data-change="3">Ver carrito</button>
                         </div>
-                            </div>
+                    </div>
                 </div>
                 <div class="view view-2" data-step="1" data-ref="/productos">
                     <div class="product-detail" id="product-detail">
@@ -77,26 +76,30 @@
                         </div>
                     </div>
                     <div class="fixed-footer">
-                <div class="row d-flex justify-content-between align-items-center">
-                    <div class="col-5">
-                        <div class="modificar_producto w-100">
-                            <button class="btn btn-light btn-sm col-4" id="decrease"><i class="fas fa-minus"></i></button>
-                            <span id="quantity" class="cantidad_producto col-4">1</span>
-                            <button class="btn btn-light btn-sm col-4" id="increase"><i class="fas fa-plus"></i></button>
+                        <div class="row d-flex justify-content-between align-items-center">
+                            <div class="col-5">
+                                <div class="modificar_producto w-100">
+                                    <button class="btn btn-light btn-sm col-4" id="decrease">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span id="quantity" class="cantidad_producto col-4">1</span>
+                                    <button class="btn btn-light btn-sm col-4" id="increase">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <button class="btn footer-btn w-100" id="agregar_producto">Agregar</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-7">
-                        <button class="btn footer-btn w-100" id="agregar_producto">Agregar</button>
-                    </div>
-                </div>
-            </div>
                 </div>
                 <!-- Vista mapa direccion -->
                 <div class="view view-3" data-step="2" data-ref="/direccion">
                     <div class="row" style="height:100vh;">
                         <div class="col-md-12">
                             <div id="map" style="width: 100%; height: 100%;"></div>
-                            <input type="text" id="address-input" class="form-control" placeholder="Escribe la dirección" style="position: absolute; top: 5%; left: 50%; transform: translate(-50%, -50%); width: 90%;" />
+                            <input type="text" id="address-input" class="form-control" placeholder="Escribe la dirección" style="position: absolute; top: 5%; left: 50%; transform: translate(-50%, -50%); width: 90%;"/>
                         </div>
                         <div class="modal-slide-up hide-modal" id="modal_direction">
                             <div class="modal-content">
@@ -128,23 +131,145 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        
+
+
+                    </div>
+                </div>
+                <div class="view view-4" data-step="3" data-ref="/cart">
+                    <!-- Parte 1 -->
+                    <div
+                        class="mobile-container">
+
+                        <!-- Encabezado -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <a href="#" class="back-btn">
+                                <i class="fa fa-arrow-left"></i>
+                                Back</a>
+                            <span class="cart-title">My Cart</span>
+                            <a href="#" class="remove-btn">Remove 3</a>
+                        </div>
+
+                        <!-- Primer producto -->
+                        <div class="product-item d-flex justify-content-between align-items-center mb-3">
+                            <div class="col-4">
+                                <div class="product-img">
+                                    <img src="https://via.placeholder.com/50" alt="Modelo Especial" class="img-fluid">
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="product-details">
+                                    <h6>Modelo Especial</h6>
+                                    <p>Size: 35.5 cl/355ml</p>
+                                    <div class="quantity-control d-flex align-items-center">
+                                        <button class="decrease-qty">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                        <input type="text" value="01" class="qty-input">
+                                        <button class="increase-qty">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <span class="product-price">$3.55</span>
+                            </div>
+                            
+                        </div>
+
+                        <div class="bottom-checkout">
+                            <!-- Campo de código promocional -->
+                            <div class="promo-code-section d-flex justify-content-between align-items-center mb-4">
+                                <input type="text" placeholder="Promo Code" class="promo-code-input">
+                                <button class="apply-btn">Apply</button>
+                            </div>
+                            <!-- Resumen del total -->
+                            <div class="total-summary d-flex justify-content-between align-items-center mb-3">
+                                <span class="summary-label">Sub Total:</span>
+                                <span class="summary-value">$10.93</span>
+                            </div>
+                            <div class="total-summary d-flex justify-content-between align-items-center mb-3">
+                                <span class="summary-label">Shipping:</span>
+                                <span class="summary-value">$2.99</span>
+                            </div>
+                            <div class="total-summary d-flex justify-content-between align-items-center mb-4">
+                                <span class="summary-label">Total (2 items):</span>
+                                <span class="summary-value">$13.92</span>
+                            </div>
+
+                            <!-- Botón para proceder al pago -->
+                            <div class="checkout-section">
+                                <button class="proceed-btn" data-change="4">Proceed To Checkout</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="view view-5" data-step="4" data-ref="/checkout">
+                    <div
+                        class="mobile-container">
+
+                        <!-- Encabezado -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <a href="#" class="back-btn">
+                                <i class="fa fa-arrow-left"></i>
+                                Back</a>
+                            <span class="cart-title">Pagar</span>
+                            <a href="#" class="remove-btn">cerrar</a>
+                        </div>
+
+                        <!-- Primer producto -->
+                        <div class="card d-flex justify-content-center align-items-center row active">
+                            <div class="col-12">
+                                <div class="icon-circular">
+                                    <i class="fa-solid fa-dollar-sign" style="color:#FF953F;"></i>
+                                </div>
+                            </div>
+                            <div class="col-12 text-center my-2">
+                                <h4>Pago en efectivo</h4>
+                            </div>
+                        </div>
+
+                        <div class="bottom-checkout">
+                            <!-- Campo de código promocional -->
+                            <div class="promo-code-section d-flex justify-content-between align-items-center mb-4">
+                                <input type="text" placeholder="Promo Code" class="promo-code-input">
+                                <button class="apply-btn">Apply</button>
+                            </div>
+                            <!-- Resumen del total -->
+                            <div class="total-summary d-flex justify-content-between align-items-center mb-3">
+                                <span class="summary-label">Sub Total:</span>
+                                <span class="summary-value">$10.93</span>
+                            </div>
+                            <div class="total-summary d-flex justify-content-between align-items-center mb-3">
+                                <span class="summary-label">Shipping:</span>
+                                <span class="summary-value">$2.99</span>
+                            </div>
+                            <div class="total-summary d-flex justify-content-between align-items-center mb-4">
+                                <span class="summary-label">Total (2 items):</span>
+                                <span class="summary-value">$13.92</span>
+                            </div>
+
+                            <!-- Botón para proceder al pago -->
+                            <div class="checkout-section">
+                                <button class="proceed-btn" data-change="4">Proceed To Checkout</button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
-            
-            
-            <button id="toggleView" class="d-none">Cambiar Vista</button>
-    </body>
-    <!-- Bootstrap JS and jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
+
+
+        </body>
+        <!-- Bootstrap JS and jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
         <script src="/app/assets/js/scroll.js"></script>
         <script src="/app/assets/js/view.js"></script>
         <script src="/app/assets/js/cart.js"></script>
         <script src="/app/assets/js/map.js"></script>
         <script src="/app/assets/js/main.js"></script>
+    </body>
 </html>
