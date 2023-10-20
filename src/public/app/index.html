@@ -219,24 +219,33 @@
                             <a href="#" class="remove-btn">cerrar</a>
                         </div>
 
-                        <!-- Primer producto -->
-                        <div class="card d-flex justify-content-center align-items-center row active">
-                            <div class="col-12">
-                                <div class="icon-circular">
-                                    <i class="fa-solid fa-dollar-sign" style="color:#FF953F;"></i>
+                        <div class="container_price">
+                            <div class="total_preview loader-container ">
+                                <svg width="100%" height="100%" viewBox="0 0 100 100">
+                                    <!-- Círculo de fondo siempre visible -->
+                                    <circle class="circular-bg" cx="50" cy="50" r="48"></circle>  <!-- Nota el cambio en el valor de r -->
+                                    <!-- Círculo de progresión -->
+                                    <circle class="circular-progress" cx="50" cy="50" r="48"></circle>
+                                </svg>
+                                <div class="tt_preview">
+                                    Total
                                 </div>
-                            </div>
-                            <div class="col-12 text-center my-2">
-                                <h4>Pago en efectivo</h4>
+                                <span id="total_preview">
+                                    <span class="integers">$170</span><span div class="decimals">.32</span>
+                                </span>
+                                <div class="payment_method">
+                                    <i class="fa-solid fa-dollar-sign"></i> Pago en efectivo 
+                                </div>
+                                <span id="change"><i class="fa-solid fa-pen"></i> Cambiar</span>
+                                <div class="loading_text">
+                                    Procesando pago...
+                                    <span>Por favor, espere mientras se procesa su transacción.</span>
+                                </div>
                             </div>
                         </div>
 
                         <div class="bottom-checkout">
-                            <!-- Campo de código promocional -->
-                            <div class="promo-code-section d-flex justify-content-between align-items-center mb-4">
-                                <input type="text" placeholder="Promo Code" class="promo-code-input">
-                                <button class="apply-btn">Apply</button>
-                            </div>
+                            
                             <!-- Resumen del total -->
                             <div class="total-summary d-flex justify-content-between align-items-center mb-3">
                                 <span class="summary-label">Sub Total:</span>
@@ -253,7 +262,7 @@
 
                             <!-- Botón para proceder al pago -->
                             <div class="checkout-section">
-                                <button class="proceed-btn" data-change="4">Proceed To Checkout</button>
+                                <button class="proceed-btn" data-change="5">Proceed To Checkout</button>
                             </div>
                         </div>
 

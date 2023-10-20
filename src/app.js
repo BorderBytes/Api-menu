@@ -108,6 +108,13 @@ app.get('/direccion', (req, res) => {
 app.get('/producto/:params+', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/app/index.html'));
 });
+// Ruta para "producto/" seguido de cualquier número de parámetros
+app.get('/checkout', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/app/index.html'));
+});
+app.get('/cart', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/app/index.html'));
+});
 // Middleware para manejar rutas no definidas
 app.use((req, res) => {
   res.status(404).send('404 - Page Not Found');

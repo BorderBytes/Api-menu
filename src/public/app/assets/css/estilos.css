@@ -97,56 +97,6 @@ body {
     color: #777;
 }
 
-.card:not(:last-child) {
-    margin-bottom: 20px;
-}
-
-
-/* Añade espacio entre las tarjetas de categorías */
-.d-flex .card:not(:last-child) {
-    margin-right: 15px; /* Antes estaba en 10px, lo aumentamos un poco */
-}
-
-/* Estilo para las imágenes de las tarjetas */
-.card img.card-img-top {
-    height: 180px; /* Antes estaba en 150px, lo aumentamos para darle más altura */
-}
-
-/* Ajustes para el cuerpo de las tarjetas */
-.card-body {
-    padding: 10px 15px; /* Añadir más padding para separar el contenido de los bordes de la tarjeta */
-}
-
-/* Espaciado general */
-.mt-3, .mt-4 {
-    margin-top: 20px !important; 
-}
-
-/* Tarjetas de categorías */
-.d-flex .card:not(:last-child) {
-    margin-right: 20px; /* Aumenta el margen entre las tarjetas */
-}
-
-/* Imágenes de tarjetas */
-.card img.card-img-top {
-    height: 120px; /* Disminuye el tamaño para que se vean más proporcionadas */
-}
-
-/* Tarjetas de productos populares */
-.card {
-    margin-bottom: 20px; /* Añade más espacio entre tarjetas */
-}
-
-/* Cuerpo de las tarjetas */
-.card-body {
-    padding: 15px 20px; /* Aumenta el padding para separar el contenido de los bordes */
-}
-
-/* Título de productos populares */
-.card-body h5 {
-    font-size: 16px; /* Reduce el tamaño de la fuente */
-    margin-bottom: 10px; /* Añade un espacio entre el título y la descripción */
-}
 /* Input de búsqueda con ícono dentro */
 .search-input {
     padding-right: 40px; /* Espacio para el ícono de lupa */
@@ -169,7 +119,7 @@ body {
 }
 
 .filter-btn:hover {
-    background-color: #555;
+    background-color: #4e4e4e;
     color: #fff;
 }
 
@@ -211,7 +161,7 @@ body {
 }
 
 .footer-btn:hover {
-    background-color: #555;
+    background-color: #4e4e4e;
     color: #fff;
 }
 
@@ -321,22 +271,12 @@ body {
     height: 100%;
     transition: transform 0.3s ease; /* Animación minimalista */
 }
-
+.view {
+    left: 100%; /* Inicialmente fuera de la vista */
+    transform: translateX(0);
+}
 .view-1 {
     left: 0;
-    transform: translateX(0);
-}
-
-.view-2 {
-    left: 100%; /* Inicialmente fuera de la vista */
-    transform: translateX(0);
-}
-.view-3 {
-    left: 100%; /* Inicialmente fuera de la vista */
-    transform: translateX(0);
-}
-.view-4 {
-    left: 100%;
     transform: translateX(0);
 }
 .scrollable-content {
@@ -534,7 +474,7 @@ body {
 p {
     margin: 0;
     font-size: 16px;
-    color: #555;
+    color: #4e4e4e;
 }
 h3 .toggle-icon {
     position: absolute;
@@ -644,8 +584,8 @@ h3 .toggle-icon {
     z-index: -1;
 }
 
-.text-gray {
-    color: gray;
+.text-#4e4e4e {
+    color: #4e4e4e;
 }
 
 .text-black {
@@ -680,15 +620,28 @@ h3 .toggle-icon {
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
-    height: 400px;
+    height: calc(100vh / 100 * 60); /* Ajusta según el porcentaje de altura que desees */
     overflow-y: scroll;
+}
+.total_preview{
+    height: 100%;
+    /* centrar los elementos verticalmente */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .bottom-checkout{
     position: fixed;
-    bottom: 20px;
+    bottom: 0;
     width: 100%;
     left: 0;
     padding: 0 20px 0 20px;
+    height: calc(100vh / 100 * 40); /* Ajusta según el porcentaje de altura que desees */
+    /* justificar hacia abajo */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin-bottom: 40px;
 }
 /* Encabezado del carrito */
 .cart-title {
@@ -774,7 +727,6 @@ h3 .toggle-icon {
     position: relative; 
     cursor: pointer;
     transition: all 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* Añadimos transiciones suaves para varios elementos */
-    padding: 20px; 
     border: 1px solid transparent; 
 }
 
@@ -815,4 +767,132 @@ h3 .toggle-icon {
     background-color: #FF953F;
     border-radius: 2px;
     transition: width 0.3s ease, height 0.3s ease; /* Animación suave para el indicador inferior */
+}
+.total_preview {
+    font-family: Arial, sans-serif; /* Puedes cambiar esto según la tipografía que prefieras. */
+    text-align: center; /* Alinear todo al centro. */
+    padding: 10px; /* Espaciado alrededor del contenedor. */
+}
+
+.tt_preview {
+    font-size: small; /* Hace que "Total" se muestre en un tamaño más pequeño. */
+    margin-bottom: 5px; /* Espaciado entre "Total" y el precio. */
+    font-size: 1em;
+    margin-bottom: 5px;
+    font-family: 'bold';
+    color: #4e4e4e;
+}
+
+#total_preview {
+    display: block;
+    font-size: 3em;
+    font-weight: bold;
+}
+
+.integers {
+    color: #1a1a1a; /* El color del precio sin decimales. */
+}
+
+.decimals {
+    color: #4e4e4e; /* El color de los decimales. */
+    font-size: inherit; /* Asegura que los decimales tengan el mismo tamaño que el precio. */
+}
+
+.payment_method {
+    font-size: small; /* Hace que el texto de método de pago sea más pequeño. */
+    color: #4e4e4e; /* Color del texto del método de pago. */
+    margin-top: 10px; /* Espaciado entre el precio y el método de pago. */
+}
+
+.fa-lock {
+    color: green; /* Color del icono de candado. */
+}
+
+#change {
+    font-size: small;
+    margin-top: 10px;
+    color: #007bff;
+}
+
+#change i {
+    margin-right: 5px; /* Espaciado a la derecha del icono de edición. */
+}
+.loader-container{
+    position: relative;
+    width: 80%;
+    height: auto;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    border-radius: 50%;
+}
+.loader-container{
+    left: 0;
+    top: 0;
+}
+.loader-container svg{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    fill: #0404040f;
+}
+.container_price{
+    
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: auto;
+
+}
+
+.circular-bg {
+    fill: none;
+    stroke: #e5e5e5;  /* Color de fondo */
+    stroke-width: 2;  /* Nota el aumento en el grosor de trazo del fondo */
+    stroke-dashoffset: 0;
+    
+}
+
+.circular-progress{
+    fill: none;
+    stroke: white;    /* Color inicial del progreso */
+    stroke-linecap: round;
+    transform-origin: center;
+    transform: rotate(-90deg);
+    stroke-dasharray: 314;
+    stroke-dashoffset: 314;
+    stroke-width: 2;  /* Grosor de trazo del progreso, menor que el fondo */
+}
+
+.total_preview.active .circular-progress{
+    animation: progress 5s ease-in-out forwards;
+    stroke: #007bff;
+    stroke-dasharray: 314;
+    stroke-dashoffset: 314;
+}
+
+@keyframes progress {
+    15% {
+        stroke-dashoffset: 250;
+        stroke: #007bff;
+    }
+    30% {
+        stroke-dashoffset: 190;
+        stroke: #007bff;
+    }
+    45% {
+        stroke-dashoffset: 100;
+        stroke: #007bff;
+    }
+    80% {
+        stroke-dashoffset: 70;
+        stroke: #007bff;
+    }
+    100% {
+        stroke-dashoffset: 0;
+        stroke: green;
+    }
 }
