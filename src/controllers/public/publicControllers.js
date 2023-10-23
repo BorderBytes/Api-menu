@@ -141,3 +141,114 @@ exports.getBusinessLocation = (req, res) => {
         res.json({data: results, executionTimeMs: executionTimeMs});
     });
 }
+
+exports.insertOrder = (req, res) => {
+    const startTime = performance.now();
+
+    const {
+        payment_method_id,
+        order_type_id,
+        order_status_id,
+        client_id,
+        address_id,
+        order_date,
+        total_order,
+        products // Asumiendo que products es un array de objetos { id, quantity, unit_kg, comments, addons }
+    } = req.body;
+
+    connection.query('SELECT shipping_cost FROM configuration LIMIT 1', (error, results) => {
+        if (error) {
+            console.error('Error al obtener el shipping_cost:', error.stack);
+            return res.status(500).json({error: 'Error interno del servidor'});
+        }
+
+        const shipping_cost = results[0].shipping_cost;
+
+        const query = `
+            INSERT INTO orders (payment_method_id, order_type_id, order_status_id, client_id, address_id, order_date, shipping_cost, total_order)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+        `;
+
+        connection.query(query, [payment_method_id, order_type_id, order_status_id, client_id, address_id, order_date, shipping_cost, total_order], (error, insertResults) => {
+            if (error) {
+                console.error('Error al ejecutar la inserción:', error.stack);
+                return res.status(500).json({error: 'Error interno del servidor'});
+            }
+
+            const orderId = insertResults.insertId;
+
+            const productIds = products.map(product => product.id);
+            connection.query(`SELECT id, price FROM products WHERE id IN (?)`, [productIds], (error, productResults) => {
+                if (error) {
+                    console.error('Error al obtener los precios de los productos:', error.stack);
+                    return res.status(500).json({error: 'Error interno del servidor'});
+                }
+
+                const productDetails = {};
+                productResults.forEach(product => {
+                    productDetails[product.id] = product.price;
+                });
+
+                const orderProductsData = products.map(product => {
+                    const price = productDetails[product.id];
+                    const subtotal = price * product.quantity;
+                    return [orderId, product.id, product.unit_kg, price, product.quantity, subtotal, product.comments];
+                });
+
+                connection.query(`INSERT INTO order_products (order_id, product_id, unit_kg, price, quantity, subtotal, comments) VALUES ?`, [orderProductsData], (error, orderProductsResults) => {
+                    if (error) {
+                        console.error('Error al insertar en order_products:', error.stack);
+                        return res.status(500).json({error: 'Error interno del servidor'});
+                    }
+
+                    const orderProductIds = orderProductsResults.insertId;
+
+                    const allAddonsPromises = products.map((product, index) => {
+                        const orderProductId = orderProductIds + index;
+
+                        if (!product.addons || product.addons.length === 0) {
+                            return Promise.resolve();
+                        }
+
+                        const addonIds = product.addons.map(addon => addon.id);
+                        return new Promise((resolve, reject) => {
+                            connection.query(`SELECT id, price FROM addon_details WHERE id IN (?)`, [addonIds], (error, addonResults) => {
+                                if (error) {
+                                    return reject(error);
+                                }
+
+                                const addonDetails = {};
+                                addonResults.forEach(addon => {
+                                    addonDetails[addon.id] = addon.price;
+                                });
+
+                                const orderAddonsData = product.addons.map(addon => {
+                                    const price = addonDetails[addon.id];
+                                    const subtotal = price * addon.quantity;
+                                    return [orderProductId, price, addon.quantity, subtotal];
+                                });
+
+                                connection.query(`INSERT INTO order_addons (order_product_id, price, quantity, subtotal) VALUES ?`, [orderAddonsData], (error) => {
+                                    if (error) {
+                                        return reject(error);
+                                    }
+                                    resolve();
+                                });
+                            });
+                        });
+                    });
+
+                    Promise.all(allAddonsPromises)
+                        .then(() => {
+                            const executionTimeMs = Math.round(performance.now() - startTime);
+                            res.json({ message: 'Orden, productos y addons insertados con éxito.', executionTimeMs: executionTimeMs });
+                        })
+                        .catch(error => {
+                            console.error('Error al insertar los addons:', error.stack);
+                            return res.status(500).json({error: 'Error interno del servidor'});
+                        });
+                });
+            });
+        });
+    });
+}

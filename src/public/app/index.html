@@ -58,7 +58,7 @@
                                     <span id="total-price-products">0.00</span>
                                 </h4>
                             </div>
-                            <button class="btn footer-btn" data-change="3">Ver carrito</button>
+                            <button class="btn footer-btn" data-change="3" id="ver_carrito">Ver carrito</button>
                         </div>
                     </div>
                 </div>
@@ -150,43 +150,15 @@
                         </div>
 
                         <!-- Primer producto -->
-                        <div class="product-item d-flex justify-content-between align-items-center mb-3">
-                            <div class="col-4">
-                                <div class="product-img">
-                                    <img src="https://via.placeholder.com/50" alt="Modelo Especial" class="img-fluid">
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="product-details">
-                                    <h6>Modelo Especial</h6>
-                                    <p>Size: 35.5 cl/355ml</p>
-                                    <div class="quantity-control d-flex align-items-center">
-                                        <button class="decrease-qty">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                        <input type="text" value="01" class="qty-input">
-                                        <button class="increase-qty">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-4 text-end">
-                                <span class="product-price">$3.55</span>
-                            </div>
-                            
-                        </div>
+                        <span id="cart_container">
+
+                        </span>
 
                         <div class="bottom-checkout">
-                            <!-- Campo de código promocional -->
-                            <div class="promo-code-section d-flex justify-content-between align-items-center mb-4">
-                                <input type="text" placeholder="Promo Code" class="promo-code-input">
-                                <button class="apply-btn">Apply</button>
-                            </div>
                             <!-- Resumen del total -->
                             <div class="total-summary d-flex justify-content-between align-items-center mb-3">
                                 <span class="summary-label">Sub Total:</span>
-                                <span class="summary-value">$10.93</span>
+                                <span class="summary-value" id="subtotal_carrito">$10.93</span>
                             </div>
                             <div class="total-summary d-flex justify-content-between align-items-center mb-3">
                                 <span class="summary-label">Shipping:</span>
@@ -194,7 +166,7 @@
                             </div>
                             <div class="total-summary d-flex justify-content-between align-items-center mb-4">
                                 <span class="summary-label">Total (2 items):</span>
-                                <span class="summary-value">$13.92</span>
+                                <span class="summary-value" id="total_carrito">$13.92</span>
                             </div>
 
                             <!-- Botón para proceder al pago -->
@@ -236,11 +208,7 @@
                                 <div class="payment_method">
                                     <i class="fa-solid fa-dollar-sign"></i> Pago en efectivo 
                                 </div>
-                                <span id="change"><i class="fa-solid fa-pen"></i> Cambiar</span>
-                                <div class="loading_text">
-                                    Procesando pago...
-                                    <span>Por favor, espere mientras se procesa su transacción.</span>
-                                </div>
+                                <span id="change" data-change="5"><i class="fa-solid fa-pen"></i> Cambiar</span>
                             </div>
                         </div>
 
@@ -267,6 +235,8 @@
                         </div>
 
                     </div>
+                </div>
+                <div class="view view-6" data-step="5" data-ref="/transfer">
                 </div>
             </div>
 
