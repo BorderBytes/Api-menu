@@ -623,6 +623,9 @@ h3 .toggle-icon {
     height: calc(100vh / 100 * 60); /* Ajusta según el porcentaje de altura que desees */
     overflow-y: scroll;
 }
+.no-scroll{
+    overflow-y: hidden;
+}
 .total_preview{
     height: 100%;
     /* centrar los elementos verticalmente */
@@ -636,13 +639,16 @@ h3 .toggle-icon {
     width: 100%;
     left: 0;
     padding: 0 20px 0 20px;
-    height: calc(100vh / 100 * 40); /* Ajusta según el porcentaje de altura que desees */
-    /* justificar hacia abajo */
+    height: calc(100vh / 100 * 40);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    margin-bottom: 40px;
+    padding-bottom: 40px;
 }
+.shadow-min {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 /* Encabezado del carrito */
 .cart-title {
     font-weight: bold;
@@ -844,14 +850,15 @@ h3 .toggle-icon {
     justify-content: center;
     align-items: center;
     position: relative;
-    height: auto;
+    height: calc(100vh / 100 * 60);
+    
 
 }
 
 .circular-bg {
     fill: none;
     stroke: #e5e5e5;  /* Color de fondo */
-    stroke-width: 2;  /* Nota el aumento en el grosor de trazo del fondo */
+    stroke-width: 1;  /* Nota el aumento en el grosor de trazo del fondo */
     stroke-dashoffset: 0;
     
 }
@@ -864,7 +871,7 @@ h3 .toggle-icon {
     transform: rotate(-90deg);
     stroke-dasharray: 314;
     stroke-dashoffset: 314;
-    stroke-width: 2;  /* Grosor de trazo del progreso, menor que el fondo */
+    stroke-width: 1;  /* Grosor de trazo del progreso, menor que el fondo */
 }
 
 .total_preview.active .circular-progress{
