@@ -50,31 +50,33 @@ $(document).ready(function () {
     </div>`;
     $(document).on('click', '[data-product]', function () {
         const id_product = $(this).data('product');
-        const that = this;  // Guarda la referencia al elemento actual
         if(globalId === id_product) {
             return;
         }
         $('#product-detail').html(skeleton);
-        // Guarda el id del producto
         globalId = id_product;
         $.ajax({
             type: "GET",
             url: `/public/products/${id_product}`,
             success: function (response) {
                 console.log(response);
-                setTimeout(function () {
-                    let image = response.data.image;
-                    let name = response.data.name;
-                    let description = response.data.description;
-                    let price = response.data.price;
-                    let addon_array = response.data.addons;
-                    let html = crearElementoProducto(image, name, description, price,addon_array,id_product);
+                let image = response.data.image;
+                let name = response.data.name;
+                let description = response.data.description;
+                let price = response.data.price;
+                let addon_array = response.data.addons;
+    
+                // Pre-carga de la imagen antes de mostrarla
+                let img = new Image();
+                img.src = `/images/products/${image}/big.webp`;
+                img.onload = function() {
+                    let html = crearElementoProducto(image, name, description, price, addon_array, id_product);
                     $('#product-detail').html(html);
                     cargarScrollImagen();
-                }, 800);
+                }
             }
         });
-    });
+    });    
     $(document).on('click', '.search-input', function () {
         loadGoogleMapsAPI().then(() => {
             initMap();
