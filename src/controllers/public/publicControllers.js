@@ -252,3 +252,18 @@ exports.insertOrder = (req, res) => {
         });
     });
 }
+
+exports.getBussinessPublicInfo = (req, res) => {
+    const startTime = performance.now();
+
+    connection.query('SELECT id,name,image,phone,address,latitude,longitude,shipping_cost FROM configuration LIMIT 1', (error, results) => {
+        const executionTimeMs = Math.round(performance.now() - startTime);
+
+        if (error) {
+            console.error('Error al ejecutar la consulta:', error.stack);
+            return res.status(500).json({error: 'Error interno del servidor'});
+        }
+
+        res.json({data: results[0], executionTimeMs: executionTimeMs});
+    });
+}
