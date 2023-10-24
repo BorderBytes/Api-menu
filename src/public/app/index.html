@@ -19,7 +19,7 @@
                             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
-                            <div class="navbar-brand mx-auto bold title_page">MiRestaurante</div>
+                            <div class="navbar-brand mx-auto bold title_page" id="titulo_header"></div>
                             <ul class="navbar-nav">
                                 <li class="nav-item">
                                     <a class="nav-link" id="full_screen">
@@ -29,7 +29,7 @@
                             </ul>
                         </nav>
                         <div class="input-group p-20" data-change="2">
-                            <input class="form-control search-input" type="search" placeholder="¿A donde lo enviamos?" aria-label="Search">
+                            <input class="form-control search-input" id="search_view" type="search" placeholder="¿A donde lo enviamos?" aria-label="Search">
                             <div class="input-group-append">
                                 <button class="btn btn-dark" type="button">
                                     <i class="fas fa-location"></i>
@@ -123,7 +123,7 @@
                                 </div>
                                 <div class="modal-buttons mt-3 d-flex justify-content-between align-items-center">
                                     <div class="col-6">
-                                        <button class="btn btn-dark w-100">Continuar</button>
+                                        <button class="btn btn-dark w-100" data-change="0">Continuar</button>
                                     </div>
                                     <div class="col-5">
                                         <button class="btn btn-light w-100" id="cancelar_direccion_modal">Editar</button>

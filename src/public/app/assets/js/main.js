@@ -18,6 +18,13 @@ $(document).ready(function () {
       
     $.ajax({
         type: "GET",
+        url: "/public/business/publicInfo",
+        success: function (response) {
+            $('#titulo_header').html(response.data.name);
+        }
+    });
+    $.ajax({
+        type: "GET",
         url: "/public/categories",
         success: function (response) {
             response.data.forEach(category => {

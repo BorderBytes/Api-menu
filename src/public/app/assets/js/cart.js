@@ -11,12 +11,13 @@ class ShoppingCart {
     
     /**
      * Constructor para inicializar el carrito.
-     * Carga los ítems del carrito desde localStorage si existen.
+     * Carga los ítems del carrito y las direcciones de envío desde localStorage si existen.
      */
     constructor() {
         this.items = [];      // Arreglo para almacenar los ítems en el carrito.
+        this.shippingAddresses = []; // Arreglo para almacenar las direcciones de envío.
         this.total = 0.0;    // Valor total inicial del carrito.
-        this.loadFromLocalStorage();  // Intenta cargar el carrito desde localStorage.
+        this.loadFromLocalStorage();  // Intenta cargar el carrito y las direcciones de envío desde localStorage.
     }
 
     /**
@@ -26,9 +27,19 @@ class ShoppingCart {
      * @param {Object} item - El ítem a agregar.
      */
     addItem(item) {
-        this.items.push(item);   // Agrega el ítem al arreglo.
-        this.calculateTotal();  // Recalcula el total.
-        this.saveToLocalStorage();  // Guarda el carrito en localStorage.
+        this.items.push(item);
+        this.calculateTotal();
+        this.saveToLocalStorage();
+    }
+
+    /**
+     * Agrega una dirección de envío.
+     * 
+     * @param {Object} address - Objeto con {lat, lng, address}.
+     */
+    addShippingAddress(address) {
+        this.shippingAddresses.push(address);
+        this.saveToLocalStorage();
     }
 
     /**
@@ -39,22 +50,27 @@ class ShoppingCart {
     }
 
     /**
-     * Guarda el carrito en localStorage.
+     * Guarda el carrito y las direcciones de envío en localStorage.
      */
     saveToLocalStorage() {
-        const cartString = JSON.stringify(this.items); // Convierte los ítems del carrito a una cadena JSON.
-        localStorage.setItem('cart', cartString);     // Almacena la cadena en localStorage.
+        const cartString = JSON.stringify({
+            items: this.items,
+            shippingAddresses: this.shippingAddresses
+        });
+        localStorage.setItem('cart', cartString);
     }
 
     /**
-     * Carga los ítems del carrito desde localStorage.
+     * Carga los ítems del carrito y las direcciones de envío desde localStorage.
      * Si se encuentran ítems, recalcula el total del carrito.
      */
     loadFromLocalStorage() {
         const cartString = localStorage.getItem('cart');
         if (cartString) {
-            this.items = JSON.parse(cartString);     // Convierte la cadena JSON a un arreglo de ítems.
-            this.calculateTotal();  // Recalcula el total después de cargar los ítems.
+            const cartData = JSON.parse(cartString);
+            this.items = cartData.items || [];
+            this.shippingAddresses = cartData.shippingAddresses || [];
+            this.calculateTotal();
         }
     }
 

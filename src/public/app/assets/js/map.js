@@ -98,6 +98,21 @@ function initMap() {
         $("#modal_direction").removeClass("hide-modal");
         let direction = $('#address-input').val();
         $('#direccion_entrega_label').text(direction);
+        $('#search_view').val(direction);
+        
+        // Enviamos la dirección a un objeto global
+        lat = autocomplete.getPlace().geometry.location.lat();
+        lng = autocomplete.getPlace().geometry.location.lng();
+        address = autocomplete.getPlace().formatted_address;
+
+        let shippingAddress = {
+            lat: lat,
+            lng: lng,
+            address: address
+        };
+
+        // Agregar la dirección al carrito
+        cartInstance.addShippingAddress(shippingAddress);
     });
 }
 function checkStatusBeforeRouting() {
